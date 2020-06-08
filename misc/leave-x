@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+choice=$(printf "Log Off\nSuspend\nPower Off\nReboot" | $DMENU -p "Bye bye" | sed "s/\W//g")
+[ ! "$choice" ] && exit
+
+case "$choice" in
+    Suspend)   systemctl suspend;;
+    LogOff)  pkill -KILL -u $USER;;
+    PowerOff)  systemctl poweroff;;
+    Reboot)  systemctl reboot;;
+    *) echo "Time to script it";;
+esac

@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+ICONS=~/.icons/system
+path=~/.local/bin
+
+"$path"/misc/connected ||
+   {
+      notify-send -t 3000 -i $ICONS/disconnected.png "Disconnected"
+      exit 1
+   }
+
+notify-send -t 3000 -i $ICONS/gitlab.png "Time to sync with Git"
+
+for dir in /home/git/own/*/; do
+   [ -d "$dir" ] && {
+      cd "$dir" || exit 1
+      # git pull
+      git add .
+      git commit -m "update" &&
+         git push
+   }
+done
+
+notify-send -t 3000 -i $ICONS/gitlab.png "Done syncing git repos"

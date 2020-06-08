@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+ICONS=~/.icons/system
+path=~/.local/bin
+error=''
+
+"$path"/misc/connected ||
+  {
+    notify-send -t 3000 -i $ICONS/critical.png "Couldn't sync with Arch!"
+    exit
+  }
+
+notify-send -t 3000 -i  $ICONS/arch.png 'Time to sync arch'
+
+doas -- pacman -Syyu --noconfirm || notify-send -t 3000 -i $ICONS/critical.png "Couldn't sync pacman!" && error=1
+yay -Syyu --noconfirm || notify-send -t 3000 -i $ICONS/critical.png "Couldn't sync AUR!" && error=1
+[ $error ] || notify-send -t 3000 -i $ICONS/arch.png 'Done syncing arch'
+
+# doas -- pacman -Syyuw --noconfirm
+# yay -Syyuw --noconfirm
+
+# pacman -Qu && doas -- pacman -Su --noconfirm &&
+#   yay -Qu && yay -Su --noconfirm &&
+#   notify-send -t 3000 -i $ICONS/arch.png 'System is up-to-date' && exit
+
+# notify-send -t 3000 -i $ICONS/arch.png 'No updates found'
+
+

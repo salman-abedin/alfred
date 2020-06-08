@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+[ "$1" ] || cat <<-EOF && exit 1
+add-music <Video> <Audio>
+EOF
+
+ffmpeg \
+   -i "$1" \
+   -stream_loop -1 -i "$2" \
+   -filter_complex "[0:a][1:a]amerge=inputs=2[a]" \
+   -map 0:v -map "[a]" \
+   -c:v copy -c:a mp3 \
+   -shortest -y \
+   "${1%.*}"-"$(date +'%Y%b%d-%H%M%S')"."${1##*.}"
+
+# -c:a aac -strict experimental -b:a 192k -ac 2 \

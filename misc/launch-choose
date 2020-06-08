@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+choice=$(printf "📚 Master PDF Editor\n✍ Libre Office Writer" |
+   rofi -dmenu -i -p "Open with" | sed "s/\W//g")
+
+[ ! "$choice" ] && exit
+
+case "$choice" in
+
+   MasterPDFEditor)
+      setsid masterpdfeditor4 "$1" > /dev/null 2>&1 &
+      ;;
+
+   LibreOfficeWriter)
+      setsid /usr/lib/libreoffice/program/oosplash \
+         --writer "$1" > /dev/null 2>&1 &
+      ;;
+
+   *) echo "Time to script it" ;;
+
+esac

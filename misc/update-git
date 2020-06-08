@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+ICONS=~/.icons/system
+path=~/.local/bin
+succeed=1
+
+"$path"/misc/connected ||
+   {
+      notify-send -t 3000 -i $ICONS/disconnected.png "Disconnected"
+      exit 1
+   }
+
+notify-send -t 3000 -i $ICONS/github.png "Time to update git reopos"
+
+for dir in /home/git/others/*/; do
+   [ -d "$dir" ] && git -C "$dir" pull ||
+      succeed=0
+done
+
+[ "$succeed" = 1 ] &&
+   notify-send -t 3000 -i $ICONS/github.png "Done updating git repos" ||
+   notify-send -t 3000 -i $ICONS/critical.png "Git update failled"

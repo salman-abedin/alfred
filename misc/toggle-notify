@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+pidof notification-daemon &&
+   notify-send -t 1000 -i ~/.icons/system/dnd.png 'Do not disturb' &&
+   sleep 1 &&
+   killall notification-daemon &&
+   exit
+
+notification-daemon &
+sleep 0.5
+notify-send -t 1000 -i ~/.icons/system/bell.png 'Disturb all you want'

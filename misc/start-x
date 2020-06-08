@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+startx ~/.config/X11/xinitrc
+

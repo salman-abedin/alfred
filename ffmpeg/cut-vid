@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+echo "Starting Point? (ex. 00:00)"
+read -r start
+
+echo "Endin Point? (ex. 00:05)"
+read -r end
+
+ffmpeg -y -i "$1" -ss "00:$start" -to "00:$end" \
+   "${1%.*}"-"$(date +'%Y%b%d-%H%M%S')"."${1##*.}"
+

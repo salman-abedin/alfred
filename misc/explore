@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+lf -last-dir-path ~/.config/lf/lastPath "$(cat ~/.config/lf/lastPath)"
+# doas -- lf -last-dir-path ~/.config/lf/lastPath "$(cat ~/.config/lf/lastPath)"
+

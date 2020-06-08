@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+curl -v http://localhost:5000"$1"
+

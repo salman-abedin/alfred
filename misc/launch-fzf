@@ -1,0 +1,25 @@
+#!/usr/bin/env sh
+
+case $(file --mime-type "$1" -bL) in
+
+   inode/directory)
+      lf -last-dir-path ~/.config/lf/lastPath "$1"
+      ;;
+
+   text/* | inode/x-empty | application/json | application/octet-stream)
+      "$EDITOR" "$1"
+      ;;
+
+   image/*)
+      feh -F -A "setBg %f" -B "black" -d --edit --keep-zoom-vp --start-at "$1" > /dev/null 2>&1 &
+      ;;
+
+   audio/*)
+      { pgrep mpv || mpv --no-audio-display --loop "$1"; } > /dev/null 2>&1 &
+      ;;
+
+   *)
+      :
+      ;;
+
+esac

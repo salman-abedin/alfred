@@ -1,0 +1,86 @@
+#!/usr/bin/env sh
+
+# Stolen from Luke Smith.
+
+stop() {
+   recpid="$(cat "$REC_PID")"
+   kill -15 "$recpid"
+   rm -f "$REC_PID"
+   sleep 3
+   kill -9 "$recpid"
+   refBlock -r o
+   canberra-gtk-play -i service-logout
+   exit
+}
+
+webcam() {
+   ffmpeg \
+      -f v4l2 -i /dev/video0 \
+      -f alsa -i default \
+      ~/webcam-"$(date +'%Y-%b-%d-%H:%M:%S')".mkv &
+   echo $! > "$REC_PID"
+   refBlock -r w
+   canberra-gtk-play -i service-login
+}
+# -video_size 1920x1080 \
+
+audio() {
+   format=${1:-flac}
+   ffmpeg \
+      -f alsa -i default \
+      -c:a "$format" \
+      ~/audio-"$(date +'%Y-%b-%d-%H:%M:%S').$format" &
+   echo $! > "$REC_PID"
+   refBlock -r a
+   canberra-gtk-play -i service-login
+}
+
+screencast() {
+   ffmpeg \
+      -f x11grab \
+      -framerate 60 \
+      -s "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')" \
+      -i "$DISPLAY" \
+      -r 30 \
+      -f alsa -i default \
+      -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
+      "$SCREENCASTS"/screencast-"$(date +'%Y-%b-%d-%H-%M-%S')".mkv &
+   echo $! > "$REC_PID"
+   refBlock -r s
+   canberra-gtk-play -i service-login
+}
+
+screenshot() {
+   choice=$(printf "screen\nsection" | $DMENU -p "Select")
+   output=~/screenshot-$(date +'%Y%b%d-%H%M%S').png
+
+   case "$choice" in
+
+      screen)
+         # sleep 1
+         # import -window root ~/screenshot-`date +'%Y-%b-%d-%H:%M:%S'`.jpg
+         maim -u -d 1 "$output"
+         canberra-gtk-play -i camera-shutter
+         ;;
+
+      section)
+         # sleep 1
+         # wid=`xprop -root | grep "_NET_ACTIVE_WINDOW(WINDOW)" | cut -d " " -f 5`
+         # import -window "$wid" ~/screenshot-`date +'%Y-%b-%d-%H:%M:%S'`.jpg
+         maim -B -u -d 1 -s "$output"
+         canberra-gtk-play -i camera-shutter
+         ;;
+   esac
+
+}
+
+choice=$(printf "📷  screenshot\n💻  screencast\n🎙  audio\n🎥  webcam\n🛑  stop" | rofi -dmenu -i -p "Select" | sed "s/\W//g")
+
+case "$choice" in
+   screenshot) screenshot ;;
+   screencast) screencast ;;
+   audio) audio "$@";;
+   webcam) webcam ;;
+   stop) stop ;;
+   *) exit ;;
+esac

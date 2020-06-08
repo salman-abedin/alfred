@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+ICONS=~/.icons/system
+
+~/.local/bin/misc/connected || {
+    notify-send -t 3000 -i $ICONS/critical.png "Couldn't sync with mails!"
+    exit
+}
+
+mbsync -c ~/.config/isync/mbsyncrc -a 2>/dev/null ||
+    notify-send -t 3000  -i $ICONS/critical.png "Could'n sync mails!"
+notify-send -t 3000 -i $ICONS/mail.png "Done syncing mails"
+
+unread=$(find ~/.local/share/mail/gmail/INBOX/new/* -type f 2>/dev/null | wc -l)
+
+# [ $unread -gt 0 ] && /usr/local/bin/st -e /usr/bin/neomutt &
+
+[ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" "Mail" "You've got $unread new mail!"
+

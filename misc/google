@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+$DMENU -p "Search" \
+    | xargs -rI% $BROWSER google.com/search\?q=%
+

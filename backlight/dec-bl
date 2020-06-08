@@ -1,0 +1,12 @@
+#!/bin/sh
+
+source=/sys/class/backlight/"$(ls /sys/class/backlight)"
+
+max="$(cat "$source"/max_brightness)"
+current="$(cat "$source"/brightness)"
+
+amount="$((  max * 10 / 100 ))"
+decreased="$(( current - amount ))"
+
+echo "$decreased" > "$source"/brightness
+

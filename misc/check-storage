@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+ICONS=~/.icons/system
+get_free(){ df -h "$1" | awk '(NR == 2){print $4}' | sed 's/G//'; }
+root=$(get_free /)
+home=$(get_free /home)
+[ "$root" -lt 5 ] && notify-send -t 0 -i $ICONS/critical.png "Low System Storage"
+[ "$home" -lt 10 ] && notify-send -t 0 -i $ICONS/critical.png "Low Home Storage"

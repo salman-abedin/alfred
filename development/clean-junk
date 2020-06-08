@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+# Forked from Luke Smith
+
+path=$(readlink -f "$1")
+name="${path%.*}"
+ext="${path##*.}"
+# dir=$(dirname "$path")
+
+case $ext in
+   c) rm -f "$name" ;;
+   tex) rm -f "$name".out "$name".log "$name".aux ;;
+      # c) find "$dir" -maxdepth 1 -type f -name "a.out" -delete ;;
+esac

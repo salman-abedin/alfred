@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+pgrep yabar && doas killall yabar || yabar &
+bspc node -t \~fullscreen

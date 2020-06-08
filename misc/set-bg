@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+[ "$1" = -s ] && /bin/cp "$(find -L ~/.local/share/wallpapers -type f | shuf -n1)"  "$WALL"
+[ "$1" ] && /bin/cp "$1" "$WALL" && /bin/cp "$1" ~/.local/share/wallpapers
+feh --no-fehbg --bg-scale "$WALL"
+
