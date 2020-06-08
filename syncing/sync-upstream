@@ -12,7 +12,7 @@ succeed=1
 
 notify-send -t 3000 -i $ICONS/github.png "Time to rebase git reopos"
 
-for dir in /home/git/forks/*/; do
+for dir in "$GIT"/forks/*/; do
    [ -d "$dir" ] && {
       cd "$dir" || exit
       git fetch upstream

@@ -1,23 +1,24 @@
 #!/usr/bin/env sh
 
-stop(){
+stop() {
    recpid=$(cat "$REC_PID")
-	kill -15 "$recpid"
-	rm -f "$REC_PID"
-	sleep 3
-	kill -9 "$recpid"
-	exit
+   kill -15 "$recpid"
+   rm -f "$REC_PID"
+   sleep 3
+   kill -9 "$recpid"
+   exit
 }
 
 [ -f "$REC_PID" ] && stop
 
 ffmpeg \
--f x11grab \
--framerate 60 \
--s "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')" \
--i "$DISPLAY" \
--r 30 \
--f alsa -i default \
--c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
-"$SCREENCASTS"/screencast-"$(date +'%Y-%b-%d-%H-%M-%S')".mkv &
+   -f x11grab \
+   -framerate 60 \
+   -s "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')" \
+   -i "$DISPLAY" \
+   -r 30 \
+   -f alsa -i default \
+   -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
+   "$SCREENCASTS"/screencast-"$(date +'%Y-%b-%d-%H-%M-%S')".mkv &
 echo $! > "$REC_PID"
+

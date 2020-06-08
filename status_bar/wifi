@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+connected || echo ❗ 000%
+strength="$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
+# printf "🌏 %03d%" "$strength"
+echo "🌏 $strength%"

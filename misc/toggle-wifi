@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+pidof iwd && {
+   doas systemctl stop iwd
+   notify-send -i "$ICONS"/disconnected.png 'Turned Wifi Off'
+} || {
+   doas systemctl start iwd
+   notify-send -i "$ICONS"/connected.png 'Turned Wifi On'
+}

@@ -8,13 +8,14 @@ ext="${path##*.}"
 # dir="${path%/*}"
 
 case $ext in
-   sass) sassc -a "$path" "$name.css" ;;
-   js) node "$path" ;;
-   h) doas make install ;;
-   tex) xelatex "$path" ;;
-   sh) sh "$path" ;;
    c)  cc "$path" -o "$name" && "$name" ;;
-   ms) groff -m ms -T ps "$path" > "$name".ps ;;
+   h|sh) doas make install ;;
+   js) node "$path" ;;
+   ms) groff -ms -ept "$path" > "$name".ps ;;
+   py)  python "$path" ;;
+   sass) sassc -a "$path" "$name.css" ;;
+   tex) xelatex "$path" ;;
+   # sh) sh "$path" ;;
    # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
    # ms) groff -m ms -T ps "$path" > "$name".ps ;;
    # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;

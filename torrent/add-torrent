@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+pidof transmission-daemon >/dev/null || { transmission-daemon && sleep 1; }
+
+transmission-remote -a "$@"
+notify-send -t 1000 -i "$ICONS"/transmission.png \
+   "Transmission" "Torrent added"

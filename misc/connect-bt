@@ -1,27 +1,16 @@
 #!/usr/bin/env sh
 
-# pgrep bluetooth > /dev/null &&
-#    doas systemctl stop bluetooth &&
-#    sleep 3 && refBar -v &&
-#    exit
-
 doas rfkill unblock bluetooth
 doas systemctl start bluetooth
-
-# doas killall pulseaudio
-# pulseaudio --start
-
-# bluetoothctl power off
 bluetoothctl power on
-# bluetoothctl scan on
 
-# device=${1:-E8:EC:A3:15:05:0D}
-device=${1:-E8:EC:A3:27:60:15}
+right=${1:-E8:EC:A3:27:60:15}
+left=${1:-E8:EC:A3:15:05:0D}
 
-bluetoothctl connect "$device"
-# >/dev/null
+bluetoothctl connect "$right" ||
+   bluetoothctl connect "$left"
 
-# bluetoothctl scan off
+bluetoothctl scan off
 
-sleep 3
+sleep 2
 ref-block 1

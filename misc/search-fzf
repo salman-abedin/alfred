@@ -2,5 +2,5 @@
 
 awk -F / '{print $NF}' "$SEARCH_LIST" |
    fzf |
-   xargs -I% grep %$ "$SEARCH_LIST" |
-   xargs launch-fzf
+   xargs -I% grep -w %$ "$SEARCH_LIST" |
+   xargs launch-swallow

@@ -2,7 +2,7 @@
 
 # Stolen from Luke Smith.
 
-cut -d ';' -f1 ~/.local/share/emoji \
+cut -d ';' -f1 ~/.local/share/misc/emoji \
     | $DMENU -p "Pick an emoji" \
     | sed "s/ .*//" \
     | tr -d '\n' \

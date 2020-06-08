@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
 
-
 ICONS=~/.icons/system
 android=/mnt/android
 disk=/disk/Phone

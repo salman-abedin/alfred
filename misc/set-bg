@@ -1,6 +1,22 @@
 #!/usr/bin/env sh
 
-[ "$1" = -s ] && /bin/cp "$(find -L ~/.local/share/wallpapers -type f | shuf -n1)"  "$WALL"
-[ "$1" ] && /bin/cp "$1" "$WALL" && /bin/cp "$1" ~/.local/share/wallpapers
-feh --no-fehbg --bg-scale "$WALL"
+wall=/tmp/wall
 
+setBg(){ feh --no-fehbg --bg-scale "$1"; }
+
+if [ "$1" = -s ]; then
+   find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 | tee "$wall"
+elif [ "$1" = -d ]; then
+   find "$WALLPAPERS" -name "$(cat $wall)" -delete
+   set-bg -s
+else
+   echo "$1" > $wall
+fi
+
+setBg "$(cat $wall)"
+
+# [ "$1" = -s ] &&
+#    cp "$(find $WALLPAPERS -name "*.jpg" -o -name "*.png" | shuf -n1)" "$WALL" ||
+#    cp "$1" "$WALL" && cp "$1" "$WALLPAPERS"
+
+# feh --no-fehbg --bg-scale "$WALL"

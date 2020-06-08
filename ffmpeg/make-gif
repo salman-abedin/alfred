@@ -1,5 +1,27 @@
 #!/usr/bin/env sh
 
-ffmpeg -y -i "$1" \
+palette="/tmp/palette.png"
+filters="fps=5,scale=720:-1:flags=lanczos"
+
+ffmpeg -i "$1" -vf "$filters,palettegen" -y $palette
+ffmpeg \
+   -i "$1" -i $palette -y \
+   -lavfi "$filters [x]; [x][1:v] paletteuse" \
    "${1%.*}"-"$(date +'%Y%b%d-%H%M%S')".gif
 
+# ffmpeg -y -i "$1" -vf palettegen palette.png
+
+# ffmpeg -y \
+#    -i "$1" -i pallette.png\
+#    -filter_complex paletteuse \
+#    -loop 0 \
+#    -r 5 \
+#    -vf scale=480:-1 \
+#    "${1%.*}"-"$(date +'%Y%b%d-%H%M%S')".gif
+
+# ffmpeg -y -i "$1" \
+#    -r 5 \
+#    -s 1280x720 \
+#    "${1%.*}"-"$(date +'%Y%b%d-%H%M%S')".gif
+
+rm -f $palette

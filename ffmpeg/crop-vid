@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+echo "Width(px)? "
+read -r w
+
+echo "Height(px)? "
+read -r h
+
+echo "x co-ordinate? "
+read -r x
+
+echo "y co-ordinate? "
+read -r y
+
+ffmpeg -y -i "$1" \
+   -filter:v "crop=$w:$h:$x:$y" \
+   "${1%.*}"-"$(date +'%Y%b%d-%H%M%S')"."${1##*.}"
+

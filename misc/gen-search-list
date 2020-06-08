@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-maxDepth=2
-grep -v "^#" ~/.config/shortcutrc |
-   xargs -I% find -L % -maxdepth $maxDepth > "$SEARCH_LIST"
-
