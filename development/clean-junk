@@ -9,6 +9,6 @@ ext="${path##*.}"
 
 case $ext in
    c) rm -f "$name" ;;
-   tex) rm -f "$name".out "$name".log "$name".aux ;;
+   tex) rm -f ./*.out ./*.log ./*.aux ;;
       # c) find "$dir" -maxdepth 1 -type f -name "a.out" -delete ;;
 esac
