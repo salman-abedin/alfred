@@ -6,16 +6,14 @@
 path=$(readlink -f "$1")
 name="${path%.*}"
 ext="${path##*.}"
-# dir="${path%/*}"
+dir="${path%/*}"
 
-ns "$path"
-
+cd "$dir" || exit 1
 [ "$clean" ] &&
     case $ext in
         c) rm -f "$name" ;;
         tex) rm -f ./*.out ./*.log ./*.aux ;;
     esac && exit
-
 case $ext in
     c) cc "$path" -o "$name" && "$name" ;;
     h | sh) doas make install ;;

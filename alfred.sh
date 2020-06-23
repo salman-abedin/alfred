@@ -13,12 +13,13 @@ setbg() {
             ;;
         reel)
             shift
-            [ "$1" = stop ] && kill -9 "$REELPID" && return
+            [ "$1" = stop ] && kill -9 "$REELPID" && exit
             while :; do
                 setbg shuffle
                 sleep "$1"
-            done &
+            done
             echo $! > $REELPID
+            shift
             ;;
         delete)
             find "$WALLPAPERS" -name "$(cat $WALL)" -delete
@@ -69,7 +70,7 @@ while :; do
     case $1 in
         --bg)
             shift
-            setbg "$1"
+            setbg "$@"
             ;;
         --dpi) setdpi ;;
         *) break ;;
