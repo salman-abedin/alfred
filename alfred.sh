@@ -1,22 +1,35 @@
 #!/usr/bin/env sh
 
 # Misc script piled together for ease of calling
-# setbg sets backwallpapers
-# setdpi sets the correct dpi
+# alfred --dg sets wallpapers (options: shuffle,reel,delete)
+# alfred --dpi sets the correct dpi
 
 setbg() {
-    wall=/tmp/wall
-    setpic() { feh --no-fehbg --bg-scale "$1"; }
-    if [ "$1" = shuffle ]; then
-        find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 | tee "$wall"
-    elif [ "$1" = delete ]; then
-        find "$WALLPAPERS" -name "$(cat $wall)" -delete
-        setbg shuffle
-        return
-    else
-        echo "$1" > $wall
-    fi
-    setpic "$(cat $wall)"
+    WALL=/tmp/wall
+    REELPID=/tmp/reelpid
+    case $1 in
+        shuffle)
+            find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 | tee "$WALL"
+            ;;
+        reel)
+            shift
+            [ "$1" = stop ] && kill -9 "$REELPID" && return
+            while :; do
+                setbg shuffle
+                sleep "$1"
+            done &
+            echo $! > $REELPID
+            ;;
+        delete)
+            find "$WALLPAPERS" -name "$(cat $WALL)" -delete
+            setbg shuffle
+            return
+            ;;
+        *)
+            echo "$1" > $WALL
+            ;;
+    esac
+    feh --no-fehbg --bg-scale "$(cat $WALL)"
 }
 
 setdpi() {
@@ -54,7 +67,7 @@ setdpi() {
 
 while :; do
     case $1 in
-        --background)
+        --bg)
             shift
             setbg "$1"
             ;;

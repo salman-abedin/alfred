@@ -4,7 +4,7 @@ My daily driver shell scripts
 
 ## Why does it exist?
 
-Most of these are written by myself in order to indulge my laziness 
+Most of these are written by myself in order to indulge my laziness
 and/or in order for me to escape doing something actually worth while.
 
 Hopefully you will get some use out of these
@@ -59,6 +59,8 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 ## Documentation
 
 Coming soon, lol.
+
+<!--- | Command | Action | -->
 
 ## Uninstallation
 
