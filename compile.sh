@@ -11,17 +11,17 @@ dir="${path%/*}"
 cd "$dir" || exit 1
 [ "$clean" ] &&
     case $ext in
-        c) rm -f "$name" ;;
-        tex) rm -f ./*.out ./*.log ./*.aux ;;
+        tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
+            # c) rm -f "$name" ;;
     esac && exit
 case $ext in
-    c) cc "$path" -o "$name" && "$name" ;;
     h | sh) doas make install ;;
-    js) node "$path" ;;
-    ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
     py) python "$path" ;;
-    sass) sassc -a "$path" "$name.css" ;;
     tex) xelatex "$path" ;;
+        # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
+        # c) cc "$path" -o "$name" && "$name" ;;
+        # js) node "$path" ;;
+        # sass) sassc -a "$path" "$name.css" ;;
         # sh) sh "$path" ;;
         # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
         # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;

@@ -1,9 +1,0 @@
-#!/usr/bin/env sh
-
-if pidof iwd; then
-   doas systemctl stop iwd
-   notify-send -i "$ICONS"/disconnected.png 'Turned Wifi Off'
-else
-   doas systemctl start iwd
-   notify-send -i "$ICONS"/connected.png 'Turned Wifi On'
-fi

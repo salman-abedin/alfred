@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 
-# Misc battery scripts
+# Monitors Battery level,
+# Blocks Charging on High battery level
+# Notifies on Plug and Unplug (Udev Script)
 
 case $1 in
     --block-charge)

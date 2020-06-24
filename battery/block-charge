@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-config="/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
-
-{ [ "$1" = "-t" ] && echo 1 || echo 0; } | doas tee $config
