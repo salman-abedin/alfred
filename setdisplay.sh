@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
 # Display related scripts
-# setdisplay --bg sets wallpapers (options: shuffle,toggle-reel,delete)
-#   Requires an Environment variable name WALLPAPERS that has the path to your wallpapers
+# setdisplay --bg --[shuffle,delete,toggle-reel] sets wallpapers
+#   Requires an Environment variable named WALLPAPERS that has the path to your wallpapers
 # setdisplay --dpi sets the correct dpi
 
 while :; do

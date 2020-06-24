@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 # Toggles Wifi & Notification
+# toggle --[noti,wifi]
 
 while :; do
     case $1 in

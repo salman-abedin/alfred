@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//'

@@ -10,8 +10,8 @@ while :; do
             $GIT/own/private \
             "
             inotifywait -m -r -e create,moved_to $dirs |
-                while read -r event; do
-                    cp -frs -t ~ \
+                while read -r; do
+                    cp -frsu -t ~ \
                         "$GIT"/own/magpie/. \
                         "$GIT"/own/private/.
                 done &
@@ -19,7 +19,7 @@ while :; do
         --mails)
             path=~/.local/share/mail/gmail/INBOX/new
             inotifywait -m -e move $path |
-                while read -r event; do
+                while read -r; do
                     refresh-block 2
                 done &
             ;;

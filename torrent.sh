@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# Torrent  related scripts
+# torrent --[add,downloader]
+
 case $1 in
     --add)
         shift

@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 
+# All purpose launch script
+
 case $1 in
     --devour)
         shift
+
         if echo "$*" | grep "\.ar\."; then
             devour alacritty \
                 --config-file ~/.config/alacritty/alacritty_ar.yml \
@@ -12,23 +15,21 @@ case $1 in
             devour sent "$1" &
             exit
         fi
+
         case $(file --mime-type "$*" -bL) in
             text/* | inode/x-empty | application/json | application/octet-stream)
-                "$EDITOR" "$*"
+                $EDITOR "$*"
                 ;;
-            video/*)
+            video/* | audio/* | image/gif)
                 pidof mpv || devour mpv "$*"
                 ;;
             application/pdf | application/postscript)
-                devour zathura "$*"
-                ;;
-            image/gif)
-                pgrep mpv || devour "mpv --loop" "$*"
+                pidof zathura || devour zathura "$*"
                 ;;
             image/*)
                 pidof feh ||
                     devour \
-                        "feh -A 'alfred --bg %f' -B 'black' -F -d --edit --keep-zoom-vp --start-at" "$*"
+                        feh -A 'setdisplay --bg %f' -B 'black' -F -d --edit --keep-zoom-vp --start-at "$*"
                 ;;
             application/zip)
                 unzip "$*" -d "${1%.*}"
@@ -37,13 +38,14 @@ case $1 in
         ;;
     --choose)
         shift
-        choice=$(printf "📖 Foxit Reader\n📚 Master PDF Editor\n💻 Code" |
+        choice=$(printf "📖 Foxit Reader\n📚 Master PDF Editor\n💻 Code\n🎥 MPV" |
             rofi -dmenu -i -p "Open with" | sed "s/\W//g")
         [ ! "$choice" ] && exit
         case "$choice" in
-            FoxitReader) swallow foxitreader "$*" ;;
-            MasterPDFEditor) swallow masterpdfeditor4 "$*" ;;
-            Code) swallow code "$1" ;;
+            FoxitReader) devour foxitreader "$*" ;;
+            MasterPDFEditor) devour masterpdfeditor4 "$*" ;;
+            Code) devour code "$*" ;;
+            MPV) devour mpv --shuffle "$*" ;;
         esac
         ;;
     *)
