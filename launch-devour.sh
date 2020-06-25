@@ -10,14 +10,11 @@ case $(file --mime-type "$*" -bL) in
         # Launch using your favorite application
         "$EDITOR" "$*"
         ;;
-    video/*)
+    video/* | audio/* | image/gif)
         devour mpv "$*"
         ;;
     application/pdf | application/postscript)
         devour zathura "$*"
-        ;;
-    image/gif)
-        devour mpv --loop "$*"
         ;;
     image/*)
         devour \

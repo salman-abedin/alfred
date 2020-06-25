@@ -7,7 +7,7 @@ if ! connected; then
     notify-send -t 3000 -i "$ICONS"/disconnected.png "Disconnected"
     exit 1
 fi
-notify-send -i "$ICONS/update.png" "Syncing now"
+notify-send -i "$ICONS/mirror.png" "Mirroring now"
 while :; do
     case $1 in
         --git)
@@ -60,5 +60,5 @@ while :; do
     shift
 done
 # wait
-notify-send -i "$ICONS/update.png" "Done syncing"
+notify-send -i "$ICONS/mirror.png" "Done mirroring"
 # exit 0

@@ -31,8 +31,8 @@ case $1 in
                     devour \
                         feh -A 'setdisplay --bg %f' -B 'black' -F -d --edit --keep-zoom-vp --start-at "$*"
                 ;;
-            application/zip)
-                unzip "$*" -d "${1%.*}"
+            application/*)
+                extract --clean "$*"
                 ;;
         esac
         ;;

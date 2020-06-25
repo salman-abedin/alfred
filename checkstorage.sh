@@ -12,9 +12,3 @@ while [ "$1" ]; do
     shift
     shift
 done
-
-# getfree() { df -h "$1" | awk '(NR == 2){print $4}' | sed 's/G//'; }
-# root=$(getfree /)
-# home=$(getfree /home)
-# [ "$root" -lt 5 ] && notify-send -t 0 -i "$ICONS"/critical.png "Low System Storage"
-# [ "$home" -lt 10 ] && notify-send -t 0 -i "$ICONS"/critical.png "Low Home Storage"
