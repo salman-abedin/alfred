@@ -11,14 +11,16 @@ notify-send -i "$ICONS/mirror.png" "Mirroring now"
 while :; do
     case $1 in
         --git)
+            rsync -a --delete ~/.mozilla/firefox/zmzk0pef.default-release \
+                "$GIT"/own/private/.mozilla/firefox
             for dir in "$GIT"/own/*/; do
                 if [ -d "$dir" ]; then
                     cd "$dir" || exit 1
                     # git pull
                     git add .
                     [ -z "$(git status --porcelain)" ] && continue
-
-                    message=$(timeout 15 rofi -dmenu -i -p "$(pwd | awk -F / '{print $NF}')")
+                    [ "$PWD" = /home/git/own/private ] ||
+                        message=$(timeout 15 rofi -dmenu -i -p "$(echo "$PWD" | awk -F / '{print $NF}')")
                     [ "$message" ] || message=$(git log -1 | tail -1 | awk '{$1=$1};1')
 
                     # timeout 15 rofi -dmenu -i -p "$(pwd | awk -F / '{print $NF}')" ||

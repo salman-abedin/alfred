@@ -14,7 +14,7 @@ case $1 in
         fi | doas tee $config > /dev/null
         ;;
     --monitor)
-        [ "$(cat /sys/class/power_supply/ADP?/online > /dev/null)" = 1 ] && exit
+        [ "$(cat /sys/class/power_supply/ADP?/online)" = 1 ] && exit
         cap=$(cat /sys/class/power_supply/BAT?/capacity)
         if [ "$cap" -lt 10 ]; then
             doas systemctl poweroff

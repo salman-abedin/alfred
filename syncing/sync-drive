@@ -1,24 +1,17 @@
 #!/usr/bin/env sh
 
-ICONS=~/.icons/system
-path=~/.local/bin
-
-"$path"/misc/connected || {
-   notify-send -t 3000 -i $ICONS/critical.png "Drive Sync" "Couldn't sync with Drive!"
-   exit 1
-}
+dir="Audio Books"
 
 sync() {
-   notify-send -t 3000 -i $ICONS/drive.png "Drive Sync" "Time to sync"
-   for i in "$@"; do
-      cd ~/Drive/"$i" || exit 1
-      # drive pull -no-prompt
-      drive push -no-prompt ||
-         notify-send -t 3000 -i $ICONS/critical.png "Drive Sync" "Couldn't sync with Drive!" ||
-         exit
-   done
-   notify-send -t 3000 -i $ICONS/drive.png "Drive Sync" "Done Syncing"
+    for i in "$@"; do
+        cd ~/Drive/"$i" || exit 1
+        # drive pull -no-prompt
+        drive push -no-prompt ||
+            notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync with Drive!" ||
+            exit 1
+    done
 }
 
-dir="Audio Books"
-[ "$1" ] && sync "$@" || sync "$dir"
+notify-send -t 3000 -i "$ICONS"/drive.png "Time to Mirror Drive"
+sync "$dir"
+notify-send -t 3000 -i "$ICONS"/drive.png "Done Mirroring Drive"

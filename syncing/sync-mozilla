@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-rsync -a --delete ~/.mozilla/firefox/zmzk0pef.default-release  \
-   "$GIT"/own/private/.mozilla/firefox
-
