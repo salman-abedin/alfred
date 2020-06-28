@@ -19,6 +19,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `preview`                               | Previewer script for lf                                                  |
 | `launch --devour`                       | xdg-open alternative combined with terminal swallowing                   |
 | `toggle --wifi`                         | Toggles wifi using **iwd** daemon                                        |
+| `toggle --wall-reel`                    | Toggles periodic background changing                                     |
 | `toggle --noti`                         | Toggles do not disturb mode using **dunst**                              |
 | `watchmen`                              | Monitors specific directories for particular changes and runs commands   |
 | `battery --block-charge`                | Blocks charging at high capacity for battery longevity                   |

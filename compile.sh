@@ -15,14 +15,15 @@ cd "$dir" || exit 1
 [ "$clean" ] &&
     case $ext in
         tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
-            # c) rm -f "$name" ;;
+        c) rm -f "$dir/a.out" ;;
     esac && exit
 
 case $ext in
+    c) make && doas make install ;;
     h | sh) doas make install ;;
     py) python "$path" ;;
     tex) xelatex "$path" ;;
-    c) gcc -Wall "$path" -lxcb ;;
+        # c) gcc -Wall "$path" -lxcb ;;
         # c) cc "$path" ;;
         # c) cc "$path" -o "$name" && "$name" ;;
         # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;

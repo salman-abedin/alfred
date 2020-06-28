@@ -2,7 +2,7 @@
 
 # Monitors Battery level,
 # Blocks Charging on High battery level
-# Notifies on Plug and Unplug (Udev Script)
+# Notifies on Plug and Unplug (Using a supplimental udev rule)
 
 case $1 in
     --block-charge)
@@ -19,7 +19,7 @@ case $1 in
         if [ "$cap" -lt 10 ]; then
             doas systemctl poweroff
         elif [ "$cap" -lt 20 ]; then
-            notify-send -t 0 -i "$ICONS"/critical.png 'Low Battery!'
+            notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
         elif [ "$cap" -lt 90 ]; then
             $0 --block-charge false
         else
@@ -27,11 +27,13 @@ case $1 in
         fi
         ;;
     --plugged)
+        # Required for Udev environment
         export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+        export ICONS=~/.local/share/icons/system
         if [ "$2" = true ]; then
-            /usr/bin/notify-send -t 3000 -i ~/.icons/system/charging.png "Charging"
+            notify-send -t 1000 -i "$ICONS"/charging.png "Charging"
         else
-            /usr/bin/notify-send -t 3000 -i ~/.icons/system/discharging.png "Discharging"
+            notify-send -t 1000 -i "$ICONS"/discharging.png "Discharging"
         fi
         ;;
 esac
