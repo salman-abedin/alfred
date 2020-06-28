@@ -12,20 +12,16 @@ while :; do
     case $1 in
         --git)
             rsync -a --delete ~/.mozilla/firefox/zmzk0pef.default-release \
-                "$GIT"/own/private/.mozilla/firefox
+                "$GIT"/own/firefox/.mozilla/firefox
             for dir in "$GIT"/own/*/; do
                 if [ -d "$dir" ]; then
                     cd "$dir" || exit 1
                     # git pull
                     git add .
                     [ -z "$(git status --porcelain)" ] && continue
-                    [ "$PWD" = /home/git/own/private ] ||
+                    [ "$PWD" = /home/git/own/firefox ] ||
                         message=$(timeout 15 rofi -dmenu -i -p "$(echo "$PWD" | awk -F / '{print $NF}')")
                     [ "$message" ] || message=$(git log -1 | tail -1 | awk '{$1=$1};1')
-
-                    # timeout 15 rofi -dmenu -i -p "$(pwd | awk -F / '{print $NF}')" ||
-                    #     git log -1 | tail -1 | awk '{$1=$1};1'
-
                     git commit -m "$message" && git push
                 fi
             done
@@ -51,11 +47,11 @@ while :; do
         --phone)
             # notify-send -t 3000 -i "$ICONS"/phone.png "Phone Sync" "Time to sync"
             if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROIDMOUNT"; then
-                notify-send -t 3000 -i "$ICONS"/critical.png "Phone Sync" "Couldn't sync phone!" && exit 1
+                notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
             fi
             unison -batch -fat "$ANDROIDMOUNT" "$ANDROIDDISK"
             fusermount -u "$ANDROIDMOUNT"
-            # notify-send -t 3000 -i "$ICONS"/phone.png "Phone Sync" "Done Syncing"
+            # notify-send -t 3000 -i "$ICONS"/phone.png "Done Syncing"
             ;;
         *) break ;;
     esac
