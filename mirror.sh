@@ -63,6 +63,7 @@ while :; do
             # notify-send -t 3000 -i "$ICONS"/phone.png "Done Syncing"
             ;;
         --newsboat | -n)
+            pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
             newsboat -x reload
             ;;
         *) break ;;

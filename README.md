@@ -18,6 +18,8 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `setplayer [next,prev,toggle]`          | Controls Spotify & mpd music                                             |
 | `preview`                               | Previewer script for lf                                                  |
 | `launch --devour`                       | xdg-open alternative combined with terminal swallowing                   |
+| `launch --link`                         | Launches programs based on url                                           |
+| `launch --choose`                       | Shows a dmenu prompt to pick launch programs                             |
 | `toggle --wifi`                         | Toggles wifi using **iwd** daemon                                        |
 | `toggle --wall-reel`                    | Toggles periodic background changing                                     |
 | `toggle --noti`                         | Toggles do not disturb mode using **dunst**                              |
