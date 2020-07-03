@@ -1,76 +1,102 @@
 #!/usr/bin/env sh
 
 # All purpose launch script
-# Dependency: Devour
+
+run() { "$@" > /dev/null 2>&1 & }
 
 case $1 in
-    --devour | -d)
-        shift
-
-        if echo "$*" | grep "\.ar\."; then
-            devour alacritty \
-                --config-file ~/.config/alacritty/alacritty_ar.yml \
-                -e "$EDITOR" "$*" &
-            exit
-        elif echo "$*" | grep "\.sent$"; then
-            devour sent "$1" &
-            exit
-        fi
-
-        case $(file --mime-type "$*" -bL) in
-            text/* | inode/x-empty | application/json | application/octet-stream)
-                $EDITOR "$*"
-                ;;
-            video/* | audio/* | image/gif)
-                pidof mpv || devour mpv "$*"
-                ;;
-            application/pdf | application/postscript)
-                pidof zathura || devour zathura "$*"
-                ;;
-            image/*)
-                pidof feh ||
-                    devour \
-                        feh -A 'setdisplay --bg %f' -B 'black' -F -d --edit --keep-zoom-vp --start-at "$*"
-                ;;
-            application/*)
-                extract --clean "$*"
-                ;;
-        esac
-        ;;
     --choose | -c)
         shift
         choice=$(printf "📖 Foxit Reader\n📚 Master PDF Editor\n💻 Code\n🎥 MPV" |
             rofi -dmenu -i -p "Open with" | sed "s/\W//g")
         [ ! "$choice" ] && exit
         case "$choice" in
-            FoxitReader) devour foxitreader "$*" ;;
-            MasterPDFEditor) devour masterpdfeditor4 "$*" ;;
-            Code) devour code "$*" ;;
-            MPV) devour mpv --shuffle "$*" ;;
+            FoxitReader) foxitreader "$*" ;;
+            MasterPDFEditor) masterpdfeditor4 "$*" ;;
+            Code) code "$*" ;;
+            MPV) mpv --shuffle "$*" ;;
         esac
         ;;
     --link | -l)
         shift
         case "$1" in
-            *mkv | *webm | *mp4 | *youtube.com/watch* | *youtube.com/playlist* | *youtu.be*)
-
-                # setsid -f mpv --input-ipc-server="~/mpv" "$1" > /dev/null 2>&1
-                echo loadfile "$1" append-play > ~/mpv
-
-                # setsid -f mpv --input-ipc-server=~/mpv "$1" > /dev/null 2>&1
-                # setsid -f mpv --input-ipc-server=\\.\\pipe\\tmp\\mpv "$1" > /dev/null 2>&1
-                # echo loadfile "$1" append-play > \\.\pipe\tmp\mpv
-                # echo loadfile https://www.youtube.com/watch?v=EBWy1d-JE6A append-play > ~/mpv
-                #
-                # setsid -f mpv "$1" > /dev/null 2>&1
-                # setsid -f tsp mpv "$1" > /dev/null 2>&1
+            *mkv | *webm | *mp4 | *mp3 | *youtube.com/watch* | *youtube.com/playlist* | *youtu.be*)
+                qmedia "$1"
                 ;;
             *)
-                setsid -f firefox "$1" > /dev/null 2>&1
+                run firefox "$1"
+                # setsid -f firefox "$1" > /dev/null 2>&1
                 ;;
         esac
         ;;
+    --tmux | -t)
+        if ! pidof tmux; then
+            tmux new-session -d -n 'news&mail' 'newsboat' \; \
+                split-window -h 'neomutt' \; \
+                swap-pane -d -t :.1 \; \
+                select-layout main-vertical
+            "$TERMINAL" -e tmux attach &
+        fi
+        ;;
+    --terminal | -T)
+        $0 -t
+        if pidof tmux; then
+            tmux new-window
+        else
+            tmux new-session -d \; switch-client
+        fi
+        if pidof "$TERMINAL"; then
+            [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
+                xdo activate -N Alacritty
+        else
+            "$TERMINAL" -e tmux attach &
+            # "$TERMINAL"
+            # sleep 0.5
+            # xdo key_press -k 28
+            # xdo key_release -k 28
+            # xdo key_press -k 38
+            # sleep 0.2
+            # xdo key_release -k 38
+            # xdo key_press -k 36
+            # sleep 0.2
+            # xdo key_release -k 36
+        fi
+
+        ;;
     *)
-        :
+        if echo "$*" | grep "\.ar\."; then
+            alacritty \
+                --config-file ~/.config/alacritty/alacritty_ar.yml \
+                -e "$EDITOR" "$*" &
+            exit
+        elif echo "$*" | grep "\.sent$"; then
+            sent "$*" &
+            exit
+        fi
+        case $(file --mime-type "$*" -bL) in
+            text/* | inode/x-empty | application/json | application/octet-stream)
+                $EDITOR "$*"
+                ;;
+            inode/directory)
+                explore "$*"
+                ;;
+            video/* | audio/* | image/gif)
+                qmedia "$1"
+                # testt mpv "$*"
+                ;;
+            application/pdf | application/postscript)
+                pidof zathura || run zathura "$*"
+                # devour zathura "$*"
+                ;;
+            image/*)
+                pidof feh ||
+                    feh -A 'setdisplay --bg %f' -B 'black' \
+                        -F -d --edit --keep-zoom-vp --start-at \
+                        "$*"
+                ;;
+            application/*)
+                extract --clean "$*"
+                ;;
+        esac
         ;;
 esac

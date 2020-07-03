@@ -1,4 +1,0 @@
-#!/usr/bin/env sh
-
-date +'📅  %a, %d %b ⌚ %H : %M'
-# date +'📅  %a, %e %b ⌚ %H : %M'

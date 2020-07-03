@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Stolen from Luke Smith.
+# Forked from Luke Smith.
 
 cut -d ';' -f1 ~/.local/share/misc/emoji \
     | $DMENU -p "Pick an emoji" \

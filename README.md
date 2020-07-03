@@ -16,7 +16,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `extract [--clean]`                     | Extract & Cleans an archive based on its extension                       |
 | `connected`                             | Checks if wifi & internet is up or not                                   |
 | `setplayer [next,prev,toggle]`          | Controls Spotify & mpd music                                             |
-| `preview`                               | Previewer script for lf                                                  |
+| `preview`                               | Previewer script for **lf**                                              |
 | `launch --devour`                       | xdg-open alternative combined with terminal swallowing                   |
 | `launch --link`                         | Launches programs based on url                                           |
 | `launch --choose`                       | Shows a dmenu prompt to pick launch programs                             |
@@ -29,7 +29,6 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `battery --plugged`                     | Udev script to notify on plugging/unplugging                             |
 | `setdisplay --dpi`                      | Sets the correct DPI for my display resolution                           |
 | `setdisplay --bg shuffle`               | Shuffles my background                                                   |
-| `setdisplay --bg toggle-reel`           | Toggles periodic background changing                                     |
 | `mirror --phone`                        | Syncs my phone & local files via wifi                                    |
 | `mirror --arch`                         | Syncs all my packages                                                    |
 | `mirror --git`                          | Syncs all my repositories                                                |
@@ -43,6 +42,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `torrent --add`                         | Adds torrent to transmission and notifies                                |
 | `torrent --downloaded`                  | Notifies when a torrent gets downloaded                                  |
 | `checkstorage <PATH1> <THRESHOLD1> ...` | Notifies on low storage level                                            |
+| `qmedia [FILE]`                         | Queues up a file on mpv                                                  |
 
 ## More highlights
 

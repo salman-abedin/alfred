@@ -1,15 +1,15 @@
 #!/usr/bin/env sh
 
 stop() {
-    recpid=$(cat "$REC_PID")
+    recpid=$(cat "$RECPID")
     kill -15 "$recpid"
-    rm -f "$REC_PID"
+    rm -f "$RECPID"
     sleep 3
     kill -9 "$recpid"
     exit
 }
 
-[ -f "$REC_PID" ] && stop
+[ -f "$RECPID" ] && stop
 
 ffmpeg \
     -f x11grab \
@@ -20,4 +20,4 @@ ffmpeg \
     -f alsa -i default \
     -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
     ~/screencast-"$(date +'%Y-%b-%d-%H-%M-%S')".mkv &
-echo $! > "$REC_PID"
+echo $! > "$RECPID"

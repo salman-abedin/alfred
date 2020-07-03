@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # All purpose syncing script
-# mirror --[git,mail,calcurse,phone,arch,firefox]
+# mirror --[git,mail,calcurse,phone,arch,firefox,repos,upstream]
 
 FIREFOXPROFILE=zmzk0pef
 
@@ -25,8 +25,10 @@ while :; do
                     # git pull
                     git add .
                     [ -z "$(git status --porcelain)" ] && continue
-                    [ "$PWD" = /mnt/horcrux/git/own/firefox ] ||
-                        [ "$PWD" = /mnt/horcrux/git/own/private ] ||
+                    # [ "$PWD" = /mnt/horcrux/git/own/firefox ] ||
+                    # [ "$PWD" = /mnt/horcrux/git/own/private ] ||
+                    [ "${PWD##*/}" = firefox ] ||
+                        [ "${PWD##*/}" = private ] ||
                         message=$(timeout 15 rofi -dmenu -i -p "$(echo "$PWD" | awk -F / '{print $NF}')")
                     [ "$message" ] || message=$(git log -1 | tail -1 | awk '{$1=$1};1')
                     git commit -m "$message" && git push
@@ -63,8 +65,19 @@ while :; do
             # notify-send -t 3000 -i "$ICONS"/phone.png "Done Syncing"
             ;;
         --newsboat | -n)
-            pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
             newsboat -x reload
+            # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
+            ;;
+        --repos | -r)
+            for dir in "$GIT"/others/*/; do
+                [ -d "$dir" ] && git -C "$dir" pull --rebase
+            done
+            ;;
+        --upstream | -u)
+            for dir in "$GIT"/forks/*/; do
+                echo "$dir"
+                [ -d "$dir" ] && git -C "$dir" pull --no-rebase
+            done
             ;;
         *) break ;;
     esac

@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
+# Converts ttf fonts to textmap(Groff compatible fonts)
+
 echo "Nick? "
 read -r nick
 ttf2afm "$1" -o temp
 afmtodit temp textmap "$nick"
 rm temp
-mv "$nick" "/home/git/own/private/.local/share/fonts/Groff/devps"
-

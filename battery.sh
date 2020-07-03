@@ -2,7 +2,9 @@
 
 # Monitors Battery level,
 # Blocks Charging on High battery level
-# Notifies on Plug and Unplug (Using a supplimental udev rule)
+# Notifies on low levels
+# Hibernates on dangerous levels
+# Additionally notifies on Plug and Unplug (Using a supplimental udev rule)
 
 case $1 in
     --block-charge)
@@ -17,7 +19,7 @@ case $1 in
         [ "$(cat /sys/class/power_supply/ADP?/online)" = 1 ] && exit
         cap=$(cat /sys/class/power_supply/BAT?/capacity)
         if [ "$cap" -lt 10 ]; then
-            doas systemctl poweroff
+            systemctl hibernate
         elif [ "$cap" -lt 20 ]; then
             notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
         elif [ "$cap" -lt 90 ]; then

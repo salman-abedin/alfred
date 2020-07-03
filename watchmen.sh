@@ -10,8 +10,8 @@ inotifywait -m -r -e create,moved_to $dirs |
             "$GIT"/own/private/.
     done &
 
-path=~/.local/share/mail/gmail/INBOX/new
-inotifywait -m -e move $path |
-    while read -r line; do
-        refresh-block 2
-    done &
+# path=~/.local/share/mail/gmail/INBOX/new
+# inotifywait -m -e move $path |
+#     while read -r line; do
+#         refresh-block 2
+#     done &

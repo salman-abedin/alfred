@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-awk -F / '{print $NF}' "$SEARCH_LIST" |
-   fzf |
-   xargs -I% grep -w %$ "$SEARCH_LIST" |
-   xargs launch-swallow

@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-[ -s "$DONT_DISTURB_MODE" ] && echo 🔕 || echo 🔔

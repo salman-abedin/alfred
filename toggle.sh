@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Toggles Wifi & Notification
+# Toggles Wifi, Notification & Wallpaper reeling
 # toggle --[noti,wifi,wall-reel]
 
 while :; do
@@ -21,18 +21,18 @@ while :; do
             fi
             ;;
         --noti | -n)
-            if [ -s "$DONT_DISTURB_MODE" ]; then
-                : > "$DONT_DISTURB_MODE"
+            if [ -s "$DDM" ]; then
+                : > "$DDM"
                 killall -SIGUSR2 dunst
                 sleep 1
                 notify-send -u low -i "$ICONS"/bell.png 'Disturb all you want'
             else
-                echo on > "$DONT_DISTURB_MODE"
+                echo on > "$DDM"
                 notify-send -u low -i "$ICONS"/dnd.png 'Do not disturb'
                 sleep 2
                 killall -SIGUSR1 dunst
             fi
-            refresh-block 3
+            uniblocks -u noti
             ;;
         --wifi | -w)
             if pidof iwd; then
@@ -42,6 +42,17 @@ while :; do
                 doas systemctl start iwd
                 notify-send -u low -i "$ICONS"/connected.png 'Turned Wifi On'
             fi
+            ;;
+        --focus | -f)
+            if [ -s "$DDM" ]; then
+                xdo show -a "$STATUSBAR"
+                bspc config top_padding 35
+            else
+                xdo hide -a "$STATUSBAR"
+                bspc config top_padding 0
+            fi
+            tmux set status
+            $0 -r -w -n
             ;;
         *) break ;;
     esac

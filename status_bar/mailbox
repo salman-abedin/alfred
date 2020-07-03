@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-unread=$(find ~/.local/share/mail/gmail/INBOX/new/* -type f 2> /dev/null |
-    wc -l)
-echo "📫  $unread"
