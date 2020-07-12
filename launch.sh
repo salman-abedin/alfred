@@ -38,6 +38,21 @@ case $1 in
             "$TERMINAL" -e tmux attach &
         fi
         ;;
+    --explorer | -e)
+        launch --tmux 2> /dev/null # Personal Script
+        if pidof tmux; then
+            tmux new-window
+        else
+            tmux new-session -d \; switch-client
+        fi
+        if pidof "$TERMINAL"; then
+            [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
+                xdo activate -N Alacritty
+        else
+            "$TERMINAL" -e tmux attach &
+        fi
+        tmux send "explore" "Enter"
+        ;;
     --terminal | -T)
         $0 -t
         if pidof tmux; then

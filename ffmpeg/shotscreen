@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Stole from https://github.com/dylanaraps
+# Stolen from https://github.com/dylanaraps
 
 scr_dir=~
 

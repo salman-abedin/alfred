@@ -13,4 +13,4 @@ bluetoothctl connect "$right" ||
 bluetoothctl scan off
 
 sleep 2
-uniblocks -r v
+uniblocks -u vol

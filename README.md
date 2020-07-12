@@ -12,6 +12,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 
 | Command                                 | Effects                                                                  |
 | --------------------------------------- | ------------------------------------------------------------------------ |
+| `backlight --[up,down]`                 | Controls backlight levels                                                |
 | `battery --block-charge`                | Blocks charging at high capacity for battery longevity                   |
 | `battery --monitor`                     | Cron script to monitor battery level & act accordingly                   |
 | `battery --plugged`                     | Udev script to notify on plugging/unplugging                             |
@@ -26,6 +27,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `mirror --git`                          | Syncs all my repositories                                                |
 | `mirror --mail`                         | Syncs my mails                                                           |
 | `mirror --phone`                        | Syncs my phone & local files via wifi                                    |
+| `mirror --repos`                        | Syncs my followed git repositories                                       |
 | `panel --bspwm`                         | Generates bspwm workspace module                                         |
 | `panel --date-time`                     | Generates date & time panel module                                       |
 | `panel --mailbox`                       | Generates unread mail count panel module                                 |
@@ -37,7 +39,8 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `qmedia [FILE]`                         | Queues up a file on mpv                                                  |
 | `setdisplay --bg shuffle`               | Shuffles my background                                                   |
 | `setdisplay --dpi`                      | Sets the correct DPI for my display resolution                           |
-| `setplayer [next,prev,toggle]`          | Controls Spotify & mpd music                                             |
+| `setplayer --play [next,prev,toggle]`   | Controls Spotify & mpd music                                             |
+| `setplayer --vol [up,down,toggle]`      | Controls volume using pulseaudio                                         |
 | `toggle --noti`                         | Toggles do not disturb mode using **dunst**                              |
 | `toggle --wall-reel`                    | Toggles periodic background changing                                     |
 | `toggle --wifi`                         | Toggles wifi using **iwd** daemon                                        |
@@ -63,9 +66,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
    -  Webcam
 
 -  Google drive syncing
--  Instant googleing
 -  Bluetooth headset connect
--  Update local git repos
 -  Make bootable USB (linux & windows (for normies!))
 -  TTF to Groff font converter
 -  And much more

@@ -14,7 +14,7 @@ case $1 in
         notify-send -t 1000 -i "$ICONS"/transmission.png \
             "Transmission" "Torrent added"
         ;;
-    --downloaded)
+    *)
         canberra-gtk-play -i complete &
         notify-send -t 0 -i "$ICONS"/transmission.png \
             "Transmission" "$TR_TORRENT_NAME Downloaded"

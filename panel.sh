@@ -7,14 +7,14 @@ case $1 in
         date +'📅  %a, %d %b ⌚ %H : %M'
         ;;
     --noti-stat | -n)
-        [ -s "$DDM" ] && echo 🔕 || echo 🔔
+        if [ -s "$DDM" ]; then echo 🔕; else echo 🔔; fi
         ;;
     --wifi | -w)
         if connected; then
             printf "🌏 %s\n" \
-                "$(awk 'FNR == 3 { printf "%d", $3*100/70 }' /proc/net/wireless)"
+                "$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
         else
-            echo ❗
+            echo "❗ 000"
         fi
         ;;
     --sys-stat | -s)
@@ -24,16 +24,17 @@ case $1 in
     else
         printf "%02d", 100 - $8
     }')"
-        mem="$(free -m | awk '(NR==2){ printf "%s", $3 }')"
+        mem="$(free -m | awk '(NR==2){ printf "%04d", $3 }')"
         temp="$(sensors | awk '(/Core 0/){printf $3}' | sed 's/\.0//; s/+//')"
-        echo "🌡 $temp   🐎 $cpu%   🧠 $mem"
+        echo "🌡 $temp   🐎 $cpu   🧠 $mem"
         ;;
     --vol-stat | -v)
         volstat="$(amixer get Master)"
         if echo "$volstat" | grep -o -m 1 "off" > /dev/null; then
-            echo 🔇 00%
+            echo 🔇 000
         else
-            printf "🔊 %s\n" "$(echo "$volstat" | grep -o -m 1 "[0-9]\+%")"
+            printf "🔊 %03d\n" \
+                "$(echo "$volstat" | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
         fi
         ;;
     --mailbox | -m)
@@ -46,7 +47,7 @@ case $1 in
                 line=${line#*:}
                 line=${line%:L*}
                 IFS=:
-                set $line
+                set -- $line
                 wm=
                 while :; do
                     case $1 in

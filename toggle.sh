@@ -35,7 +35,7 @@ while :; do
             uniblocks -u noti
             ;;
         --wifi | -w)
-            if pidof iwd; then
+            if pidof iwd > /dev/null; then
                 doas systemctl stop iwd
                 notify-send -u low -i "$ICONS"/disconnected.png 'Turned Wifi Off'
             else

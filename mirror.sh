@@ -37,12 +37,12 @@ while :; do
             # wait &
             # notify-send -t 3000 -i "$ICONS"/gitlab.png "Done syncing git repos"
             ;;
-        --mail | -m)
-            mbsync -c ~/.config/isync/mbsyncrc -a
-            unread=$(find ~/.local/share/mail/gmail/INBOX/new/* -type f 2> /dev/null | wc -l)
-            [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
-                "You've got $unread new mail!"
-            ;;
+            # --mail | -m)
+            # mbsync -c ~/.config/isync/mbsyncrc -a
+            # unread=$(find ~/.local/share/mail/gmail/INBOX/new/* -type f 2> /dev/null | wc -l)
+            # [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
+            # "You've got $unread new mail!"
+            # ;;
         --calcurse | -c)
             CALCURSE_CALDAV_PASSWORD=$(gpg -d --batch --passphrase asdlkj ~/.local/share/passwords/salmanabedin@disroot.org.gpg) calcurse-caldav
             # --init=keep-remote
@@ -64,10 +64,10 @@ while :; do
             fusermount -u "$ANDROIDMOUNT"
             # notify-send -t 3000 -i "$ICONS"/phone.png "Done Syncing"
             ;;
-        --newsboat | -n)
-            newsboat -x reload
+            # --newsboat | -n)
+            # newsboat -x reload
             # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
-            ;;
+            # ;;
         --repos | -r)
             for dir in "$GIT"/others/*/; do
                 [ -d "$dir" ] && git -C "$dir" pull --rebase

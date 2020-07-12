@@ -1,11 +1,8 @@
 #!/usr/bin/env sh
 
-last_path=~/.config/lf/last_path
-
+LAST_PATH=~/.local/share/LF_LAST_PATH
 if [ "$*" ]; then
-    lf -last-dir-path $last_path "$*" 
+    lf -last-dir-path $LAST_PATH "$*"
 else
-    lf -last-dir-path $last_path "$(cat $last_path)"
+    lf -last-dir-path $LAST_PATH "$(cat $LAST_PATH)"
 fi
-
-# doas -- lf -last-dir-path ~/.config/lf/lastPath "$(cat ~/.config/lf/lastPath)"

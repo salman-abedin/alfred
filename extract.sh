@@ -19,4 +19,5 @@ case $ext in
         # zip) unzip "$path" -d "${1%.*}" ;;
 esac
 
-[ "$clean" ] && rm -f "$1"
+[ "$clean" ] && mv -f "$1" ~/.local/Trash
+# [ "$clean" ] && rm -f "$1"
