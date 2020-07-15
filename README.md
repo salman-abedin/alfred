@@ -12,10 +12,10 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 
 | Command                                 | Effects                                                                  |
 | --------------------------------------- | ------------------------------------------------------------------------ |
-| `backlight --[up,down]`                 | Controls backlight levels                                                |
+| `backlight --[up,down]`                 | Modulates backlight levels                                               |
 | `battery --block-charge`                | Blocks charging at high capacity for battery longevity                   |
-| `battery --monitor`                     | Cron script to monitor battery level & act accordingly                   |
-| `battery --plugged`                     | Udev script to notify on plugging/unplugging                             |
+| `battery --monitor`                     | **Cron** script to monitor battery levels & act accordingly              |
+| `battery --plugged`                     | **Udev** script to notify on plugging/unplugging                         |
 | `checkstorage <PATH1> <THRESHOLD1> ...` | Notifies on low storage level                                            |
 | `compile [--clean]`                     | Compiles & Cleans development leftovers of a file based on its extension |
 | `connected`                             | Checks if wifi & internet is up or not                                   |
@@ -24,7 +24,7 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `launch --devour`                       | xdg-open alternative combined with terminal swallowing                   |
 | `launch --link`                         | Launches programs based on url                                           |
 | `mirror --arch`                         | Syncs all my packages                                                    |
-| `mirror --git`                          | Syncs all my repositories                                                |
+| `mirror --git`                          | Syncs my personal repositories                                           |
 | `mirror --mail`                         | Syncs my mails                                                           |
 | `mirror --phone`                        | Syncs my phone & local files via wifi                                    |
 | `mirror --repos`                        | Syncs my followed git repositories                                       |
@@ -36,15 +36,15 @@ git clone https://github.com/salman-abedin/alfred.git && cd alfred && sudo make 
 | `panel --vol-stat`                      | Generates volume level panel module                                      |
 | `panel --wifi`                          | Generates wifi link strength panel module                                |
 | `preview`                               | Previewer script for **lf**                                              |
-| `qmedia [FILE]`                         | Queues up a file on mpv                                                  |
+| `qmedia [FILE]`                         | Queues up a file on **mpv**                                              |
 | `setdisplay --bg shuffle`               | Shuffles my background                                                   |
 | `setdisplay --dpi`                      | Sets the correct DPI for my display resolution                           |
-| `setplayer --play [next,prev,toggle]`   | Controls Spotify & mpd music                                             |
+| `setplayer --play [next,prev,toggle]`   | Controls **spotify** & **mpd** music                                     |
 | `setplayer --vol [up,down,toggle]`      | Controls volume using pulseaudio                                         |
 | `toggle --noti`                         | Toggles do not disturb mode using **dunst**                              |
 | `toggle --wall-reel`                    | Toggles periodic background changing                                     |
 | `toggle --wifi`                         | Toggles wifi using **iwd** daemon                                        |
-| `torrent --add`                         | Adds torrent to transmission and notifies                                |
+| `torrent --add`                         | Adds torrent to **transmission** and notifies                            |
 | `torrent --downloaded`                  | Notifies when a torrent gets downloaded                                  |
 | `watchmen`                              | Monitors specific directories for particular changes and runs commands   |
 

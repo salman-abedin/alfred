@@ -1,16 +1,16 @@
 .POSIX:
-PREFIX = /usr/local
-
+BIN_DIR = /usr/local/bin
 install:
-	@mkdir -p ${DESTDIR}${PREFIX}/bin
-	@for e in *.sh; do \
+	@mkdir -p $(BIN_DIR)
+	@for e in src/*.sh; do \
 		cp -f $$e $${e%.*}; \
 		chmod 755 $${e%.*}; \
-		mv $${e%.*} ${DESTDIR}${PREFIX}/bin; \
+		mv $${e%.*} $(BIN_DIR); \
 		done
-	@echo Done installing executable files to ${DESTDIR}${PREFIX}/bin
+	@echo Done installing executable files to $(BIN_DIR)
 uninstall:
-	@for e in *.sh;do \
-		rm -f ${DESTDIR}${PREFIX}/bin/$${e%.*}; \
+	@for e in src/*.sh;do \
+		rm -f $(BIN_DIR)/$${e%.*}; \
 		done
-	@echo Done removing executable files from ${DESTDIR}${PREFIX}/bin
+	@echo Done removing executable files from $(BIN_DIR)
+.PHONY: install uninstall

@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-notify-send -t 1000 "$@"
