@@ -20,7 +20,7 @@ while :; do
                git add .
                [ -z "$(git status --porcelain)" ] && continue
                [ "${PWD##*/}" = private ] ||
-                  message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')") && ns succed
+                  message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
                [ -z "$message" ] && message=$(git log -1 | tail -1 | awk '{$1=$1};1')
                git commit -m "$message" && git push
             fi
@@ -84,13 +84,12 @@ while :; do
          # Firefox backup
          tar cf firefox.tar.gz ~/.mozilla/firefox/$FIREFOXPROFILE.default-release
          gpg -r salmanabedin@disroot.org -e firefox.tar.gz
-         rm firefox.tar.gz
-         mv firefox.tar.gz.gpg $LOCAL
+         rclone copy firefox.tar.gz.gpg $CLOUD
+         rm firefox.tar.gz firefox.tar.gz.gpg
 
-         # Git backups
-         rsync -a --delete "$GIT"/others "$GIT"/forks "$LOCAL"/git
-
-         rclone sync $LOCAL $CLOUD -P
+         rclone sync $LOCAL $CLOUD
+         rclone sync "$GIT"/others $CLOUD/git/others
+         rclone sync "$GIT"/forks $CLOUD/git/forks
          ;;
       *) break ;;
    esac

@@ -47,17 +47,19 @@ wifi() {
 }
 
 focusmode() {
-   if [ -s "$DDM" ]; then
-      xdo show -a "$STATUSBAR"
-      bspc config top_padding 35
-   else
-      xdo hide -a "$STATUSBAR"
-      bspc config top_padding 0
-   fi
+   # if [ -s "$DDM" ]; then
+   #    xdo show -a "$STATUSBAR"
+   #    bspc config top_padding 35
+   # else
+   #    xdo hide -a "$STATUSBAR"
+   #    bspc config top_padding 0
+   # fi
+   xdotool key Super+Shift+b
+   sleep 0.5 && xdotool key Super+Shift+f
    tmux set status
-   wallreel
-   wifi
-   notifications
+   # wallreel
+   # wifi
+   # notifications
 }
 
 while :; do

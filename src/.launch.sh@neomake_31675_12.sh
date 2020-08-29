@@ -110,9 +110,9 @@ launch_file() {
          # devour feh -F -A "setdisplay --bg %f" -B 'black' \
          #    -d --edit --keep-zoom-vp --start-at \
          #    "$@"
-         feh -F -A "setdisplay --bg %f" -B 'black' \
+         run feh -F -A "setdisplay --bg %f" -B 'black' \
             -d --edit --keep-zoom-vp --start-at \
-            "$@" > /dev/null 2>&1
+            "$@"
          ;;
       *x-bittorrent)
          torrent --add "$1"
