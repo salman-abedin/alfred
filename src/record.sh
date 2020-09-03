@@ -1,12 +1,14 @@
 #!/bin/sh
 #
 # General purpose recording script
+# Dependencies: ffmpeg, xrandr, awk, sed, sleep
+# Usage: record [--display | -d] | [--screencast | -s]
 
 RESOLUTION=$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')
 
 case $1 in
    --display | -d)
-      # Forked from https://github.com/dylanaraps
+      # Forked from https://github.com/dylanaraps/bin/blob/master/scr
       ffmpeg -y \
          -hide_banner \
          -loglevel error \
@@ -14,9 +16,10 @@ case $1 in
          -video_size "$RESOLUTION" \
          -i "$DISPLAY" \
          -vframes 1 \
-         ~/Downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
+         /mnt/horcrux/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
       ;;
    --screencast | -s)
+      # Forked from https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord
       RECPID=/tmp/recpid
       stop() {
          recpid=$(cat "$RECPID")
@@ -31,7 +34,7 @@ case $1 in
       ffmpeg \
          -f x11grab \
          -framerate 60 \
-         -s "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')" \
+         -s "$RESOLUTION" \
          -i "$DISPLAY" \
          -r 30 \
          -f alsa -i default \

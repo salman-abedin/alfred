@@ -3,7 +3,7 @@
 # Forked from Luke Smith.
 
 cut -d ';' -f1 ~/.local/share/misc/emojis |
-   $DMENU -p "Pick an emoji" |
+   $DMENU |
    sed "s/ .*//" |
    tr -d '\n' |
    xsel -b && xdotool key Control+Shift+v

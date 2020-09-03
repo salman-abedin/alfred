@@ -8,7 +8,7 @@
 setdpi() {
    FILE=~/.config/X11/Xresources
 
-   grep 'Xft.dpi' "$FILE" && xrdb -merge "$FILE" && return
+   grep 'Xft.dpi' "$FILE" > /dev/null && xrdb -merge "$FILE" && return
 
    INFO=/tmp/display_info
    xrandr | grep ' connected' > $INFO
@@ -41,19 +41,22 @@ setdpi() {
 }
 
 setbg() {
-   exec 3> /tmp/wall
-   exec 4< /tmp/wall
+   WALL=~/.local/share/WALL
+   # exec 3> /tmp/wall
+   # exec 4< /tmp/wall
+   exec 3> $WALL
+   exec 4< $WALL
    case $1 in
-      shuffle)
+      shuffle | -s)
          find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 >&3
          feh --no-fehbg --bg-scale "$(cat <&4)"
          ;;
-      delete)
+      delete | -d)
          find "$WALLPAPERS" -name "$(cat <&4)" -delete
          setbg shuffle
          ;;
       *)
-         echo "$1" >&3
+         [ -n "$1" ] && echo "$1" >&3
          feh --no-fehbg --bg-scale "$(cat <&4)"
          ;;
    esac
@@ -61,7 +64,10 @@ setbg() {
    exec 4<&-
 }
 
-case $1 in
-   --bg) setbg "$2" ;;
-   --dpi) setdpi ;;
-esac
+while :; do
+   case $1 in
+      --bg) shift && setbg "$1" ;;
+      --dpi) setdpi ;;
+   esac
+   shift
+done

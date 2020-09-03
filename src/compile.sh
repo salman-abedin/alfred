@@ -6,7 +6,7 @@
 
 [ "$1" = --clean ] && shift && clean=true
 path=$(readlink -f "$1")
-# name="${path%.*}"
+name="${path%.*}"
 ext="${path##*.}"
 dir="${path%/*}"
 
@@ -16,6 +16,7 @@ cd "$dir" || exit 1
    case $ext in
       tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
       c) rm -f "$dir/a.out" ;;
+      sass) sassc -a "$path" "$name.css" ;;
    esac && exit
 
 makefile() {
@@ -30,23 +31,13 @@ makefile() {
 
 case $ext in
    c | h | sh) makefile ;;
-   py) python "$path" ;;
-   tex) xelatex "$path" ;;
-   lua) lua "$path" ;;
    txt) wc -w "$path" ;;
-      # c) gcc -Wall "$path" -lxcb ;;
-      # c) cc "$path" ;;
-      # c) cc "$path" -o "$name" && "$name" ;;
+   tex) xelatex "$path" ;;
       # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
-      # js) node "$path" ;;
-      # sass) sassc -a "$path" "$name.css" ;;
-      # sh) sh "$path" ;;
       # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
       # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;
-      # c)  tcc "$path" -o "$name" && "$TERMINAL" -e sh -c "$name; read -r line" ;;
       # scss) sassc "$path" "$name.css" ;;
       # ts)     tsc "$file";;
-      # c)      gcc $file && $TERMINAL -e sh -c "" ;;
       # [rR]md) Rscript -e "require(rmarkdown); rmarkdown::render('$file', quiet=TRUE)" ;;
       # ms)     groff -ms -T pdf $file > $name.pdf ;;
       # ms)     eqn $file -T pdf | groff -ms -T pdf > $name.pdf ;;

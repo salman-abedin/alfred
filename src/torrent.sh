@@ -10,12 +10,10 @@ case $1 in
          sleep 1
       fi
       transmission-remote -a "$@"
-      notify-send -t 1000 -i "$ICONS"/transmission.png \
-         "Transmission" "Torrent added"
+      notify-send -t 1000 -i "$ICONS"/transmission.png "Torrent added"
       ;;
    *)
       canberra-gtk-play -i complete &
-      notify-send -t 0 -i "$ICONS"/transmission.png \
-         "Transmission" "$TR_TORRENT_NAME Downloaded"
+      notify-send -t 0 -i "$ICONS"/transmission.png "$TR_TORRENT_NAME Downloaded"
       ;;
 esac

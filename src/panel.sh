@@ -27,8 +27,20 @@ case $1 in
       temp="$(sensors | awk '(/Core 0/){printf $3}' | sed 's/\.0//; s/+//')"
       printf "🧠 %s  🐎 %s 🌡 %s" "$mem" "$cpu" "$temp"
       ;;
+
+   --mailbox | -m)
+      for file in ~/.local/share/mail/INBOX/new/*; do
+         [ -f "$file" ] || continue # Ensures correct output for empty directories
+         printf '%s\n' "$file"
+      done | {
+         while IFS= read -r line || [ -n "$line" ]; do
+            lines=$((lines + 1))
+         done &&
+            printf "📫  %s" "${lines:-0}"
+      }
+      ;;
+
    --vol-stat | -v)
-      # DUMMY_FIFO=/tmp/dff
       showstat() {
          if amixer get Master | grep -o -m 1 "off" > /dev/null; then
             printf "🔇 000"
@@ -37,47 +49,66 @@ case $1 in
                "$(amixer get Master | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
          fi
       }
-      # trap 'showstat' RTMIN+1
-      # trap 'rm -f "$DUMMY_FIFO"; exit' INT TERM QUIT EXIT
       showstat
-      # mkfifo "$DUMMY_FIFO"
-      # while :; do
-      #    : < "$DUMMY_FIFO" &
-      #    wait
-      # done
       ;;
-   # --bspwm | -b)
-   #    bspc subscribe report |
-   #       while read -r line; do
-   #          line=${line#*:}
-   #          line=${line%:L*}
-   #          IFS=:
-   #          set -- $line
-   #          wm=
-   #          while :; do
-   #             case $1 in
-   #                [FOU]*) name=🏚 ;;
-   #                f*) name=🕳 ;;
-   #                o*) name=🌴 ;;
-   #                *) break ;;
-   #             esac
-   #             if [ -z "$wm" ]; then
-   #                wm="$name" && shift && continue
-   #             else
-   #                wm="$wm  $name"
-   #             fi
-   #             shift
-   #          done
-   #          # echo "W$wm"
-   #          echo "$wm"
-   #       done
-   #    ;;
-   # --mailbox | -m)
-   #    printf "📫 %s" \
-   #       find ~/.local/share/mail/gmail/INBOX/new/* -type f | wc -l
-   #    ;;
-   # --noti-stat | -n)
-   #    if [ -s "$DDM" ]; then echo 🔕; else echo 🔔; fi
-   #    ;;
    *) exit 1 ;;
 esac
+
+#===============================================================================
+#                             Exp
+#===============================================================================
+
+# --mailbox | -m)
+#    # printf "📫 %s" \
+#    #    find ~/.local/share/mail/INBOX/new/* -type f | wc -l
+#    ;;
+
+# --bspwm | -b)
+#    bspc subscribe report |
+#       while read -r line; do
+#          line=${line#*:}
+#          line=${line%:L*}
+#          IFS=:
+#          set -- $line
+#          wm=
+#          while :; do
+#             case $1 in
+#                [FOU]*) name=🏚 ;;
+#                f*) name=🕳 ;;
+#                o*) name=🌴 ;;
+#                *) break ;;
+#             esac
+#             if [ -z "$wm" ]; then
+#                wm="$name" && shift && continue
+#             else
+#                wm="$wm  $name"
+#             fi
+#             shift
+#          done
+#          # echo "W$wm"
+#          echo "$wm"
+#       done
+#    ;;
+# --noti-stat | -n)
+#    if [ -s "$DDM" ]; then echo 🔕; else echo 🔔; fi
+#    ;;
+
+# --vol-stat | -v)
+#    DUMMY_FIFO=/tmp/dff
+#    showstat() {
+#       if amixer get Master | grep -o -m 1 "off" > /dev/null; then
+#          printf "🔇 000"
+#       else
+#          printf "🔊 %03d" \
+#             "$(amixer get Master | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
+#       fi
+#    }
+#    trap 'showstat' RTMIN+1
+#    trap 'rm -f "$DUMMY_FIFO"; exit' INT TERM QUIT EXIT
+#    showstat
+#    mkfifo "$DUMMY_FIFO"
+#    while :; do
+#       : < "$DUMMY_FIFO" &
+#       wait
+#    done
+#    ;;

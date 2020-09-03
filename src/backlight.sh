@@ -1,21 +1,34 @@
 #!/bin/sh
 #
-# Modulates backlight levels
-# Usage: backlight --(up|down)
+# Modulates backlight levels ( requires root access)
+# Dependencis: doas, tee
+# Usage: backlight --(up|down|dim)
 
 for device in /sys/class/backlight/*; do
    read -r CURRENT < "$device"/brightness
    read -r MAX < "$device"/max_brightness
    MARGIN=$((MAX / 10))
    case $1 in
-      --up)
+      --up | -u)
          [ "$CURRENT" = "$MAX" ] && continue
-         increased=$((CURRENT + MARGIN))
-         [ "$increased" -gt "$MAX" ] && increased="$MAX"
-         echo "$increased" > "$device"/brightness
+         echo $((CURRENT + MARGIN < MAX ? CURRENT + MARGIN : MAX)) |
+            doas -n tee "$device"/brightness
          ;;
-      --down)
-         echo $((CURRENT - MARGIN)) > "$device"/brightness
+      --down | -d)
+         [ "$CURRENT" = 0 ] && continue
+         echo $((CURRENT - MARGIN > 0 ? CURRENT - MARGIN : 0)) |
+            doas -n tee "$device"/brightness
+         ;;
+      --dim | -D)
+         DIM_FIFO=/tmp/dff
+
+         trap 'exit 0' TERM INT
+         trap 'echo $CURRENT | doas -n tee $device/brightness; pkill -P $$' EXIT
+
+         echo $((MAX / 3)) | doas -n tee "$device"/brightness
+         [ -e "$DIM_FIFO" ] || mkfifo "$DIM_FIFO"
+         : < "$DIM_FIFO" &
+         wait
          ;;
    esac
 done

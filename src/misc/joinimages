@@ -1,5 +1,0 @@
-#!/bin/sh
-#
-# Usage: join-images <HorizontalCount>x<VerticalCount>
-
-ffmpeg -pattern_type glob -i "*.png" -filter_complex tile="$1" output.png

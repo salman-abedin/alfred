@@ -1,38 +1,47 @@
 #!/bin/sh
 #
 # General purpose syncing script
+# Dependencies: git, rclone, unison
 # mirror --[git,calcurse,phone,arch,repos,upstream]
 
+LOCAL=/mnt/horcrux
+CLOUD=drive
+
 if ! connected; then
-   notify-send -t 3000 -i "$ICONS"/disconnected.png "Disconnected"
+   # notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
    exit 1
 fi
 
-notify-send -i "$ICONS/mirror.png" "Mirroring now"
+# notify-send -i "$ICONS/mirror.png" "Mirroring now"
 
 while :; do
    case $1 in
+
+      --mail | -m) mbsync -c ~/.config/isync/mbsyncrc -a ;;
+
       --git | -g)
+         #weechat
+         cp -fr /home/internal/weechat "$GIT"/own/magpie-private/.config
+
          for dir in "$GIT"/own/*/ "$GIT"/suckless/*/; do
-            if [ -d "$dir" ]; then
-               cd "$dir" || exit 1
-               # git pull
-               git add .
-               [ -z "$(git status --porcelain)" ] && continue
-               [ "${PWD##*/}" = private ] ||
-                  message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
-               [ -z "$message" ] && message=$(git log -1 | tail -1 | awk '{$1=$1};1')
+            cd "$dir" || continue
+            # git pull --no-rebase
+            git add .
+            [ -z "$(git status --porcelain)" ] && continue
+            [ "${PWD##*/}" = magpie-private ] ||
+               [ "${PWD##*/}" = magpie-archived ] ||
+               message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
+            if [ -z "$message" ]; then
+               git commit -C HEAD --reset-author && git push
+            else
                git commit -m "$message" && git push
             fi
          done
-         # wait &
-         # notify-send -t 3000 -i "$ICONS"/gitlab.png "Done syncing git repos"
          ;;
 
       --calcurse | -c)
          CALCURSE_CALDAV_PASSWORD=$(gpg -d ~/.local/share/passwords/salmanabedin@disroot.org.gpg) calcurse-caldav
          # --init=keep-remote
-         # notify-send -i "$ICONS"/calendar.png "Done syncing calcurse"
          ;;
 
       --arch | -a)
@@ -42,15 +51,13 @@ while :; do
          ;;
 
       --phone | -p)
-         ANDROIDMOUNT=/mnt/android
-         ANDROIDDISK=/mnt/horcrux/phone
-         # notify-send -t 3000 -i "$ICONS"/phone.png "Phone Sync" "Time to sync"
-         if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROIDMOUNT"; then
+         ANDROID=/mnt/phone
+         LOCAL=/mnt/horcrux/phone
+         if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
             notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
          fi
-         unison -batch -fat "$ANDROIDMOUNT" "$ANDROIDDISK"
-         fusermount -u "$ANDROIDMOUNT"
-         # notify-send -t 3000 -i "$ICONS"/phone.png "Done Syncing"
+         unison -batch -fat "$ANDROID" "$LOCAL"
+         fusermount -u "$ANDROID"
          ;;
 
       --repos | -r)
@@ -70,37 +77,81 @@ while :; do
          ;;
 
       --dots | -d)
-         cp -frsu -t ~ \
+         WEECHAT_ROOT=$GIT/own/magpie/.config/weechat
+         WEECHAT_PRIVATE=$GIT/own/magpie-private/.config/weechat
+         WEECHAT_CLONE=/home/salman/.config/weechat
+
+         find "$WEECHAT_ROOT" -maxdepth 1 -type f |
+            sed 's/\/mnt\/horcrux\/git\/own\/magpie/\/home\/salman/' |
+            xargs cp -ft "$WEECHAT_ROOT"
+
+         find "$WEECHAT_PRIVATE" -maxdepth 1 -type f |
+            sed 's/\/mnt\/horcrux\/git\/own\/magpie-private/\/home\/salman/' |
+            xargs cp -ft "$WEECHAT_PRIVATE"
+
+         cp -frs -t ~ \
             "$GIT"/own/magpie/. \
-            "$GIT"/own/private/.
+            "$GIT"/own/magpie-private/.
+
+         find "$WEECHAT_CLONE" -maxdepth 1 -type l -delete
+         find "$WEECHAT_ROOT" "$WEECHAT_PRIVATE" -maxdepth 1 -type f |
+            xargs cp -ft /home/salman/.config/weechat
+
          doas -- find ~ -xtype l -delete
+         rm ~/LICENSE ~/README.md ~/.gitignore
+
          ;;
 
       --drive | -D)
-         LOCAL=/mnt/horcrux/drive
-         CLOUD=drive:synced
-         FIREFOXPROFILE=zmzk0pef
 
-         # Firefox backup
-         tar cf firefox.tar.gz ~/.mozilla/firefox/$FIREFOXPROFILE.default-release
-         gpg -r salmanabedin@disroot.org -e firefox.tar.gz
-         rclone copy firefox.tar.gz.gpg $CLOUD
-         rm firefox.tar.gz firefox.tar.gz.gpg
+         rclone sync $LOCAL/documents $CLOUD:documents
+         rclone sync $LOCAL/notes $CLOUD:notes
+         rclone sync $LOCAL/library $CLOUD:library
 
-         rclone sync $LOCAL $CLOUD
-         rclone sync "$GIT"/others $CLOUD/git/others
-         rclone sync "$GIT"/forks $CLOUD/git/forks
+         rclone sync "$GIT"/others $CLOUD:git/others
+         rclone sync "$GIT"/forks $CLOUD:git/forks
+         rclone sync "$GIT"/archived $CLOUD:git/archived
          ;;
-      *) break ;;
+
+         --firefox | -f)
+         LOCAL=/mnt/horcrux
+         CLOUD=drive
+         FIREFOX_PROFILE=zmzk0pef.default-release
+         FIREFOX_LOCAL=$LOCAL/firefox
+
+         # cd /tmp || exit
+         # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
+         # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
+         # tar xf $FIREFOX_PROFILE.tar
+         # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
+         # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
+
+         cd $FIREFOX_LOCAL || exit
+         tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
+         gpg -esr "$MAIL" $FIREFOX_PROFILE.tar
+         rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
+         rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
+         ;;
+
+      \
+         *) break ;;
    esac
    shift
 done
 # wait
-notify-send -i "$ICONS/mirror.png" "Done mirroring"
+# notify-send -i "$ICONS/mirror.png" "Done mirroring"
 
 #===============================================================================
 #                             Exp
 #===============================================================================
+
+# --brave | -b)
+#    cd ~/.config || exit
+#    tar cf Brave.tar BraveSoftware
+#    gpg -esr "$MAIL" Brave.tar
+#    rclone copy Brave.tar.gpg $CLOUD:/
+#    rm Brave.tar Brave.tar.gpg
+#    ;;
 
 # --firefox | -f)
 # rsync -a --delete ~/.mozilla/firefox/"$FIREFOXPROFILE".default-release \
@@ -111,14 +162,16 @@ notify-send -i "$ICONS/mirror.png" "Done mirroring"
 # ~/.local/share/passwords/salmanabedin@disroot.org.gpg)" \
 # https://cloud.disroot.org/remote.php/dav/files/salmanabedin/
 # ;;
-# --mail | -m)
-# mbsync -c ~/.config/isync/mbsyncrc -a
-# unread=$(find ~/.local/share/mail/gmail/INBOX/new/* -type f 2> /dev/null | wc -l)
-# [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
-# "You've got $unread new mail!"
-# ;;
 
 # --newsboat | -n)
 # newsboat -x reload
 # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
 # ;;
+# umount -l /mnt/cloud
+
+# --mail | -m)
+#    mbsync -c ~/.config/isync/mbsyncrc -a
+#    unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
+#    [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
+#    "You've got $unread new mail!"
+#    ;;

@@ -2,42 +2,26 @@
 #
 # General purpose launching script
 
-run() { setsid "$@" > /dev/null 2>&1; }
+silence() { setsid -f "$@" > /dev/null 2>&1 & }
 
 launch_dwm() {
    while :; do
-      dwm 2> ~/.dwm.log
+      dwm 2> ~/.local/share/dwm.log
    done
-}
-
-bookmark() {
-   # xdotool key Control+l && sleep 1 && exit
-   # xdotool keyup j key --clearmodifiers Control+l && sleep 1 && exit
-   # xte 'keydown Control_L' 'keydown l' 'keyup Control_L' 'keyup l' && exit
-   # xte 'keydown Super_L' 'keydown t' 'keyup Super_L' 'keyup t' && exit
-   # xte 'keydown Super_L' 'keydown t' && sleep 0.2 && xte 'keyup Super_L' 'keyup t' && exit
-   # xte 'keydown Ctrl_L' 'keydown l' && sleep 0.2 && xte 'keyup Ctrl_L' 'keyup l' && exit
-   BOOKMARKS=/mnt/horcrux/git/own/private/.local/share/bookmarks
-   LOCATION=$(find $BOOKMARKS -type d |
-      awk -F / '{print $NF}' |
-      $DMENU -p 'Bookamark location') &&
-      TITLE=$($DMENU -p 'Bookamrk title') &&
-      LINK=$($DMENU -p 'Bookamrk link') &&
-      echo "$LINK" > "$(find $BOOKMARKS -type d -name "$LOCATION")"/"$TITLE".link
 }
 
 choose() {
    choice=$(printf "📕 Zathura\n📘 Evince\n📖 Foxit Reader\n📙 Master PDF Editor\n💻 Code\n🎥 MPV\n🌏 Browser" |
       $DMENU -p "Open with" | sed "s/\W//g") &&
       case "$choice" in
-         Zathura) run zathura "$1" ;;
-         Evince) run evince "$1" ;;
-         Browser) run $BROWSER --new-window "$1" ;;
-         FoxitReader) run foxitreader "$1" ;;
-         MasterPDFEditor) run masterpdfeditor4 "$1" ;;
-         Code) run code "$1" ;;
-         MPV) run mpv "$1" ;;
-            # MPV) run mpv --shuffle "$1" ;;
+         Zathura) silence zathura "$1" ;;
+         Evince) silence evince "$1" ;;
+         Browser) silence $BROWSER --new-window "$1" ;;
+         FoxitReader) silence foxitreader "$1" ;;
+         MasterPDFEditor) silence masterpdfeditor4 "$1" ;;
+         Code) silence code "$1" ;;
+         MPV) silence mpv "$1" ;;
+            # MPV) silence mpv --shuffle "$1" ;;
       esac
 }
 
@@ -47,12 +31,13 @@ link() {
          qmedia "$1"
          ;;
       *)
-         run firefox "$1"
+         silence "$BROWSER" "$1"
+         # silence firefox "$1"
          ;;
    esac
 }
 
-explore() {
+dir() {
    launch --tmux 2> /dev/null # Personal Script
    if pidof tmux; then
       tmux new-window
@@ -65,7 +50,7 @@ explore() {
    else
       "$TERMINAL" -e tmux attach &
    fi
-   tmux send "pilot-explore ${1:-~}" "Enter"
+   tmux send "$FILE ${1:-~}" "Enter"
 }
 
 launch_file() {
@@ -76,7 +61,7 @@ launch_file() {
             -e "$EDITOR" "$@" &
          exit
          ;;
-      *.link)
+      *.url)
          $BROWSER "$(cat "$@")"
          exit
          ;;
@@ -87,6 +72,18 @@ launch_file() {
          xdotool key Super+f
          exit
          ;;
+      *.dev)
+         devour "$TERMINAL" nvim "$1"
+         exit
+         ;;
+      *.gpg)
+         gpg -d "$1" > "${1%.gpg}"
+         exit
+         ;;
+      *toy.*)
+         # tmux split-window -h -l 30 "$EDITOR ${1%/*}/output" \; last-pane
+         tmux split-window -h -l 50 \; last-pane
+         ;;
    esac
 
    case $(file --mime-type "$1" -bL) in
@@ -95,31 +92,31 @@ launch_file() {
          # exit
          ;;
       *directory)
-         pilot-explore "$1"
+         $FILE "$1"
+         ;;
+      *html)
+         $BROWSER "$1"
          ;;
       video* | audio* | *gif)
-         devour mpv "$@" > /dev/null 2>&1 &
-         # qmedia "$1"
-         # testt mpv "$@"
+         qmedia "$1"
          ;;
       *pdf | *postscript | *epub+zip | *vnd.djvu)
-         devour zathura "$@"
-         # devour zathura -- "$@"
+         silence "$READER" "$1"
+         sleep 2 && transset-df -a 0.90
+         ;;
+      *svg+xml)
+         silence magick display "$1"
          ;;
       image*)
-         # devour feh -F -A "setdisplay --bg %f" -B 'black' \
-         #    -d --edit --keep-zoom-vp --start-at \
-         #    "$@"
-         feh -F -A "setdisplay --bg %f" -B 'black' \
-            -d --edit --keep-zoom-vp --start-at \
-            "$@" > /dev/null 2>&1
+         silence feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' -d --edit --start-at \
+            "$1"
          ;;
       *x-bittorrent)
-         torrent --add "$1"
+         transmission-remote -a "$1"
          ;;
       *.document)
          pandoc "$1" -o "${1%.*}.pdf"
-         devour zathura "${1%.*}.pdf"
+         $0 -f "${1%.*}.pdf"
          ;;
       application*)
          extract --clean "$1"
@@ -159,12 +156,23 @@ terminal() {
 
 launch_tmux() {
    pidof tmux > /dev/null 2>&1 || {
-      tmux new-session -d -n 'news&mail' 'calcurse' \; \
-         split-window -h 'neomutt' \; \
-         split-window 'newsboat' \; \
-         split-window 'weechat' \; \
-         select-pane -t :.1
+      tmux new-session -d \
+         -n 'chat' 'weechat' \; \
+         new-window -n 'schedule' 'calcurse' \; \
+         split-window -h 'neomutt' \; last-pane
    }
+   # -n 'news' 'newsboat' \; \
+   # new-window -n 'chat' 'weechat' \; \
+}
+
+launch_api() {
+   SERVER=/mnt/horcrux/innovations/quick_assist/server
+   tmux \
+      new-window -n 'server' \; \
+      send "cd $SERVER" 'Enter' \; \
+      send "yrd" 'Enter' \; \
+      split-window -h \; \
+      send 'da mongod' 'Enter' \; last-pane
 }
 
 while :; do
@@ -174,9 +182,9 @@ while :; do
       --file | -f) shift && launch_file "$1" ;;
       --choose | -c) shift && choose "$1" ;;
       --link | -l) shift && link "$1" ;;
-      --explore | -e) shift && pilot-explorer "$1" ;;
-      --bookmark | -b) bookmark ;;
-      --dwm | -d) launch_dwm ;;
+      --dir | -d) shift && $FILE "$1" ;;
+      --dwm | -D) launch_dwm ;;
+      --api | -a) launch_api ;;
       *) break ;;
    esac
    shift

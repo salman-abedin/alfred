@@ -6,19 +6,21 @@
 DDM=/tmp/ddm
 
 wallreel() {
-   REELPID=/tmp/reelpid
+   REELPID=/tmp/reel_pid
+
    if [ -s $REELPID ]; then
-      kill -9 "$(cat $REELPID)"
+      kill $(cat $REELPID)
       : > $REELPID
       notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Stopped"
    else
-      notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Started"
       while :; do
          setdisplay --bg shuffle
          sleep 5m
       done &
       echo $! > $REELPID
+      notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Started"
    fi
+
 }
 
 notifications() {
@@ -56,10 +58,20 @@ focusmode() {
    # fi
    xdotool key Super+Shift+b
    sleep 0.5 && xdotool key Super+Shift+f
-   tmux set status
-   # wallreel
+   # tmux set status
+   wallreel
    # wifi
-   # notifications
+   notifications
+}
+
+fullscreen() {
+   xdotool key Super+Shift+b
+   sleep 0.5 && xdotool key Super+Shift+f
+}
+
+dont_disturb() {
+   wallreel
+   notifications
 }
 
 while :; do
@@ -67,7 +79,9 @@ while :; do
       --wall-reel | -r) wallreel ;;
       --noti | -n) notifications ;;
       --wifi | -w) wifi ;;
-      --focus-mode | -f) focusmode ;;
+      --fullscreen | -f) fullscreen ;;
+      --focus-mode | -F) focusmode ;;
+      --dnd | -d) dont_disturb ;;
       *) break ;;
    esac
    shift

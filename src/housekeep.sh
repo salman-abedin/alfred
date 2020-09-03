@@ -1,12 +1,16 @@
 #!/bin/sh
 #
-# Cleans up the system (weekly cronjob)
+# Cleans up the system (cronjob)
 
-doas -- pacman -Scc --noconfirm
-doas -- pacman -Rns --noconfirm $(pacman -Qttdq)
+doas -n -- pacman -Scc --noconfirm
+doas -n -- pacman -Rns --noconfirm $(pacman -Qttdq)
 find ~ -xtype l -delete
 find ~ -type d -empty -delete
-doas -- rm -fr \
-   ~/.local/share/Trash/* \
+doas -n -- rm -fr \
    /var/cache/pacman/pkg/* \
    /var/log/journal/*
+
+# ~/.local/share/Trash/* \
+# ~/.local/share/Trash/.*
+
+# canberra-gtk-play -i trash-empty &

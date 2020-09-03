@@ -20,7 +20,8 @@ case $1 in
       set -- /sys/class/power_supply/BAT?/capacity
       read -r cap < "$1"
       if [ "$cap" -lt 10 ]; then
-         systemctl poweroff
+         leavex -s
+         # systemctl poweroff
          # systemctl hibernate
       elif [ "$cap" -lt 20 ]; then
          notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
@@ -31,13 +32,19 @@ case $1 in
       fi
       ;;
    --plugged)
-      # Required for Udev environment
-      export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+      # libnotify environment variables
+      # export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+
+      read -r DISPLAY < /tmp/DISPLAY
+      export DISPLAY
+      export XAUTHORITY=~/.config/X11/Xauthority
       export ICONS=~/.local/share/icons/system
+
       if [ "$2" = true ]; then
          notify-send -t 1000 -i "$ICONS"/charging.png "Charging"
       else
          notify-send -t 1000 -i "$ICONS"/discharging.png "Discharging"
       fi
+      # doas -n -- canberra-gtk-play -i device-removed &
       ;;
 esac

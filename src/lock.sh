@@ -1,30 +1,79 @@
 #!/bin/sh
 #
 # Screen locker
-# Dependencies: timeout, i3lock-color
+# Dependencies: shuf, i3lock-color, xset, sleep, xdotool
 
-dur=$((INACTIVITY * 3 / 60))
+timeout 5m \
+   ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
+   ~/.local/share/screensavers/matrix.mp4 ||
+   xset dpms force off
+exit
+
+#===============================================================================
+
 QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
+LOCK_STAT=/tmp/LOCK_STAT
 
-# toggle -n
+[ ! -s "$LOCK_STAT" ] && {
+   echo locked > $LOCK_STAT
+   {
+      # Fixes the i3lock lock bug
+      { sleep 2 && xdotool mousemove 0 0 click 1 mousemove restore; } &
+      i3lock -ekn \
+         --indicator --radius 170 --ring-width 3 \
+         --ringcolor ffffff --insidecolor 00000000 --linecolor 00000000 \
+         --timestr "%H:%M" \
+         --time-font sans --timecolor ffffff --timesize 100 \
+         --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
+         --date-font sans --datecolor ffffff --datesize 30 \
+         --greetertext "$QUOTE" --greeterpos 'w/2:100' \
+         --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 25 \
+         --pass-volume-keys --pass-media-keys \
+         -c 00000000 -B 20
+      setbg -s
+      : > $LOCK_STAT
 
-timeout "$dur"m \
-   i3lock -k \
-   --timestr "%H:%M" \
-   --time-font monospace --timecolor ffffff --timesize 100 \
-   --datestr "%a, %d %b" --datepos='tx+0:ty+50' \
-   --date-font monospace --datecolor ffffff --datesize 30 \
-   --greetertext "$QUOTE" --greeterpos 'w/2:100' \
-   --greetercolor ffffff --greetersize 30 \
-   --pass-volume-keys --pass-media-keys \
-   -c 00000000 -B 10 \
-   -enu || systemctl suspend
-
-# toggle -n
+      # kill 0
+      # pkill -P $$
+      kill $$
+   } &
+}
+sleep 5m
+ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
+   ~/.local/share/screensavers/matrix.mp4
+xset dpms force off
 
 #===============================================================================
 #                             Exp
 #===============================================================================
+
+# > /dev/null 2>&1 &
+# sleep 5
+# kill $!
+
+# # toggle -n
+# if timeout "$dur" \
+#    i3lock -ekn \
+#    --indicator --radius 170 --ring-width 3 \
+#    --ringcolor ffffff --insidecolor 00000000 --linecolor 00000000 \
+#    --timestr "%H:%M" \
+#    --time-font sans --timecolor ffffff --timesize 100 \
+#    --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
+#    --date-font sans --datecolor ffffff --datesize 30 \
+#    --greetertext "$QUOTE" --greeterpos 'w/2:100' \
+#    --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 25 \
+#    --pass-volume-keys --pass-media-keys \
+#    -c 00000000 -B 20; then
+#    # Unlocked
+#    :
+#    # toggle -n
+# else
+#    # Timed out
+#    xset dpms force off
+# fi
+
+# # Check whether the script was forced or if audio is playing or not
+# [ -z "$1" ] && [ "$(pacmd list-sink-inputs)" != "0 sink input(s) available." ] && exit 0
 
 # timeout "$dur"m \
 #    ffplay \
