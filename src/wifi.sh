@@ -6,8 +6,8 @@
 WIFI_SSID=c4rn@g3
 WIFI_PASS=pqlamz.,
 
-REPEATER_SSID=DIRECT-2D-Android_7e2a
-REPEATER_PASS=qqSe18Rt
+REPEATER_SSID=DIRECT-Repeater
+REPEATER_PASS=asdflkjh
 
 CJ_SSID="The Color Pink"
 CJ_PASS=pink1221
@@ -24,17 +24,18 @@ case "$1" in
    --show | -S) run show ;;
    --scan | -s) run scan ;;
    --list | -l)
-      $0 -s
-      # sleep 1
-      run get-networks
+      $0 -s &&
+         # sleep 1
+         run get-networks
       ;;
    --con | -c)
-      $0 -s
-      # $0 -d && $0 -s
-      # sleep 1
-      # run --passphrase "${WIFI_PASS:-$3}" connect "${WIFI_SSID:-$2}"
-      run --passphrase "${3:-$WIFI_PASS}" connect "${2:-$WIFI_SSID}"
-      $0 -S
+      # $0 -s
+      $0 -d &&
+         $0 -s &&
+         # sleep 1
+         # run --passphrase "${WIFI_PASS:-$3}" connect "${WIFI_SSID:-$2}"
+         run --passphrase "${3:-$WIFI_PASS}" connect "${2:-$WIFI_SSID}" &&
+         $0 -S
       ;;
    --rep | -r) $0 -c $REPEATER_SSID $REPEATER_PASS ;;
    --saraj) $0 -c "$CJ_SSID" "$CJ_PASS" ;;

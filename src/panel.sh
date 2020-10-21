@@ -6,6 +6,7 @@
 
 case $1 in
    --date-time | -d) printf "%s" "$(date +'🗓  %a, %d %b   🕰 %H : %M')" ;;
+   # --date-time | -d) printf "%s" "$(date +'🕰 %H : %M   🗓  %a, %d %b')" ;;
    --wifi | -w)
       if connected; then
          printf "🌏 %s" \

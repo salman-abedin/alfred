@@ -7,11 +7,10 @@
 ext="${1##*.}"
 
 case $ext in
-   tar) tar xf "$1" ;;
+   tar | gz) tar xf "$1" ;;
    zip) unzip "$1" -d "${1%.*}" ;;
    xz) unxz "$1" ;;
-   gz) gunzip "$1" ;;
-   bz2) tar -xjvf "$1" ;;
+   bz2) tar -xjf "$1" ;;
    rar) unrar e "$1" ;;
    7z) 7z x "$1" ;;
    *) exit 1 ;;

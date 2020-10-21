@@ -4,7 +4,7 @@
 
 MAIL_DIR=~/.local/share/mail/INBOX/new
 
-inotifywait -m -e delete move $MAIL_DIR |
+inotifywait -m -e move,delete $MAIL_DIR |
    while read -r line; do
       uniblocks -u mail
    done

@@ -5,17 +5,18 @@
 connect() {
    # doas rfkill unblock bluetooth
    # doas systemctl start bluetooth
+   # bluetoothctl power off
    # bluetoothctl power on
    # bluetoothctl scan on
 
    right=${1:-E8:EC:A3:27:60:15}
    left=${1:-E8:EC:A3:15:05:0D}
 
-   { bluetoothctl connect "$right" || bluetoothctl connect "$left"; } && {
+   if bluetoothctl connect "$right" || bluetoothctl connect "$left"; then
       sleep 2
       uniblocks -u vol
       # bluetoothctl scan off
-   }
+   fi
 }
 
 toggle_mic() {

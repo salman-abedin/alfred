@@ -3,6 +3,7 @@
 # Modulates backlight levels ( requires root access)
 # Dependencis: doas, tee
 # Usage: backlight --(up|down|dim)
+#
 
 for device in /sys/class/backlight/*; do
    read -r CURRENT < "$device"/brightness

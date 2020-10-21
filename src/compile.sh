@@ -7,16 +7,16 @@
 [ "$1" = --clean ] && shift && clean=true
 path=$(readlink -f "$1")
 name="${path%.*}"
+name_only="${name##*/}"
 ext="${path##*.}"
 dir="${path%/*}"
+build="${dir%/*}/build"
 
 cd "$dir" || exit 1
-
 [ "$clean" ] &&
    case $ext in
       tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
       c) rm -f "$dir/a.out" ;;
-      sass) sassc -a "$path" "$name.css" ;;
    esac && exit
 
 makefile() {
@@ -33,10 +33,16 @@ case $ext in
    c | h | sh) makefile ;;
    txt) wc -w "$path" ;;
    tex) xelatex "$path" ;;
+   pug) pug "$path" -o "$build" ;;
+   scss) sassc "$path" "$name.css" ;;
+   sass)
+      sassc -a "$path" "$build/$name_only.css"
+      echo " " >> "$build/$name_only.html"
+      sed '$d' "$build/$name_only.html"
+      ;;
       # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
       # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
       # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;
-      # scss) sassc "$path" "$name.css" ;;
       # ts)     tsc "$file";;
       # [rR]md) Rscript -e "require(rmarkdown); rmarkdown::render('$file', quiet=TRUE)" ;;
       # ms)     groff -ms -T pdf $file > $name.pdf ;;

@@ -32,7 +32,9 @@ while :; do
                [ "${PWD##*/}" = magpie-archived ] ||
                message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
             if [ -z "$message" ]; then
-               git commit -C HEAD --reset-author && git push
+               # git commit -C HEAD --reset-author && git push
+               # git commit --amend --no-edit
+               git commit --allow-empty-message -m '' && git push
             else
                git commit -m "$message" && git push
             fi
@@ -47,7 +49,7 @@ while :; do
       --arch | -a)
          doas -- pacman -Syyu --noconfirm
          yay -Syu --noconfirm
-         npm update -g
+         # npm update -g
          ;;
 
       --phone | -p)
@@ -113,7 +115,7 @@ while :; do
          rclone sync "$GIT"/archived $CLOUD:git/archived
          ;;
 
-         --firefox | -f)
+      --firefox | -f)
          LOCAL=/mnt/horcrux
          CLOUD=drive
          FIREFOX_PROFILE=zmzk0pef.default-release

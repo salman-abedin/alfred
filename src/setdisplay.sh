@@ -42,22 +42,18 @@ setdpi() {
 
 setbg() {
    WALL=~/.local/share/WALL
-   # exec 3> /tmp/wall
-   # exec 4< /tmp/wall
-   exec 3> $WALL
-   exec 4< $WALL
    case $1 in
       shuffle | -s)
-         find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 >&3
-         feh --no-fehbg --bg-scale "$(cat <&4)"
+         find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 > $WALL
+         feh --no-fehbg --bg-scale "$(cat < $WALL)"
          ;;
       delete | -d)
-         find "$WALLPAPERS" -name "$(cat <&4)" -delete
+         find "$WALLPAPERS" -name "$(cat < $WALL)" -delete
          setbg shuffle
          ;;
       *)
-         [ -n "$1" ] && echo "$1" >&3
-         feh --no-fehbg --bg-scale "$(cat <&4)"
+         [ -n "$1" ] && echo "$1" > $WALL
+         feh --no-fehbg --bg-scale "$(cat $WALL)"
          ;;
    esac
    exec 3<&-
@@ -66,8 +62,16 @@ setbg() {
 
 while :; do
    case $1 in
-      --bg) shift && setbg "$1" ;;
+      --bg)
+         if [ -n "$2" ]; then
+            setbg "$2"
+            shift
+         else
+            setbg
+         fi
+         ;;
       --dpi) setdpi ;;
+      *) break ;;
    esac
    shift
 done

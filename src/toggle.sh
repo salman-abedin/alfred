@@ -66,7 +66,7 @@ focusmode() {
 
 fullscreen() {
    xdotool key Super+Shift+b
-   sleep 0.5 && xdotool key Super+Shift+f
+   sleep 0.7 && xdotool key Super+Shift+f
 }
 
 dont_disturb() {
