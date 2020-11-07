@@ -27,6 +27,7 @@ case $1 in
          rm -f "$RECPID"
          sleep 3
          kill -9 "$recpid"
+         notify-send "stopped recording"
          exit
       }
 
@@ -39,7 +40,7 @@ case $1 in
          -r 30 \
          -f alsa -i default \
          -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
-         ~/Downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
+         /mnt/horcrux/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
       echo $! > "$RECPID"
       ;;
    *) exit 1 ;;

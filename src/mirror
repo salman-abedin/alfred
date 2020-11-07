@@ -115,6 +115,14 @@ while :; do
          rclone sync "$GIT"/archived $CLOUD:git/archived
          ;;
 
+      --brave | -b)
+         cd ~/.config || exit
+         tar cf Brave.tar BraveSoftware
+         gpg -esr "$MAIL" Brave.tar
+         rclone copy Brave.tar.gpg $CLOUD:/
+         rm Brave.tar Brave.tar.gpg
+         ;;
+
       --firefox | -f)
          LOCAL=/mnt/horcrux
          CLOUD=drive
@@ -135,8 +143,7 @@ while :; do
          rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
          ;;
 
-      \
-         *) break ;;
+      *) break ;;
    esac
    shift
 done
@@ -146,14 +153,6 @@ done
 #===============================================================================
 #                             Exp
 #===============================================================================
-
-# --brave | -b)
-#    cd ~/.config || exit
-#    tar cf Brave.tar BraveSoftware
-#    gpg -esr "$MAIL" Brave.tar
-#    rclone copy Brave.tar.gpg $CLOUD:/
-#    rm Brave.tar Brave.tar.gpg
-#    ;;
 
 # --firefox | -f)
 # rsync -a --delete ~/.mozilla/firefox/"$FIREFOXPROFILE".default-release \

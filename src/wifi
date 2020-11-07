@@ -3,18 +3,6 @@
 # Wifi related scripts
 # USAGE: wifi -l | [-c SSID PASS] | -d | -S | -s
 
-WIFI_SSID=c4rn@g3
-WIFI_PASS=pqlamz.,
-
-REPEATER_SSID=DIRECT-Repeater
-REPEATER_PASS=asdflkjh
-
-CJ_SSID="The Color Pink"
-CJ_PASS=pink1221
-
-MARINADE_SSID="Cafe Marinade"
-MARINADE_PASS=password
-
 CARD=$(ip link | grep -o 'wl.\w*')
 
 run() { iwctl station "$CARD" "$@"; }

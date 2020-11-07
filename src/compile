@@ -33,13 +33,14 @@ case $ext in
    c | h | sh) makefile ;;
    txt) wc -w "$path" ;;
    tex) xelatex "$path" ;;
-   pug) pug "$path" -o "$build" ;;
+   pug) pug -o "$build" "$path" ;;
    scss) sassc "$path" "$name.css" ;;
    sass)
       sassc -a "$path" "$build/$name_only.css"
       echo " " >> "$build/$name_only.html"
       sed '$d' "$build/$name_only.html"
       ;;
+   *) makefile ;;
       # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
       # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
       # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;

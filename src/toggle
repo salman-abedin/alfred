@@ -74,6 +74,23 @@ dont_disturb() {
    notifications
 }
 
+screen_key() {
+   if pgrep screenkey; then
+      pkill screenkey
+   else
+      screenkey -s small --persist
+   fi
+}
+
+screen_text() {
+   if pgrep screenkey; then
+      pkill screenkey
+   else
+      screenkey -p center -s small --no-whitespace --multiline \
+         --ignore Mode_switch --ignore Escape --ignore KP_Left
+   fi
+}
+
 while :; do
    case $1 in
       --wall-reel | -r) wallreel ;;
@@ -82,6 +99,8 @@ while :; do
       --fullscreen | -f) fullscreen ;;
       --focus-mode | -F) focusmode ;;
       --dnd | -d) dont_disturb ;;
+      --screen_key) screen_key ;;
+      --screen_text) screen_text ;;
       *) break ;;
    esac
    shift
