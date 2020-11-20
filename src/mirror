@@ -2,7 +2,7 @@
 #
 # General purpose syncing script
 # Dependencies: git, rclone, unison
-# mirror --[git,calcurse,phone,arch,repos,upstream]
+# Usage: mirror --[git,calcurse,phone,arch,repos,upstream]
 
 LOCAL=/mnt/horcrux
 CLOUD=drive
@@ -32,17 +32,17 @@ while :; do
                [ "${PWD##*/}" = magpie-archived ] ||
                message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
             if [ -z "$message" ]; then
-               # git commit -C HEAD --reset-author && git push
                # git commit --amend --no-edit
-               git commit --allow-empty-message -m '' && git push
+               git commit --allow-empty-message -m '' && git push -f
             else
-               git commit -m "$message" && git push
+               git commit -m "$message" && git push -f
             fi
          done
          ;;
 
       --calcurse | -c)
          CALCURSE_CALDAV_PASSWORD=$(gpg -d ~/.local/share/passwords/salmanabedin@disroot.org.gpg) calcurse-caldav
+         # --init=keep-local
          # --init=keep-remote
          ;;
 
@@ -91,23 +91,24 @@ while :; do
             sed 's/\/mnt\/horcrux\/git\/own\/magpie-private/\/home\/salman/' |
             xargs cp -ft "$WEECHAT_PRIVATE"
 
-         cp -frs -t ~ \
-            "$GIT"/own/magpie/. \
-            "$GIT"/own/magpie-private/.
+         # cp -frs -t ~ \
+         #    "$GIT"/own/magpie/. \
+         #    "$GIT"/own/magpie-private/.
+
+         cp -frs "$GIT"/own/magpie/. "$GIT"/own/magpie-private/. ~
 
          find "$WEECHAT_CLONE" -maxdepth 1 -type l -delete
          find "$WEECHAT_ROOT" "$WEECHAT_PRIVATE" -maxdepth 1 -type f |
             xargs cp -ft /home/salman/.config/weechat
 
-         doas -- find ~ -xtype l -delete
-         rm ~/LICENSE ~/README.md ~/.gitignore
+         doas -n -- find ~ -xtype l -delete
+         rm -f ~/LICENSE ~/README.md ~/.gitignore
 
          ;;
 
       --drive | -D)
 
          rclone sync $LOCAL/documents $CLOUD:documents
-         rclone sync $LOCAL/notes $CLOUD:notes
          rclone sync $LOCAL/library $CLOUD:library
 
          rclone sync "$GIT"/others $CLOUD:git/others
@@ -123,36 +124,37 @@ while :; do
          rm Brave.tar Brave.tar.gpg
          ;;
 
-      --firefox | -f)
-         LOCAL=/mnt/horcrux
-         CLOUD=drive
-         FIREFOX_PROFILE=zmzk0pef.default-release
-         FIREFOX_LOCAL=$LOCAL/firefox
-
-         # cd /tmp || exit
-         # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
-         # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
-         # tar xf $FIREFOX_PROFILE.tar
-         # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
-         # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
-
-         cd $FIREFOX_LOCAL || exit
-         tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
-         gpg -esr "$MAIL" $FIREFOX_PROFILE.tar
-         rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
-         rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
-         ;;
-
       *) break ;;
    esac
    shift
 done
-# wait
-# notify-send -i "$ICONS/mirror.png" "Done mirroring"
 
 #===============================================================================
 #                             Exp
 #===============================================================================
+
+# wait
+# notify-send -i "$ICONS/mirror.png" "Done mirroring"
+
+# --firefox | -f)
+#    LOCAL=/mnt/horcrux
+#    CLOUD=drive
+#    FIREFOX_PROFILE=zmzk0pef.default-release
+#    FIREFOX_LOCAL=$LOCAL/firefox
+
+#    # cd /tmp || exit
+#    # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
+#    # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
+#    # tar xf $FIREFOX_PROFILE.tar
+#    # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
+#    # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
+
+#    cd $FIREFOX_LOCAL || exit
+#    tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
+#    gpg -esr "$MAIL" $FIREFOX_PROFILE.tar
+#    rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
+#    rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
+#    ;;
 
 # --firefox | -f)
 # rsync -a --delete ~/.mozilla/firefox/"$FIREFOXPROFILE".default-release \

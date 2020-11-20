@@ -3,25 +3,23 @@
 # General purpose launching script
 
 fork() { setsid -f "$@" > /dev/null 2>&1 & }
+launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 
-launch_dwm() {
-   while :; do
-      dwm 2> ~/.local/share/dwm.log
-   done
+mux() {
+   tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
+   # tmux split-window -h "$EDITOR $1" \; \
+   #    swap-pane -d -t :.1 \; \
+   #    select-layout main-vertical
+   # # resize-pane -Z
 }
 
 choose() {
-   choice=$(printf "📕 Zathura\n📘 Evince\n📖 Foxit Reader\n📙 Master PDF Editor\n💻 Code\n🎥 MPV\n🌏 Browser" |
-      $DMENU -p "Open with" | sed "s/\W//g") &&
-      case "$choice" in
-         Zathura) fork zathura "$1" ;;
-         Evince) fork evince "$1" ;;
+   choice=$(printf "🌏 Browser\n📚 Foxit Reader\n📙 Master PDF Editor\n🎥 MPV" | $DMENU) &&
+      case "${choice#* }" in
          Browser) fork falkon "$1" ;;
          FoxitReader) fork foxitreader "$1" ;;
          MasterPDFEditor) fork masterpdfeditor4 "$1" ;;
-         Code) fork code "$1" ;;
-         MPV) fork mpv "$1" ;;
-            # MPV) fork mpv --shuffle "$1" ;;
+         MPV) qmedia "$1" ;;
       esac
 }
 
@@ -37,23 +35,8 @@ link() {
    esac
 }
 
-dir() {
-   launch --tmux 2> /dev/null # Personal Script
-   if pidof tmux; then
-      tmux new-window
-   else
-      tmux new-session -d \; switch-client
-   fi
-   if pidof "$TERMINAL"; then
-      [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
-         xdo activate -N Alacritty
-   else
-      "$TERMINAL" -e tmux attach &
-   fi
-   tmux send "$FILE ${1:-~}" "Enter"
-}
-
 launch_file() {
+   ns "$1"
    case $1 in
       *.ar.*)
          alacritty \
@@ -62,7 +45,7 @@ launch_file() {
          exit
          ;;
       *.url)
-         $BROWSER "$(cat "$@")"
+         fork $BROWSER "$(cat "$@")"
          exit
          ;;
       *.sent)
@@ -71,58 +54,37 @@ launch_file() {
          # sleep 1 && xdotool key Super+f
          exit
          ;;
-      *.dev)
-         devour "$TERMINAL" nvim "$1"
-         exit
-         ;;
       *.gpg)
          gpg -d "$1" > "${1%.gpg}"
+         $EDITOR "${1%.gpg}"
          exit
          ;;
       *toy.*)
-         # tmux split-window -h -l 30 "$EDITOR ${1%/*}/output" \; last-pane
-         tmux split-window -h -l 50 \; last-pane
+         {
+            sleep 0.5
+            tmux split-window -h -l 50 \; \
+               select-layout main-vertical \; \
+               last-pane
+         } &
          ;;
    esac
 
    case $(file --mime-type "$1" -bL) in
-      text* | *x-empty | *json | *octet-stream)
-         $EDITOR "$1"
-         # exit
-         ;;
-      *directory)
-         $FILE "$1"
-         ;;
-      *html)
-         $BROWSER "$1"
-         ;;
-      video* | audio* | *gif)
-         qmedia "$1"
-         ;;
-      *pdf | *postscript | *epub+zip | *vnd.djvu)
-         fork "$READER" "$1"
-         # sleep 2 && transset-df -a 0.90
-         ;;
-      *svg+xml)
-         fork magick display "$1"
-         ;;
+      # text* | *x-empty | *json | *octet-stream) $EDITOR "$1" ;;
+      text* | *x-empty | *json | *octet-stream) mux "$1" ;;
+      *directory) $FILE "$1" ;;
+      *html) fork falkon "$1" ;;
+      video* | audio* | *gif) fork mpv "$1" ;;
+      *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
+      *svg+xml) fork magick display "$1" ;;
+      *x-bittorrent) transmission-remote -a "$1" ;;
+      *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
+      application*) extract --clean "$1" ;;
       image*)
          fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' -d --edit --start-at \
             "$1"
          ;;
-      *x-bittorrent)
-         transmission-remote -a "$1"
-         ;;
-      *.document)
-         pandoc "$1" -o "${1%.*}.pdf"
-         $0 -f "${1%.*}.pdf"
-         ;;
-      application*)
-         extract --clean "$1"
-         ;;
-      *)
-         return
-         ;;
+      *) return ;;
    esac
 
 }
@@ -134,23 +96,6 @@ terminal() {
       tmux new-session -d \; switch-client
    fi
    pidof "$TERMINAL" || "$TERMINAL" -e tmux attach &
-   # if pidof "$TERMINAL"; then
-   # [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
-   # xdo activate -N st-256color
-   # xdo activate -N Alacritty
-   # else
-   # "$TERMINAL" -e tmux attach &
-   # "$TERMINAL"
-   # sleep 0.5
-   # xdo key_press -k 28
-   # xdo key_release -k 28
-   # xdo key_press -k 38
-   # sleep 0.2
-   # xdo key_release -k 38
-   # xdo key_press -k 36
-   # sleep 0.2
-   # xdo key_release -k 36
-   # fi
 }
 
 launch_tmux() {
@@ -160,31 +105,63 @@ launch_tmux() {
          new-window -n 'schedule' 'calcurse' \; \
          split-window -h 'neomutt' \; last-pane
    }
-   # -n 'news' 'newsboat' \; \
-   # new-window -n 'chat' 'weechat' \; \
 }
 
-launch_api() {
-   SERVER=/mnt/horcrux/innovations/quick_assist/server
-   tmux \
-      new-window -n 'server' \; \
-      send "cd $SERVER" 'Enter' \; \
-      send "yrd" 'Enter' \; \
-      split-window -h \; \
-      send 'da mongod' 'Enter' \; last-pane
-}
+case $1 in
+   --tmux | -t) launch_tmux ;;
+   --terminal | -T) terminal ;;
+   --file | -f) launch_file "$2" ;;
+   --choose | -c) choose "$2" ;;
+   --link | -l) link "$2" ;;
+   --dwm | -D) launch_dwm ;;
+esac
 
-while :; do
-   case $1 in
-      --tmux | -t) launch_tmux ;;
-      --terminal | -T) terminal ;;
-      --file | -f) shift && launch_file "$1" ;;
-      --choose | -c) shift && choose "$1" ;;
-      --link | -l) shift && link "$1" ;;
-      --dir | -d) shift && $FILE "$1" ;;
-      --dwm | -D) launch_dwm ;;
-      --api | -a) launch_api ;;
-      *) break ;;
-   esac
-   shift
-done
+#===============================================================================
+#                             Exp
+#===============================================================================
+
+# launch_api() {
+#    SERVER=/mnt/horcrux/innovations/quick_assist/server
+#    tmux \
+#       new-window -n 'server' \; \
+#       send "cd $SERVER" 'Enter' \; \
+#       send "yrd" 'Enter' \; \
+#       split-window -h \; \
+#       send 'da mongod' 'Enter' \; last-pane
+# }
+
+# dir() {
+#    launch --tmux 2> /dev/null # Personal Script
+#    if pidof tmux; then
+#       tmux new-window
+#    else
+#       tmux new-session -d \; switch-client
+#    fi
+#    if pidof "$TERMINAL"; then
+#       [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
+#          xdo activate -N Alacritty
+#    else
+#       "$TERMINAL" -e tmux attach &
+#    fi
+#    tmux send "$FILE ${1:-~}" "Enter"
+# }
+
+# terminal() {
+# if pidof "$TERMINAL"; then
+# [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
+# xdo activate -N st-256color
+# xdo activate -N Alacritty
+# else
+# "$TERMINAL" -e tmux attach &
+# "$TERMINAL"
+# sleep 0.5
+# xdo key_press -k 28
+# xdo key_release -k 28
+# xdo key_press -k 38
+# sleep 0.2
+# xdo key_release -k 38
+# xdo key_press -k 36
+# sleep 0.2
+# xdo key_release -k 36
+# fi
+# }

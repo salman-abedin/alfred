@@ -2,9 +2,7 @@
 #
 # Monitors specific directores for particular changes and runs commands
 
-MAIL_DIR=~/.local/share/mail/INBOX/new
-
-inotifywait -m -e move,delete $MAIL_DIR |
+inotifywait -m -e move,delete ~/.local/share/mail/INBOX/new |
    while read -r line; do
       uniblocks -u mail
    done

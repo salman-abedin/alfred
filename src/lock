@@ -3,11 +3,14 @@
 # Screen locker
 # Dependencies: shuf, i3lock-color, xset, sleep, xdotool
 
-timeout 5m \
-   ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
-   ~/.local/share/screensavers/matrix.mp4 ||
-   xset dpms force off
+xset dpms force off
 exit
+
+# timeout 5m \
+#    ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
+#    ~/.local/share/screensavers/matrix.mp4 ||
+#    xset dpms force off
+# exit
 
 #===============================================================================
 

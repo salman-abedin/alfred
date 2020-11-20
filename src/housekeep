@@ -1,15 +1,24 @@
 #!/bin/sh
 #
 # Cleans up the system (cronjob)
+#
+# Dependencies: doas, find
 
-doas -n -- pacman -Scc --noconfirm
-doas -n -- pacman -Rns --noconfirm $(pacman -Qttdq)
-doas -n find ~ -xtype l -delete
-doas -n find ~ -type d -empty -delete
-doas -n -- rm -fr \
-   /var/cache/pacman/pkg/* \
-   /var/log/journal/*
+COMMANDS="\
+   pacman -Scc --noconfirm                   # Clears cached packages
+   pacman -Rns --noconfirm $(pacman -Qttdq)  # Deletes orphaned packages
+   find ~ -xtype l -delete                   # Deletes dead links
+   find ~ -type d -empty -delete             # Deletes empty directories
+   rm -fr /var/cache/pacman/pkg/*             # Clears pacman caches
+"
 
+doas -n $SHELL -c "$COMMANDS" 2> /dev/null
+
+#===============================================================================
+#                             Exp
+#===============================================================================
+
+# /var/log/journal/*
 # ~/.local/share/Trash/* \
 # ~/.local/share/Trash/.*
 

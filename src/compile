@@ -11,6 +11,7 @@ name_only="${name##*/}"
 ext="${path##*.}"
 dir="${path%/*}"
 build="${dir%/*}/build"
+docs="${dir%/*}/docs"
 
 cd "$dir" || exit 1
 [ "$clean" ] &&
@@ -33,14 +34,17 @@ case $ext in
    c | h | sh) makefile ;;
    txt) wc -w "$path" ;;
    tex) xelatex "$path" ;;
-   pug) pug -o "$build" "$path" ;;
-   scss) sassc "$path" "$name.css" ;;
+   pug)
+      pug -o "$build" "$path"
+      rm -f $(find "$build" -type f -name "data.html" -or -name "mixins.*")
+      ;;
    sass)
       sassc -a "$path" "$build/$name_only.css"
       echo " " >> "$build/$name_only.html"
       sed '$d' "$build/$name_only.html"
       ;;
    *) makefile ;;
+      # scss) sassc "$path" "$name.css" ;;
       # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
       # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
       # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;

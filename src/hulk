@@ -1,0 +1,43 @@
+#!/bin/sh
+#
+# hulk: Bulk moves/renames files of a given directory using default editor
+#
+# Dependencies: Milky pure baby!
+#
+# Usage:
+#        hulk       (Launches on the current directory)
+#        hulk <DIR> (Launches on the specified directory)
+
+LIST_OLD_PATH=/tmp/HULK_LIST_OLD_$$
+LIST_NEW_PATH="$LIST_OLD_PATH"_new
+
+get_line() {
+   i=0
+   while IFS= read -r line; do
+      i=$((i + 1))
+      [ "$i" = "$2" ] && echo "$line" && break
+   done < "$1"
+}
+
+cd "${1:-$PWD}" || exit 1
+
+for file in * .*; do
+   [ "$file" = . ] || [ "$file" = .. ] && continue
+   echo "$PWD/$file"
+done > $LIST_OLD_PATH
+
+cp "$LIST_OLD_PATH" "$LIST_NEW_PATH"
+$EDITOR "$LIST_NEW_PATH"
+
+for file in * .*; do
+   [ "$file" = . ] || [ "$file" = .. ] && continue
+   i=$((i + 1))
+   {
+      mv -f "$(get_line "$LIST_OLD_PATH" "$i")" \
+         "$(get_line "$LIST_NEW_PATH" "$i")"
+      # TODO: Conditional remove
+      # rm "$(get_line "$LIST_OLD_PATH" "$i")"
+   } 2> /dev/null
+done
+
+rm -f "$LIST_OLD_PATH" "$LIST_NEW_PATH"

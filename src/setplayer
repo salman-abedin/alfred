@@ -2,7 +2,7 @@
 #
 # Audio controller for spotify & mpd
 #
-# Dependencies:playerctl, pulseaudio-alsa(for getting volume levels over 100%)
+# Dependencies: playerctl, pulseaudio-alsa (for getting volume levels over 100%)
 #               canberra-gtk-play [optional] (for audible notification)
 #
 # Usage: setplayer --play (next|prev|toggle)

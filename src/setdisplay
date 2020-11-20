@@ -1,16 +1,23 @@
 #!/bin/sh
 #
 # Display related scripts
+#
+# Dependencies: xrandr, xrdb, grep, find
+#
 # setdisplay --bg [shuffle,delete] sets & deletes wallpapers
-#   Requires an Environment variable named WALLPAPERS that has the path to your wallpapers
 # setdisplay --dpi sets the correct dpi
 
+FILE_PATH_WALL=~/.local/share/WALL
+PATH_X_RESOURCES=~/.config/X11/Xresources
+PATH_WALLPAPERS=$GIT/archived/eyelust
+
 setdpi() {
-   FILE=~/.config/X11/Xresources
-
-   grep 'Xft.dpi' "$FILE" > /dev/null && xrdb -merge "$FILE" && return
-
    INFO=/tmp/display_info
+
+   grep 'Xft.dpi' "$PATH_X_RESOURCES" > /dev/null &&
+      xrdb -merge "$PATH_X_RESOURCES" &&
+      return
+
    xrandr | grep ' connected' > $INFO
 
    WIDTH_MM=$(awk '{print $NF}' $INFO)
@@ -35,43 +42,38 @@ setdpi() {
    DPI=$(awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" \
       'BEGIN{print dp / di}')
 
-   echo "Xft.dpi: $DPI" >> "$FILE"
-   xrdb -merge "$FILE"
+   echo "Xft.dpi: $DPI" >> "$PATH_X_RESOURCES"
+   xrdb -merge "$PATH_X_RESOURCES"
    rm $INFO
 }
 
+_get_wall_path() {
+   read -r WALL_PATH < "$FILE_PATH_WALL"
+   echo $WALL_PATH
+}
+
 setbg() {
-   WALL=~/.local/share/WALL
    case $1 in
       shuffle | -s)
-         find "$WALLPAPERS" -name "*.jpg" -o -name "*.png" | shuf -n1 > $WALL
-         feh --no-fehbg --bg-scale "$(cat < $WALL)"
+         find "$PATH_WALLPAPERS" -name "*.jpg" -o -name "*.png" |
+            shuf -n1 > $FILE_PATH_WALL
+         feh --no-fehbg --bg-scale "$(_get_wall_path)"
          ;;
       delete | -d)
-         find "$WALLPAPERS" -name "$(cat < $WALL)" -delete
+         find "$PATH_WALLPAPERS" -name "$(_get_wall_path)" -delete
          setbg shuffle
          ;;
       *)
-         [ -n "$1" ] && echo "$1" > $WALL
-         feh --no-fehbg --bg-scale "$(cat $WALL)"
+         [ -n "$1" ] && echo "$1" > $FILE_PATH_WALL
+         feh --no-fehbg --bg-scale "$(_get_wall_path)"
          ;;
    esac
-   exec 3<&-
-   exec 4<&-
 }
 
-while :; do
+while [ -n "$1" ]; do
    case $1 in
-      --bg)
-         if [ -n "$2" ]; then
-            setbg "$2"
-            shift
-         else
-            setbg
-         fi
-         ;;
+      --bg) shift && setbg "$1" ;;
       --dpi) setdpi ;;
-      *) break ;;
    esac
    shift
 done

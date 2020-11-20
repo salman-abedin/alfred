@@ -1,7 +1,6 @@
 #!/bin/sh
 #
-# Toggles Wifi, Notification & Wallpaper reeling
-# toggle --[noti,wifi,wall-reel]
+# Toggles misc operations
 
 DDM=/tmp/ddm
 
