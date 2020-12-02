@@ -16,7 +16,7 @@ case $1 in
          -video_size "$RESOLUTION" \
          -i "$DISPLAY" \
          -vframes 1 \
-         /mnt/horcrux/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
+         /mnt/internal/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
       ;;
    --screencast | -s)
       # Forked from https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord
@@ -40,7 +40,7 @@ case $1 in
          -r 30 \
          -f alsa -i default \
          -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
-         /mnt/horcrux/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
+         /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
       echo $! > "$RECPID"
       ;;
    *) exit 1 ;;

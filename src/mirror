@@ -4,7 +4,7 @@
 # Dependencies: git, rclone, unison
 # Usage: mirror --[git,calcurse,phone,arch,repos,upstream]
 
-LOCAL=/mnt/horcrux
+LOCAL=/mnt/internal
 CLOUD=drive
 
 if ! connected; then
@@ -16,8 +16,12 @@ fi
 
 while :; do
    case $1 in
-
-      --mail | -m) mbsync -c ~/.config/isync/mbsyncrc -a ;;
+      --mail | -m)
+         mbsync -c ~/.config/isync/mbsyncrc -a
+         unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
+         [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
+            "Psst. You've got $unread unread mail!"
+         ;;
 
       --git | -g)
          #weechat
@@ -29,10 +33,10 @@ while :; do
             git add .
             [ -z "$(git status --porcelain)" ] && continue
             [ "${PWD##*/}" = magpie-private ] ||
-               [ "${PWD##*/}" = magpie-archived ] ||
+               [ "${PWD##*/}" = notes ] ||
+               [ "${PWD##*/}" = leetcode ] ||
                message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
             if [ -z "$message" ]; then
-               # git commit --amend --no-edit
                git commit --allow-empty-message -m '' && git push -f
             else
                git commit -m "$message" && git push -f
@@ -42,8 +46,8 @@ while :; do
 
       --calcurse | -c)
          CALCURSE_CALDAV_PASSWORD=$(gpg -d ~/.local/share/passwords/salmanabedin@disroot.org.gpg) calcurse-caldav
-         # --init=keep-local
          # --init=keep-remote
+         # --init=keep-local
          ;;
 
       --arch | -a)
@@ -54,7 +58,7 @@ while :; do
 
       --phone | -p)
          ANDROID=/mnt/phone
-         LOCAL=/mnt/horcrux/phone
+         LOCAL=/mnt/internal/phone
          if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
             notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
          fi
@@ -84,11 +88,11 @@ while :; do
          WEECHAT_CLONE=/home/salman/.config/weechat
 
          find "$WEECHAT_ROOT" -maxdepth 1 -type f |
-            sed 's/\/mnt\/horcrux\/git\/own\/magpie/\/home\/salman/' |
+            sed 's/\/mnt\/internal\/git\/own\/magpie/\/home\/salman/' |
             xargs cp -ft "$WEECHAT_ROOT"
 
          find "$WEECHAT_PRIVATE" -maxdepth 1 -type f |
-            sed 's/\/mnt\/horcrux\/git\/own\/magpie-private/\/home\/salman/' |
+            sed 's/\/mnt\/internal\/git\/own\/magpie-private/\/home\/salman/' |
             xargs cp -ft "$WEECHAT_PRIVATE"
 
          # cp -frs -t ~ \
@@ -124,6 +128,32 @@ while :; do
          rm Brave.tar Brave.tar.gpg
          ;;
 
+      --firefox | -f)
+         CLOUD=drive
+         FIREFOX_LOCAL=/mnt/internal/misc/firefox
+         FIREFOX_PROFILE=zmzk0pef.default-release
+         GPG_MAIL=SalmanAbedin@disroot.org
+
+         #---------------------------------------
+         #              Backup
+         #---------------------------------------
+         cd $FIREFOX_LOCAL || exit
+         tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
+         gpg -esr "$GPG_MAIL" $FIREFOX_PROFILE.tar
+         rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
+         rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
+
+         #---------------------------------------
+         #              Sync
+         #---------------------------------------
+         # cd /tmp || exit
+         # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
+         # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
+         # tar xf $FIREFOX_PROFILE.tar
+         # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
+         # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
+
+         ;;
       *) break ;;
    esac
    shift
@@ -135,26 +165,6 @@ done
 
 # wait
 # notify-send -i "$ICONS/mirror.png" "Done mirroring"
-
-# --firefox | -f)
-#    LOCAL=/mnt/horcrux
-#    CLOUD=drive
-#    FIREFOX_PROFILE=zmzk0pef.default-release
-#    FIREFOX_LOCAL=$LOCAL/firefox
-
-#    # cd /tmp || exit
-#    # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
-#    # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
-#    # tar xf $FIREFOX_PROFILE.tar
-#    # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
-#    # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
-
-#    cd $FIREFOX_LOCAL || exit
-#    tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
-#    gpg -esr "$MAIL" $FIREFOX_PROFILE.tar
-#    rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
-#    rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
-#    ;;
 
 # --firefox | -f)
 # rsync -a --delete ~/.mozilla/firefox/"$FIREFOXPROFILE".default-release \
@@ -171,10 +181,3 @@ done
 # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
 # ;;
 # umount -l /mnt/cloud
-
-# --mail | -m)
-#    mbsync -c ~/.config/isync/mbsyncrc -a
-#    unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
-#    [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
-#    "You've got $unread new mail!"
-#    ;;

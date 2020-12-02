@@ -6,7 +6,10 @@ fork() { setsid -f "$@" > /dev/null 2>&1 & }
 launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 
 mux() {
-   tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
+   tmux split-window -h \; \
+      send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter \; \
+      kill-pane -t :.1
+   # tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
    # tmux split-window -h "$EDITOR $1" \; \
    #    swap-pane -d -t :.1 \; \
    #    select-layout main-vertical
@@ -14,19 +17,21 @@ mux() {
 }
 
 choose() {
-   choice=$(printf "🌏 Browser\n📚 Foxit Reader\n📙 Master PDF Editor\n🎥 MPV" | $DMENU) &&
+   choice=$(printf "🌏 Browser\n🎥 MPV\n📚 Foxit Reader\n📙 Master PDF Editor" | $DMENU) &&
       case "${choice#* }" in
          Browser) fork falkon "$1" ;;
+         MPV) fork mpv "$1" ;;
          FoxitReader) fork foxitreader "$1" ;;
          MasterPDFEditor) fork masterpdfeditor4 "$1" ;;
-         MPV) qmedia "$1" ;;
+            # MPV) qmedia "$1" ;;
       esac
 }
 
 link() {
    case "$1" in
       *mkv | *webm | *mp4 | *mp3 | *youtube.com/watch* | *youtube.com/playlist* | *youtu.be*)
-         qmedia "$1"
+         fork mpv "$1"
+         # qmedia "$1"
          ;;
       *)
          fork "$BROWSER" "$1"
@@ -36,8 +41,7 @@ link() {
 }
 
 launch_file() {
-   ns "$1"
-   case $1 in
+   case $* in
       *.ar.*)
          alacritty \
             --config-file ~/.config/alacritty/alacritty_ar.yml \
@@ -60,21 +64,30 @@ launch_file() {
          exit
          ;;
       *toy.*)
-         {
-            sleep 0.5
-            tmux split-window -h -l 50 \; \
-               select-layout main-vertical \; \
-               last-pane
-         } &
+         # {
+         #    sleep 0.5
+         #    tmux split-window -h -l 50 \; \
+         #       select-layout main-vertical \; \
+         #       last-pane
+         # } &
+         FILE=$*
+         EXT=${FILE##*.}
+         if [ "$EXT" = sql ]; then
+            tmux split-window
+         else
+            tmux split-window -h -l 50 \; select-layout main-vertical
+         fi
+         tmux last-pane
          ;;
    esac
 
-   case $(file --mime-type "$1" -bL) in
+   case $(file --mime-type "$*" -bL) in
       # text* | *x-empty | *json | *octet-stream) $EDITOR "$1" ;;
-      text* | *x-empty | *json | *octet-stream) mux "$1" ;;
+      text* | *x-empty | *json | *octet-stream) mux "$*" ;;
       *directory) $FILE "$1" ;;
       *html) fork falkon "$1" ;;
-      video* | audio* | *gif) fork mpv "$1" ;;
+      video* | audio* | *gif) fork mpv "$*" ;;
+      video* | audio* | *gif) ns "$1" ;;
       *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
       *svg+xml) fork magick display "$1" ;;
       *x-bittorrent) transmission-remote -a "$1" ;;
@@ -86,33 +99,35 @@ launch_file() {
          ;;
       *) return ;;
    esac
-
 }
 
 terminal() {
-   if pidof tmux > /dev/null 2>&1; then
-      tmux new-window
-   else
-      tmux new-session -d \; switch-client
-   fi
+   # if pidof tmux > /dev/null 2>&1; then
+   #    tmux new-window
+   # else
+   #    tmux new-session -d \; switch-client
+   # fi
+   tmux new-session -d \; switch-client
    pidof "$TERMINAL" || "$TERMINAL" -e tmux attach &
+   [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] && xdo activate -N st-256color
 }
 
 launch_tmux() {
    pidof tmux > /dev/null 2>&1 || {
-      tmux new-session -d \
+      tmux new-session -s 'home' -d \
          -n 'chat' 'weechat' \; \
          new-window -n 'schedule' 'calcurse' \; \
-         split-window -h 'neomutt' \; last-pane
+         new-window -n 'mails' 'neomutt' \;
+      # split-window -h 'neomutt' \; last-pane
    }
 }
 
 case $1 in
    --tmux | -t) launch_tmux ;;
    --terminal | -T) terminal ;;
-   --file | -f) launch_file "$2" ;;
-   --choose | -c) choose "$2" ;;
-   --link | -l) link "$2" ;;
+   --file | -f) shift && launch_file "$*" ;;
+   --choose | -c) shift && choose "$*" ;;
+   --link | -l) shift && link "$*" ;;
    --dwm | -D) launch_dwm ;;
 esac
 
@@ -121,7 +136,7 @@ esac
 #===============================================================================
 
 # launch_api() {
-#    SERVER=/mnt/horcrux/innovations/quick_assist/server
+#    SERVER=/mnt/internal/innovations/quick_assist/server
 #    tmux \
 #       new-window -n 'server' \; \
 #       send "cd $SERVER" 'Enter' \; \

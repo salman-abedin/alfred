@@ -39,13 +39,11 @@ case $1 in
       echo "Endin Point? (ex. 00:05)"
       read -r end
       ffmpeg -y -i "$2" -ss "00:$start" -to "00:$end" \
-         "${2%.*}"-"$(date +'%Y%b%d-%H%M%S')"."${1##*.}"
+         "${2%.*}"-"$(date +'%Y-%b_%d-%H%M%S')"."${1##*.}"
       ;;
    --join | -j)
-      for vid in "$PWD"/*.mkv; do
-         echo "file '$vid'" >> list
-         ffmpeg -f concat -i list -c copy -y all.mkv
-         rm list
-      done
+      for vid in "$PWD"/*.mkv; do echo "file '$vid'" >> list; done
+      ffmpeg -f concat -safe 0 -i list -c copy -y all.mkv
+      rm list
       ;;
 esac

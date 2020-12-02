@@ -32,13 +32,12 @@ case $1 in
       fi
       ;;
    --plugged)
-      # libnotify environment variables
-      # export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-
       read -r DISPLAY < /tmp/DISPLAY
       export DISPLAY
       export XAUTHORITY=~/.config/X11/Xauthority
       export ICONS=~/.local/share/icons/system
+      # Required to work on Arch
+      export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
 
       if [ "$2" = true ]; then
          notify-send -t 1000 -i "$ICONS"/charging.png "Charging"

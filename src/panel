@@ -6,15 +6,12 @@
 
 case $1 in
    --date-time | -d) printf "%s" "$(date +'🗓  %a, %d %b   🕰 %H : %M')" ;;
-   # --date-time | -d) printf "%s" "$(date +'🕰 %H : %M   🗓  %a, %d %b')" ;;
    --wifi | -w)
       if connected; then
          printf "🌏 %s" \
             "$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
       else
          echo "❗ 000"
-         iwctl station "$(ip link | grep -o 'w.*:' | tr -d ':')" scan
-         # wifi -c
       fi
       ;;
    --sys-stat | -s)
@@ -31,7 +28,7 @@ case $1 in
 
    --mailbox | -m)
       for file in ~/.local/share/mail/INBOX/new/*; do
-         [ -f "$file" ] || continue # Ensures correct output for empty directories
+         [ -f "$file" ] || continue
          printf '%s\n' "$file"
       done | {
          while IFS= read -r line || [ -n "$line" ]; do
