@@ -37,9 +37,9 @@ while :; do
                [ "${PWD##*/}" = leetcode ] ||
                message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
             if [ -z "$message" ]; then
-               git commit --allow-empty-message -m '' && git push -f
+               git commit --allow-empty-message -m '' && git push
             else
-               git commit -m "$message" && git push -f
+               git commit -m "$message" && git push
             fi
          done
          ;;
@@ -51,7 +51,7 @@ while :; do
          ;;
 
       --arch | -a)
-         doas -- pacman -Syyu --noconfirm
+         doas -n -- pacman -Syu --noconfirm
          yay -Syu --noconfirm
          # npm update -g
          ;;
@@ -73,11 +73,11 @@ while :; do
          ;;
 
       --upstream | -u)
-         for dir in "$GIT"/forks/*/; do
+         for dir in "$GIT"/suckless/*/; do
             if [ -d "$dir" ]; then
                cd "$dir" || exit
                git fetch upstream
-               git rebase upstream/master
+               git merge upstream/master
             fi
          done
          ;;

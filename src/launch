@@ -2,7 +2,7 @@
 #
 # General purpose launching script
 
-fork() { setsid -f "$@" > /dev/null 2>&1 & }
+fork() { setsid -f "$@" > /dev/null 2>&1; }
 launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 
 mux() {
@@ -27,7 +27,7 @@ choose() {
       esac
 }
 
-link() {
+launch_link() {
    case "$1" in
       *mkv | *webm | *mp4 | *mp3 | *youtube.com/watch* | *youtube.com/playlist* | *youtu.be*)
          fork mpv "$1"
@@ -49,7 +49,7 @@ launch_file() {
          exit
          ;;
       *.url)
-         fork $BROWSER "$(cat "$@")"
+         fork "$BROWSER" "$(cat "$@")"
          exit
          ;;
       *.sent)
@@ -63,35 +63,35 @@ launch_file() {
          $EDITOR "${1%.gpg}"
          exit
          ;;
-      *toy.*)
+         # *toy.*)
          # {
          #    sleep 0.5
          #    tmux split-window -h -l 50 \; \
          #       select-layout main-vertical \; \
          #       last-pane
          # } &
-         FILE=$*
-         EXT=${FILE##*.}
-         if [ "$EXT" = sql ]; then
-            tmux split-window
-         else
-            tmux split-window -h -l 50 \; select-layout main-vertical
-         fi
-         tmux last-pane
-         ;;
+         # FILE=$*
+         # EXT=${FILE##*.}
+         # if [ "$EXT" = sql ]; then
+         #    tmux split-window
+         # else
+         #    tmux split-window -h -l 50 \; select-layout main-vertical
+         # fi
+         # tmux split-window -l 25% \; last-pane
+         # ;;
    esac
 
    case $(file --mime-type "$*" -bL) in
       # text* | *x-empty | *json | *octet-stream) $EDITOR "$1" ;;
-      text* | *x-empty | *json | *octet-stream) mux "$*" ;;
+      text* | *x-empty | *json | *octet-stream | application/csv) mux "$*" ;;
       *directory) $FILE "$1" ;;
       *html) fork falkon "$1" ;;
       video* | audio* | *gif) fork mpv "$*" ;;
-      video* | audio* | *gif) ns "$1" ;;
       *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
       *svg+xml) fork magick display "$1" ;;
       *x-bittorrent) transmission-remote -a "$1" ;;
       *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
+      # application/csv) sc-im "$1" ;;
       application*) extract --clean "$1" ;;
       image*)
          fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' -d --edit --start-at \
@@ -101,14 +101,14 @@ launch_file() {
    esac
 }
 
-terminal() {
+launch_terminal() {
    # if pidof tmux > /dev/null 2>&1; then
    #    tmux new-window
    # else
    #    tmux new-session -d \; switch-client
    # fi
    tmux new-session -d \; switch-client
-   pidof "$TERMINAL" || "$TERMINAL" -e tmux attach &
+   pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach &
    [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] && xdo activate -N st-256color
 }
 
@@ -122,13 +122,19 @@ launch_tmux() {
    }
 }
 
+launch_bolt() {
+   launch_terminal
+   tmux send "bolt --search" "Enter"
+}
+
 case $1 in
-   --tmux | -t) launch_tmux ;;
-   --terminal | -T) terminal ;;
-   --file | -f) shift && launch_file "$*" ;;
+   --bolt | -b) launch_bolt ;;
    --choose | -c) shift && choose "$*" ;;
-   --link | -l) shift && link "$*" ;;
-   --dwm | -D) launch_dwm ;;
+   --dwm | -d) launch_dwm ;;
+   --file | -f) shift && launch_file "$*" ;;
+   --link | -l) shift && launch_link "$*" ;;
+   --tmux | -t) launch_tmux ;;
+   --launch_terminal | -T) launch_terminal ;;
 esac
 
 #===============================================================================
@@ -161,7 +167,7 @@ esac
 #    tmux send "$FILE ${1:-~}" "Enter"
 # }
 
-# terminal() {
+# launch_terminal() {
 # if pidof "$TERMINAL"; then
 # [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] &&
 # xdo activate -N st-256color

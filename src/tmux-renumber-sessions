@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Renumbers tmux sessions using hooks
+# 
+# Usage:
+#        > ~/.config/tmux.conf
+#          set-hook -g session-created "run tmux-renumber-sessions"
+#          set-hook -g session-closed "run tmux-renumber-sessions"
+#
+# Forked from https://github.com/maximbaz/dotfiles/commit/925a5b88a8263805a5a24c6198dad23bfa62f44d
+
+# Get named sessions count
+id=$(tmux list-sessions -F '#S' | grep "[a-z]$" | wc -l)
+# Rename unnamed sessions in ascending order
+for session in $(tmux list-sessions -F '#S' | grep "[0-9]$" | sort -n); do
+   id=$((id + 1))
+   tmux rename-session -t "$session" $id
+done

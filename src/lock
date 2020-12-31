@@ -3,48 +3,81 @@
 # Screen locker
 # Dependencies: shuf, i3lock-color, xset, sleep, xdotool
 
-xset dpms force off
-exit
+LOCK_STAT=/tmp/LOCK_STAT
+BACKGROUND_FORMATTED=/tmp/LOCK_BACKGROUND
+FILE_PID_SAVESCREEN=/tmp/LOCK_PID_SAVESCREEN
+
+PATH_WALLPAPERS=$GIT/archived/eyelust
+FILE_SCREENSAVER=~/.local/share/screensavers/matrix.mp4
+
+# SCREENSAVER_DELAY=15m
+SCREENSAVER_DELAY=5
+
+kill_screensaver() {
+   read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
+   kill "$PID_SAVESCREEN"
+}
+
+savescreen() {
+   sleep $SCREENSAVER_DELAY
+   mpv -fs --no-osc --no-audio --loop=inf $FILE_SCREENSAVER &
+   echo $! > $FILE_PID_SAVESCREEN
+   sleep $SCREENSAVER_DELAY
+   xset dpms force off
+   kill_screensaver
+}
+
+post_unlocked() {
+   # setdisplay --bg shuffle
+   toggle -n
+   : > "$LOCK_STAT"
+   kill_screensaver
+   kill $$
+}
+
+lock() {
+   echo locked > $LOCK_STAT
+   toggle -n
+   # Fixes the i3lock lock bug
+   # { sleep 2 && xdotool mousemove 0 0 click 1 mousemove restore; } &
+   QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
+   i3lock -ekn \
+      --indicator --radius 170 --ring-width 3 \
+      --ringcolor ffffff --insidecolor 00000000 --linecolor 00000000 \
+      --timestr "%H:%M" \
+      --time-font sans --timecolor ffffff --timesize 100 \
+      --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
+      --date-font sans --datecolor ffffff --datesize 30 \
+      --greetertext "$QUOTE" --greeterpos 'w/2:100' \
+      --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 25 \
+      --pass-volume-keys --pass-media-keys \
+      -c 00000000 \
+      -i "$BACKGROUND_FORMATTED"
+   post_unlocked
+}
+
+set_background() {
+   convert \
+      $(find $PATH_WALLPAPERS -name "*.jpg" -o -name "*.png" | shuf -n1) \
+      -resize "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')"! \
+      -fill black -colorize 50% \
+      -filter Gaussian \
+      -blur 0x3 \
+      "$BACKGROUND_FORMATTED"
+}
+
+main() {
+   [ -s "$LOCK_STAT" ] && exit
+   set_background
+   lock &
+   savescreen
+}
+main
 
 # timeout 5m \
 #    ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
 #    ~/.local/share/screensavers/matrix.mp4 ||
 #    xset dpms force off
-# exit
-
-#===============================================================================
-
-QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
-LOCK_STAT=/tmp/LOCK_STAT
-
-[ ! -s "$LOCK_STAT" ] && {
-   echo locked > $LOCK_STAT
-   {
-      # Fixes the i3lock lock bug
-      { sleep 2 && xdotool mousemove 0 0 click 1 mousemove restore; } &
-      i3lock -ekn \
-         --indicator --radius 170 --ring-width 3 \
-         --ringcolor ffffff --insidecolor 00000000 --linecolor 00000000 \
-         --timestr "%H:%M" \
-         --time-font sans --timecolor ffffff --timesize 100 \
-         --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
-         --date-font sans --datecolor ffffff --datesize 30 \
-         --greetertext "$QUOTE" --greeterpos 'w/2:100' \
-         --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 25 \
-         --pass-volume-keys --pass-media-keys \
-         -c 00000000 -B 20
-      setbg -s
-      : > $LOCK_STAT
-
-      # kill 0
-      # pkill -P $$
-      kill $$
-   } &
-}
-sleep 5m
-ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
-   ~/.local/share/screensavers/matrix.mp4
-xset dpms force off
 
 #===============================================================================
 #                             Exp
@@ -54,7 +87,6 @@ xset dpms force off
 # sleep 5
 # kill $!
 
-# # toggle -n
 # if timeout "$dur" \
 #    i3lock -ekn \
 #    --indicator --radius 170 --ring-width 3 \
@@ -69,7 +101,6 @@ xset dpms force off
 #    -c 00000000 -B 20; then
 #    # Unlocked
 #    :
-#    # toggle -n
 # else
 #    # Timed out
 #    xset dpms force off

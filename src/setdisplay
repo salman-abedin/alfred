@@ -11,7 +11,7 @@ FILE_PATH_WALL=~/.local/share/WALL
 PATH_X_RESOURCES=~/.config/X11/Xresources
 PATH_WALLPAPERS=$GIT/archived/eyelust
 
-setdpi() {
+set_dpi() {
    INFO=/tmp/display_info
 
    grep 'Xft.dpi' "$PATH_X_RESOURCES" > /dev/null &&
@@ -52,7 +52,7 @@ _get_wall_path() {
    echo $WALL_PATH
 }
 
-setbg() {
+set_bg() {
    case $1 in
       shuffle | -s)
          find "$PATH_WALLPAPERS" -name "*.jpg" -o -name "*.png" |
@@ -61,7 +61,7 @@ setbg() {
          ;;
       delete | -d)
          find "$PATH_WALLPAPERS" -name "$(_get_wall_path)" -delete
-         setbg shuffle
+         set_bg shuffle
          ;;
       *)
          [ -n "$1" ] && echo "$1" > $FILE_PATH_WALL
@@ -72,8 +72,8 @@ setbg() {
 
 while [ -n "$1" ]; do
    case $1 in
-      --bg) shift && setbg "$1" ;;
-      --dpi) setdpi ;;
+      --bg) shift && set_bg "$1" ;;
+      --dpi) set_dpi ;;
    esac
    shift
 done
