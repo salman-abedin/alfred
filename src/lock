@@ -10,8 +10,7 @@ FILE_PID_SAVESCREEN=/tmp/LOCK_PID_SAVESCREEN
 PATH_WALLPAPERS=$GIT/archived/eyelust
 FILE_SCREENSAVER=~/.local/share/screensavers/matrix.mp4
 
-# SCREENSAVER_DELAY=15m
-SCREENSAVER_DELAY=5
+SCREENSAVER_DELAY=5m
 
 kill_screensaver() {
    read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
@@ -21,6 +20,7 @@ kill_screensaver() {
 savescreen() {
    sleep $SCREENSAVER_DELAY
    mpv -fs --no-osc --no-audio --loop=inf $FILE_SCREENSAVER &
+   # ffplay -volume 0 -fs -loop 10 $FILE_SCREENSAVER & \
    echo $! > $FILE_PID_SAVESCREEN
    sleep $SCREENSAVER_DELAY
    xset dpms force off
@@ -32,7 +32,8 @@ post_unlocked() {
    toggle -n
    : > "$LOCK_STAT"
    kill_screensaver
-   kill $$
+   pkill -P $$
+   # kill $$
 }
 
 lock() {
@@ -69,8 +70,8 @@ set_background() {
 main() {
    [ -s "$LOCK_STAT" ] && exit
    set_background
-   lock &
-   savescreen
+   savescreen &
+   lock
 }
 main
 

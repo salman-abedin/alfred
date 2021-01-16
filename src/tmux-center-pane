@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Auto centers tmux panes
+#
+# Usage:
+#        > ~/.config/tmux.conf
+#          set-hook -g pane-focus-in "run tmux-center-pane"
+
+[ "$(tmux list-panes | wc -l)" -gt 1 ] && exit
+tmux split-window -h -l 19\% "printf '\033[2J\033[H' && read -r line" \; \
+   last-pane \; \
+   split-window -b -h -l 21\% "printf '\033[2J\033[H' && read -r line" \; \
+   last-pane

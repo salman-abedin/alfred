@@ -6,9 +6,11 @@ fork() { setsid -f "$@" > /dev/null 2>&1; }
 launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 
 mux() {
-   tmux split-window -h \; \
+   # tmux split-window -h \; \
+   tmux send "C-c" \; \
       send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter \; \
-      kill-pane -t :.1
+      # kill-pane -a
+      # kill-pane -t :.1
    # tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
    # tmux split-window -h "$EDITOR $1" \; \
    #    swap-pane -d -t :.1 \; \

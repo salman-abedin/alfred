@@ -4,6 +4,29 @@
 
 DDM=/tmp/ddm
 
+tmux_center() {
+   on() {
+      tmux split-window -h -l 19\% "clear && read -r line" \; \
+         last-pane \; \
+         split-window -b -h -l 21\% "clear && read -r line" \; \
+         last-pane
+   }
+   off() {
+      tmux kill-pane -t :.+ \; kill-pane -t:.-
+   }
+   if [ -n "$1" ]; then
+      case $1 in
+         off) off ;;
+         on) on ;;
+      esac
+      :
+   elif [ "$(tmux list-panes | wc -l)" = 1 ]; then
+      on
+   else
+      off
+   fi
+}
+
 wallreel() {
    REELPID=/tmp/reel_pid
 
@@ -98,6 +121,7 @@ while :; do
       --fullscreen | -f) fullscreen ;;
       --focus-mode | -F) focusmode ;;
       --dnd | -d) dont_disturb ;;
+      --tmux-center | -t) shift && tmux_center "$1" ;;
       --screen_key) screen_key ;;
       --screen_text) screen_text ;;
       *) break ;;
