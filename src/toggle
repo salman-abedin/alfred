@@ -113,15 +113,24 @@ screen_text() {
    fi
 }
 
+cam(){
+   if pgrep droidcam; then
+      pkill droidcam
+   else
+      droidcam-cli -a 192.168.0.101 4747
+   fi
+}
+
 while :; do
    case $1 in
-      --wall-reel | -r) wallreel ;;
-      --noti | -n) notifications ;;
-      --wifi | -w) wifi ;;
+      --cam | -c) cam ;;
+      --dnd | -d) dont_disturb ;;
       --fullscreen | -f) fullscreen ;;
       --focus-mode | -F) focusmode ;;
-      --dnd | -d) dont_disturb ;;
+      --noti | -n) notifications ;;
+      --wall-reel | -r) wallreel ;;
       --tmux-center | -t) shift && tmux_center "$1" ;;
+      --wifi | -w) wifi ;;
       --screen_key) screen_key ;;
       --screen_text) screen_text ;;
       *) break ;;

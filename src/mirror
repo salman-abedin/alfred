@@ -51,9 +51,10 @@ while :; do
          ;;
 
       --arch | -a)
-         doas -n -- pacman -Syu --noconfirm
-         yay -Syu --noconfirm
+         # doas -n -- pacman -Syu --noconfirm
+         # yay -Syu --noconfirm
          # npm update -g
+         paru -Syu --noconfirm
          ;;
 
       --phone | -p)

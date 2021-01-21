@@ -3,10 +3,9 @@
 # Bluetooth related scripts
 
 connect() {
-   # doas rfkill unblock bluetooth
-   # doas systemctl start bluetooth
+   doas systemctl restart bluetooth
    # bluetoothctl power off
-   # bluetoothctl power on
+   bluetoothctl power on
    # bluetoothctl scan on
 
    right=${1:-E8:EC:A3:27:60:15}

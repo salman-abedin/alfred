@@ -26,6 +26,8 @@ for device in /sys/class/backlight/*; do
          trap 'exit 0' TERM INT
          trap 'echo $CURRENT | doas -n tee $device/brightness; pkill -P $$' EXIT
 
+         # cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit
+         pacmd list-sink-inputs | grep 'state: RUNNING' && exit
          echo $((MAX / 3)) | doas -n tee "$device"/brightness
          [ -e "$DIM_FIFO" ] || mkfifo "$DIM_FIFO"
          : < "$DIM_FIFO" &

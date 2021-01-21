@@ -69,6 +69,8 @@ set_background() {
 
 main() {
    [ -s "$LOCK_STAT" ] && exit
+   # cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit
+   pacmd list-sink-inputs | grep 'state: RUNNING' && exit
    set_background
    savescreen &
    lock

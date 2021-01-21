@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# Play around with various programming languages
+
+path=$(readlink -f "$1")
+ext="${path##*.}"
+dir="${path%/*}"
+# name="${path%.*}"
+
+cd "$dir" || exit 1
+
+case $ext in
+   lua) cmd="lua $path" ;;
+   py) cmd="python $path" ;;
+   ts) cmd="yarn build && yarn start" ;;
+   js) cmd="yarn start" ;;
+   sh) cmd="$SHELL $path" ;;
+   c) cmd="gcc $path && ./a.out" ;;
+   hs) cmd="runhaskell $path" ;;
+   dart) cmd="dart $path" ;;
+   php) cmd="php $path" ;;
+   sql) cmd="sqlite3 -column -header toy.db \"\$(cat $path)\"" ;;
+esac
+
+# pgrep -f "$cmd" ||
+tmux send -t :.+ C-c \; \
+   send -t :.+ C-l \; \
+   send -t :.+ C-l \; \
+   send -t :.+ "$cmd" Enter \;
+
+#===============================================================================
+#                             Exp
+#===============================================================================
+
+# js) cmd="node $name" ;;
+# tmux last-pane && tmux last-pane
+# run() { "$@" "$path" > output 2>&1 & }
+# c) cc "$path" -o "$name" && "$TERMINAL" -e sh -c "$name; read -r line" ;;

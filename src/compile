@@ -43,6 +43,7 @@ case $ext in
       echo " " >> "$build/$name_only.html"
       sed '$d' "$build/$name_only.html"
       ;;
+   md)  pandoc $file -t ms -o $name.pdf ;;
    *) makefile ;;
       # scss) sassc "$path" "$name.css" ;;
       # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;

@@ -21,7 +21,8 @@ mux() {
 choose() {
    choice=$(printf "🌏 Browser\n🎥 MPV\n📚 Foxit Reader\n📙 Master PDF Editor" | $DMENU) &&
       case "${choice#* }" in
-         Browser) fork falkon "$1" ;;
+         Browser) fork qutebrowser "$1" ;;
+         # Browser) fork falkon "$1" ;;
          MPV) fork mpv "$1" ;;
          FoxitReader) fork foxitreader "$1" ;;
          MasterPDFEditor) fork masterpdfeditor4 "$1" ;;
@@ -87,7 +88,8 @@ launch_file() {
       # text* | *x-empty | *json | *octet-stream) $EDITOR "$1" ;;
       text* | *x-empty | *json | *octet-stream | application/csv) mux "$*" ;;
       *directory) $FILE "$1" ;;
-      *html) fork falkon "$1" ;;
+      *html) fork qutebrowser "$1" ;;
+      # *html) fork falkon "$1" ;;
       video* | audio* | *gif) fork mpv "$*" ;;
       *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
       *svg+xml) fork magick display "$1" ;;
@@ -122,8 +124,7 @@ launch_terminal() {
 launch_tmux() {
    pidof tmux > /dev/null 2>&1 || {
       tmux new-session -s 'home' -d \
-         -n 'chat' 'weechat' \; \
-         new-window -n 'schedule' 'calcurse' \; \
+         -n 'schedule' 'calcurse' \; \
          new-window -n 'mails' 'neomutt' \;
       # split-window -h 'neomutt' \; last-pane
    }

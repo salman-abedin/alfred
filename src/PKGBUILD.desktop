@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=PKGBUILD
+Comment=PKGBUILD
+Exec=PKGBUILD
+Icon=PKGBUILD
+Terminal=false
+StartupNotify=false
+Categories=Application;
