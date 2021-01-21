@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Auto Builds and deployes node applications
+#
+# Usage: cd <PROJECT> && deploy <SERVER>
+
+PROJECT=${PWD##*/}
+
+if yarn build; then
+   ssh "$1" mkdir "$PROJECT" > /dev/null
+   rsync -aP build config package.json yarn.lock "$1":~/"$PROJECT"
+   rm -fr build
+   ssh "$1" << eof
+cd $PROJECT
+yarn
+pm2 stop $PROJECT > /dev/null 2>&1
+pm2 start --name $PROJECT 'yarn start'
+pm2 save
+eof
+fi

@@ -8,9 +8,9 @@ launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 mux() {
    # tmux split-window -h \; \
    tmux send "C-c" \; \
-      send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter \; \
-      # kill-pane -a
-      # kill-pane -t :.1
+      send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter \;
+   # kill-pane -a
+   # kill-pane -t :.1
    # tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
    # tmux split-window -h "$EDITOR $1" \; \
    #    swap-pane -d -t :.1 \; \
@@ -92,7 +92,12 @@ launch_file() {
       *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
       *svg+xml) fork magick display "$1" ;;
       *x-bittorrent) transmission-remote -a "$1" ;;
-      *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
+      *.document)
+         BASE=${1##*/}
+         CONVERTED=/mnt/internal/downloads/${BASE%.*}.pdf
+         pandoc "$1" --pdf-engine wkhtmltopdf -o "$CONVERTED" && $0 -f "$CONVERTED"
+         ;;
+      # *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
       # application/csv) sc-im "$1" ;;
       application*) extract --clean "$1" ;;
       image*)
