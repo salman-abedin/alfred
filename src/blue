@@ -1,20 +1,16 @@
 #!/bin/sh
 #
-# Bluetooth related scripts
+# Bluetooth Headset related scripts
 
 connect() {
-   doas systemctl restart bluetooth
-   # bluetoothctl power off
+   RIGHT=${1:-E8:EC:A3:27:60:15}
+   LEFT=${1:-E8:EC:A3:15:05:0D}
+
+   doas -n systemctl restart bluetooth
    bluetoothctl power on
-   # bluetoothctl scan on
-
-   right=${1:-E8:EC:A3:27:60:15}
-   left=${1:-E8:EC:A3:15:05:0D}
-
-   if bluetoothctl connect "$right" || bluetoothctl connect "$left"; then
+   if bluetoothctl connect "$RIGHT" || bluetoothctl connect "$LEFT"; then
       sleep 2
       uniblocks -u vol
-      # bluetoothctl scan off
    fi
 }
 

@@ -113,7 +113,7 @@ screen_text() {
    fi
 }
 
-cam(){
+cam() {
    if pgrep droidcam; then
       pkill droidcam
    else
@@ -121,10 +121,55 @@ cam(){
    fi
 }
 
+dark_mode() {
+   VIM=$GIT/own/magpie/.config/nvim/plugin/theme.vim
+   ST=$GIT/suckless/st/config.def.h
+   DWM=$GIT/suckless/dwm/config.def.h
+   QUTE=$GIT/own/magpie/.config/qutebrowser/config.py
+
+   if grep "bg=light" "$VIM" > /dev/null; then
+      notify-send "Going dark"
+      sed -i 's/=light/=dark/;s/PaperColor/one/' "$VIM"
+
+      sed -i 's/"#eee.*/\/\/&/' "$ST"
+      sed -i 's/defaultbg=259/defaultbg=258/' "$ST"
+      sed -i 's/defaultfg=258/defaultfg=7/' "$ST"
+      sed -i 's/defaultcs=258/defaultcs=7/' "$ST"
+
+      sed -i 's/norm_bg\[\]="#cccccc"/norm_bg\[\]="#000000"/' "$DWM"
+      sed -i 's/norm_border\[\]="#000000"/norm_border\[\]="#ffffff"/' "$DWM"
+      sed -i 's/norm_fg\[\]="#000000"/norm_fg\[\]="#ffffff"/' "$DWM"
+
+      sed -i 's/# c.colors.web/c.colors.web/' "$QUTE"
+   else
+      notify-send "Going light"
+      sed -i 's/=dark/=light/;s/colorscheme one/colorscheme PaperColor/' "$VIM"
+
+      sed -i 's/\/\/"#eee/"#eee/' "$ST"
+      sed -i 's/defaultbg=258/defaultbg=259/' "$ST"
+      sed -i 's/defaultfg=7/defaultfg=258/' "$ST"
+      sed -i 's/defaultcs=7/defaultcs=258/' "$ST"
+
+      sed -i 's/norm_bg\[\]="#000000"/norm_bg\[\]="#cccccc"/' "$DWM"
+      sed -i 's/norm_border\[\]="#ffffff"/norm_border\[\]="#000000"/' "$DWM"
+      sed -i 's/norm_fg\[\]="#ffffff"/norm_fg\[\]="#000000"/' "$DWM"
+
+      sed -i 's/c.colors.web.*/# &/' "$QUTE"
+   fi
+
+   cd "${ST%/*}" && make && doas -n make install
+   cd "${DWM%/*}" && make && doas -n make install
+
+   pkill $TERMINAL 2> /dev/null
+   pkill dwm 2> /dev/null
+   $TERMINAL -e tmux attach &
+}
+
 while :; do
    case $1 in
       --cam | -c) cam ;;
-      --dnd | -d) dont_disturb ;;
+      --dark | -d) dark_mode ;;
+      --dnd | -D) dont_disturb ;;
       --fullscreen | -f) fullscreen ;;
       --focus-mode | -F) focusmode ;;
       --noti | -n) notifications ;;
