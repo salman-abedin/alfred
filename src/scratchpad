@@ -1,9 +1,7 @@
 #!/bin/sh
 #
 # Launches your default terminal as a scratchpad
-# Note: Use your window manager to make the class "scratcpadd" floating
-#
-# Dependencies: fzf & cat
+# Note: Use your window manager to make the class "scratchpad" floating
 
 #---------------------------------------
 #               Config
@@ -11,25 +9,17 @@
 
 WIDTH=80
 HEIGHT=10
-OFFSET_X=250
-OFFSET_Y=250
+OFFSET_X=0
+OFFSET_Y=0
 
 #---------------------------------------
 #               Script
 #---------------------------------------
 
-ARGS=/tmp/SCRATCHPAD_ARGS
 SCRATCHPAD="$TERMINAL -c scratchpad -g "$WIDTH"x$HEIGHT+$OFFSET_X+$OFFSET_Y"
 
 if [ -n "$1" ]; then
-   # Dmenu
-   if [ "$1" = -d ]; then
-      cat > $ARGS
-      $SCRATCHPAD "$SHELL" -c "cat $ARGS | fzf"
-   else
-      # Arguments
-      $SCRATCHPAD "$SHELL" -c "$* && read line"
-   fi
+   $SCRATCHPAD "$SHELL" -c "$* && read line"
 else
    $SCRATCHPAD
 fi
