@@ -1,15 +1,20 @@
 .POSIX:
-BIN_DIR = /usr/local/bin
+DIR_BIN = /usr/local/bin
+SCRIPTS = $(shell grep -lr "^#\!" ./* | sed 's/.\///')
+CONFIG = $(shell find $$PWD -type f -name "*rc")
+init:
+	@[ $(CONFIG) ] && { \
+		[ -f ~/.config/$(CONFIG) ] || cp $(CONFIG) ~/.config; \
+	} || exit 0
+	@echo Initiation finished.
 install:
-	@mkdir -p $(BIN_DIR)
-	@for script in src/*; do \
-		cp -f $$script $(BIN_DIR); \
-		chmod 755 $(BIN_DIR)/$${script#src/}; \
+	@mkdir -p $(DIR_BIN)
+	@for script in $(SCRIPTS); do \
+		cp -f $$script $(DIR_BIN); \
+		chmod 755 $(DIR_BIN)/$${script##*/}; \
 		done
-	@echo Done installing the executable files.
+	@echo Installation finished.
 uninstall:
-	@for script in src/*;do \
-		rm -f $(BIN_DIR)/$${script#src/}; \
-		done
-	@echo Done removing executable files.
-.PHONY: install uninstall
+	@for script in $(SCRIPTS); do rm -f $(DIR_BIN)/$${script##*/}; done
+	@echo Uninstallation finished.
+.PHONY: init install uninstall

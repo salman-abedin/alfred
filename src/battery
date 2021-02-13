@@ -36,8 +36,13 @@ case $1 in
       export DISPLAY
       export XAUTHORITY=~/.config/X11/Xauthority
       export ICONS=~/.local/share/icons/system
-      # Required to work on Arch
-      export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+
+      read -r distro < /etc/os-release
+      case $distro in
+         *Arch\ Linux*)
+            export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
+            ;;
+      esac
 
       if [ "$2" = true ]; then
          notify-send -t 1000 -i "$ICONS"/charging.png "Charging"

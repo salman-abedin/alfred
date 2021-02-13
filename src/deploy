@@ -1,23 +1,39 @@
 #!/bin/sh
 #
-# Auto Builds and deployes typescript applications
+# Builds and deployes javascript applications
 #
 # Dependencies: yarn, ssh & rsync.
 #
-# Usage: cd <PROJECT> && deploy <SERVER>
+# Usage: cd PROJECT && deploy (git MESSAGE | vps SERVER)
 
-PROJECT=${PWD##*/}
-
-if yarn build; then
-   ssh "$1" mkdir "$PROJECT" 2> /dev/null
-   # rsync -aP build config package.json yarn.lock "$1":~/"$PROJECT"
-   rsync -aP build package.json yarn.lock "$1":~/"$PROJECT"
-   rm -fr build
-   ssh "$1" << eof
+case $1 in
+   git)
+      MESSAGE=$2
+      if yarn build; then
+         git add .
+         if [ -z "$MESSAGE" ]; then
+            git commit --amend --no-edit
+         else
+            git commit -m "$MESSAGE"
+         fi
+         git push -f -u origin master
+      fi
+      ;;
+   vps)
+      PROJECT=${PWD##*/}
+      ADDRESS=$2
+      if yarn build; then
+         ssh "$ADDRESS" mkdir "$PROJECT" 2> /dev/null
+         # rsync -aP build config package.json yarn.lock "$1":~/"$PROJECT"
+         rsync -aP build package.json yarn.lock "$ADDRESS":~/"$PROJECT"
+         rm -fr build
+         ssh "$ADDRESS" << eof
 cd $PROJECT
 yarn
 pm2 delete $PROJECT > /dev/null 2>&1
 pm2 start --name $PROJECT 'yarn start'
 pm2 save
 eof
-fi
+      fi
+      ;;
+esac

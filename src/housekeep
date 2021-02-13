@@ -12,6 +12,7 @@ pacman -Rns --noconfirm $(pacman -Qttdq)  # Deletes orphaned packages
 find ~ -xtype l -delete                   # Deletes dead links
 find ~ -type d -empty -delete             # Deletes empty directories
 rm -fr /var/cache/pacman/pkg/* ~/.cache   # Clears caches
+# rm -fr /mnt/internal/trash/.                # Clears trash
 eof
 
 #===============================================================================

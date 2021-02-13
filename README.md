@@ -1,6 +1,4 @@
-# Alfred
-
-My daily driver shell scripts
+# Alfred: My daily driver shell scripts
 
 ## Installation
 

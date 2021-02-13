@@ -13,9 +13,13 @@ dir="${path%/*}"
 build="${dir%/*}/build"
 docs="${dir%/*}/docs"
 
+case "$1" in
+   *rc | *.sh) exit ;;
+esac
+
 cd "$dir" || exit 1
-[ "$clean" ] &&
-   case $ext in
+[ "$clean" ] \
+   && case $ext in
       tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
       c) rm -f "$dir/a.out" ;;
    esac && exit
@@ -33,18 +37,18 @@ makefile() {
 case $ext in
    c | h | sh) makefile ;;
    txt) wc -w "$path" ;;
-   tex) xelatex "$path" ;;
-   pug)
-      pug -o "$build" "$path"
-      rm -f $(find "$build" -type f -name "data.html" -or -name "mixins.*")
-      ;;
-   sass)
-      sassc -a "$path" "$build/$name_only.css"
-      echo " " >> "$build/$name_only.html"
-      sed '$d' "$build/$name_only.html"
-      ;;
-   md)  pandoc $file -t ms -o $name.pdf ;;
+   md) pandoc $file -t ms -o $name.pdf ;;
    *) makefile ;;
+      # tex) xelatex "$path" ;;
+      # pug)
+      #    pug -o "$build" "$path"
+      #    rm -f $(find "$build" -type f -name "data.html" -or -name "mixins.*")
+      #    ;;
+      #    echo " " >> "$build/$name_only.html"
+      #    sed '$d' "$build/$name_only.html"
+      #    ;;
+      # sass)
+      #    sassc -a "$path" "$build/$name_only.css"
       # scss) sassc "$path" "$name.css" ;;
       # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
       # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;

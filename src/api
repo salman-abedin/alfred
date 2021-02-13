@@ -10,57 +10,58 @@
 HOST=/tmp/API_HOST
 
 read_file() {
-   curl -s -X POST \
-      -H 'Content-Type: application/json' \
-      -d "$(cat "$1")" \
-      "$(cat $HOST)$END_POINT"
+  curl -s -X POST \
+    -H 'Content-Type: application/json' \
+    -d "$(cat "$1")" \
+    "$(cat $HOST)$END_POINT"
 }
-
 send_query_string() {
-   args="-s"
-   [ "$1" = -d ] && args="$args -X DELETE"
-   END_POINT=$2
-   shift 2
+  args="-s"
+  [ "$1" = -d ] && args="$args -X DELETE"
+  END_POINT=$2
+  shift 2
 
-   [ -n "$1" ] && {
-      query="?"
-      for q in "$@"; do
-         query="$query$q&"
-      done
-      query=${query%&}
-   }
+  [ -n "$1" ] && {
+    query="?"
+    for q in "$@"; do
+      query="$query$q&"
+    done
+    query=${query%&}
+  }
 
-   curl $args "$(cat $HOST)$END_POINT$query" |
-      sed -E 's/\[|},/&\n/g; s/\],/\n&\n/g'
+  curl $args "$(cat $HOST)$END_POINT$query" \
+    | sed -E 's/\[|},/&\n/g; s/\],/\n&\n/g'
 }
-
 send_data_string() {
-   args=-s
-   [ "$1" = -P ] && args="$args -X PATCH"
-   END_POINT=$2
-   shift 2
+  args=-s
+  [ "$1" = -P ] && args="$args -X PATCH"
+  END_POINT=$2
+  shift 2
 
-   data="{ "
-   for i in "$@"; do
-      key=${i%=*}
-      value=${i#*=}
-      data="$data\"$key\":\"$value\", "
-   done
-   data=${data%, }
-   data="$data }"
+  data="{ "
+  for i in "$@"; do
+    key=${i%=*}
+    value=${i#*=}
+    data="$data\"$key\":\"$value\", "
+  done
+  data=${data%, }
+  data="$data }"
 
-   curl $args \
-      -H 'Content-Type: application/json' \
-      -d "$data" \
-      "$(cat $HOST)$END_POINT"
+  curl $args \
+    -H 'Content-Type: application/json' \
+    -d "$data" \
+    "$(cat $HOST)$END_POINT"
+}
+main() {
+  case $1 in
+    --init | -i) echo "$2" > $HOST ;;
+    --post | -p | --patch | -P) send_data_string "$@" ;;
+    --get | -g | --delete | -d) send_query_string "$@" ;;
+    *) read_file $1 ;;
+  esac
 }
 
-case $1 in
-   --init | -i) echo "$2" > $HOST ;;
-   --post | -p | --patch | -P) send_data_string "$@" ;;
-   --get | -g | --delete | -d) send_query_string "$@" ;;
-   *) read_file $1 ;;
-esac
+main "$1"
 
 #===============================================================================
 #                             Exp
