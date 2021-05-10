@@ -16,20 +16,21 @@ case $1 in
     fi | doas tee $config > /dev/null
     ;;
   --monitor)
-    [ "$(cat /sys/class/power_supply/ADP?/online)" = 1 ] && exit
-    set -- /sys/class/power_supply/BAT?/capacity
-    read -r cap < "$1"
-    if [ "$cap" -lt 10 ]; then
-      leavex -s
-      # systemctl poweroff
-      # systemctl hibernate
-    elif [ "$cap" -lt 20 ]; then
-      notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
-    elif [ "$cap" -lt 90 ]; then
-      $0 --block-charge false
-    else
-      notify-send -t 0 -i "$ICONS"/charging.png 'Full Charge!'
-      $0 --block-charge true
+    set -- /sys/class/power_supply/BAT?/status
+    read -r status < "$1"
+
+    if [ "$status" = "Full" ]; then
+      notify-send -t 0 -i "$ICONS"/charging.png 'Fully Charged!'
+
+    elif [ "$status" = "Discharging" ]; then
+      set -- /sys/class/power_supply/BAT?/capacity
+      read -r capacity < "$1"
+
+      if [ "$capacity" -lt 10 ]; then
+        leavex -s
+      elif [ "$capacity" -lt 20 ]; then
+        notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
+      fi
     fi
     ;;
   --plugged)
