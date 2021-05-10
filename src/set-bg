@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Display related scripts
+#
+# Dependencies: feh, shuf & readlink
+#
+# set-bg --shuffle | --delete | WALL_PATH | NONE
+
+PATH_WALL=~/.local/share/WALL
+PATH_WALLPAPERS=~/.local/share/wallpapers
+
+_get_wall_path() {
+  read -r WALL_PATH < "$PATH_WALL"
+  echo $WALL_PATH
+}
+
+case $1 in
+  --shuffle | -s)
+    for wall in "$PATH_WALLPAPERS"/*; do
+      echo "$wall"
+    done \
+      | shuf -n1 > $PATH_WALL
+    feh --no-fehbg --bg-scale "$(_get_wall_path)"
+    ;;
+  delete | -d)
+    rm -f "$(readlink $(_get_wall_path))"
+    $0 -s
+    ;;
+  *)
+    [ -n "$1" ] && echo "$1" > $PATH_WALL
+    feh --no-fehbg --bg-scale "$(_get_wall_path)"
+    ;;
+esac
