@@ -2,50 +2,12 @@
 #
 # Display related scripts
 #
-# Dependencies: xrandr, xrdb, grep, find
+# Dependencies: find
 #
 # setdisplay --bg [shuffle,delete] sets & deletes wallpapers
-# setdisplay --dpi sets the correct dpi
 
 PATH_WALL=~/.local/share/WALL
-PATH_XRESOURCES=~/.config/X11/Xresources
 PATH_WALLPAPERS=~/.local/share/wallpapers
-
-set_dpi() {
-  INFO=/tmp/display_info
-
-  grep 'Xft.dpi' "$PATH_XRESOURCES" > /dev/null \
-    && xrdb -merge "$PATH_XRESOURCES" \
-    && return
-
-  xrandr | grep ' connected' > $INFO
-
-  WIDTH_MM=$(awk '{print $NF}' $INFO)
-  WIDTH_IN=$(echo "${WIDTH_MM%mm}" | awk '{print $1 * 0.03937007874015748}')
-
-  HEIGHT_MM=$(awk '{print $(NF-2)}' $INFO)
-  HEIGHT_IN=$(echo "${HEIGHT_MM%mm}" | awk '{print $1 * 0.03937007874015748}')
-
-  DIAGONAL_IN=$(awk -v w="$WIDTH_IN" -v h="$HEIGHT_IN" \
-    'BEGIN{print sqrt(w^2 + h^2)}')
-
-  PX=$(cut -d ' ' -f 4 $INFO)
-
-  WIDTH_PX=${PX%x*}
-
-  TEMP_HEIGHT_PX=${PX#*x}
-  HEIGHT_PX=${TEMP_HEIGHT_PX%%+*}
-
-  DIAGONAL_PX=$(awk -v w="$WIDTH_PX" -v h="$HEIGHT_PX" \
-    'BEGIN{print sqrt(w^2 +h^2)}')
-
-  DPI=$(awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" \
-    'BEGIN{print dp / di}')
-
-  echo "Xft.dpi: $DPI" >> "$PATH_XRESOURCES"
-  xrdb -merge "$PATH_XRESOURCES"
-  rm $INFO
-}
 
 _get_wall_path() {
   read -r WALL_PATH < "$PATH_WALL"

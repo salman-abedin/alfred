@@ -127,7 +127,7 @@ while :; do
       #cp -fr /home/internal/weechat "$GIT"/own/magpie-private/.config
 
       # for repo in "$GIT"/own/*/ "$GIT"/suckless/*/; do
-      for repo in "$REPOS"/*/ "$REPOS"/../daily/*/ ; do
+      for repo in "$REPOS"/*/ "$REPOS"/../daily/*/; do
         cd "$repo" || continue
         # git pull --no-rebase
         git add .
@@ -189,7 +189,7 @@ while :; do
       # yay -Syu --noconfirm
       # npm update -g
       doas -n -- paru -Syu --noconfirm
-      yarn upgrade global
+      # yarn upgrade global
       ;;
       #}}}
       # upstream{{{
@@ -201,7 +201,7 @@ while :; do
         if [ -d "$repo" ]; then
           cd "$repo" || exit
           git fetch upstream
-          git merge upstream/master
+          git merge upstream/master --allow-unrelated-histories
         fi
       done
       ;;
