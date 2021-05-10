@@ -22,13 +22,13 @@ case $1 in
   --vol)
     case $2 in
 
-      # up) amixer set Master 5%+ ;;
-      # down) amixer set Master 5%- ;;
-      # toggle) amixer set Master toggle ;;
+      up) amixer set Master 5%+ ;;
+      down) amixer set Master 5%- ;;
+      toggle) amixer set Master toggle ;;
 
-      up) pactl set-sink-volume @DEFAULT_SINK@ +10% ;;
-      down) pactl set-sink-volume @DEFAULT_SINK@ -10% ;;
-      toggle) pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
+      # up) pactl set-sink-volume @DEFAULT_SINK@ +10% ;;
+      # down) pactl set-sink-volume @DEFAULT_SINK@ -10% ;;
+      # toggle) pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
 
     esac
     canberra-gtk-play -i audio-volume-change

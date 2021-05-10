@@ -15,6 +15,7 @@ read_file() {
     -d "$(cat "$1")" \
     "$(cat $HOST)$END_POINT"
 }
+
 send_query_string() {
   args="-s"
   [ "$1" = -d ] && args="$args -X DELETE"

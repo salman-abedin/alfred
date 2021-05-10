@@ -26,8 +26,8 @@ mux() {
 }
 
 choose() {
-  choice=$(printf "🌏 Browser\n🎥 MPV\n📚 Foxit Reader\n📙 Master PDF Editor" | amenu) &&
-    case "${choice#* }" in
+  choice=$(printf "🌏 Browser\n🎥 MPV\n📚 Foxit Reader\n📙 Master PDF Editor" | amenu) \
+    && case "${choice#* }" in
       Browser) fork qutebrowser "$1" ;;
       # Browser) fork falkon "$1" ;;
       MPV) fork mpv "$1" ;;
@@ -139,8 +139,8 @@ launch_terminal() {
 launch_tmux() {
   pidof tmux > /dev/null 2>&1 || {
     tmux new-session -s 'home' -d \
-      -n 'schedule' 'calcurse' \; \
-      new-window -n 'mails' 'neomutt' \;
+      -n 'schedule' 'calcurse' \;
+    # new-window -n 'mails' 'neomutt' \;
     # split-window -h 'neomutt' \; last-pane
   }
 }
