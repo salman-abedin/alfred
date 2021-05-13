@@ -1,0 +1,56 @@
+#!/bin/sh
+#
+# Toggles misc operations
+
+VIM=/mnt/internal/git/system/magpie/.config/nvim/init.lua
+ST=/mnt/internal/git/system/st/config.def.h
+DWM=/mnt/internal/git/system/dwm/config.def.h
+# QUTE=$GIT/own/magpie/.config/qutebrowser/config.py
+
+if grep "'light'" "$VIM" > /dev/null; then
+  notify-send "Going dark"
+
+  COLOR_SCHEME_VIM="s/'light'/'dark'/;s/PaperColor/OceanicNext/"
+
+  COLOR_SCHEME_ST='s/"#eee.*/\/\/&/'
+  BACKGROUND_ST='s/defaultbg.*/defaultbg=258;/'
+  FOREGROUND_ST='s/defaultfg.*/defaultfg=7;/'
+  CURSOR_ST='s/defaultcs.*/defaultcs=7;/'
+  FONT_ST='s/"mono:style=bold/"mono/'
+
+  BACKGROUND_DWM='s/norm_bg\[.*/norm_bg\[\]="#000000";/'
+  BORDER_DWM='s/norm_border\[.*/norm_border\[\]="#ffffff";/'
+  FOREGROUND_DWM='s/norm_fg\[.*/norm_fg\[\]="#ffffff";/'
+
+  # THEME_QUTE='s/darkmode.*/darkmode.enabled=True/;s/dark=False/dark=True/'
+else
+  notify-send "Going light"
+
+  COLOR_SCHEME_VIM="s/'dark'/'light'/;s/OceanicNext/PaperColor/"
+
+  COLOR_SCHEME_ST='s/\/\/"#eee/"#eee/'
+  BACKGROUND_ST='s/defaultbg.*/defaultbg=259;/'
+  FOREGROUND_ST='s/defaultfg.*/defaultfg=258;/'
+  CURSOR_ST='s/defaultcs.*/defaultcs=258;/'
+  FONT_ST='s/"mono/&:style=bold/'
+
+  BACKGROUND_DWM='s/norm_bg\[.*/norm_bg\[\]="#cccccc";/'
+  BORDER_DWM='s/norm_border\[.*/norm_border\[\]="#000000";/'
+  FOREGROUND_DWM='s/norm_fg\[.*/norm_fg\[\]="#000000";/'
+
+  # THEME_QUTE='s/darkmode.*/darkmode.enabled=False/;s/dark=True/dark=False/'
+fi
+
+sed -i "$COLOR_SCHEME_VIM" "$VIM"
+
+sed -i "$COLOR_SCHEME_ST;$BACKGROUND_ST;$FOREGROUND_ST;$CURSOR_ST;$FONT_ST" "$ST"
+cd "${ST%/*}" && make && doas -n make install
+pkill "$TERMINAL" 2> /dev/null
+$TERMINAL -e tmux attach &
+
+sed -i "$BACKGROUND_DWM;$BORDER_DWM;$FOREGROUND_DWM" "$DWM"
+cd "${DWM%/*}" && make && doas -n make install
+pkill dwm 2> /dev/null
+
+# sed -i "$THEME_QUTE" "$QUTE"
+# pkill qutebrowser && { qutebrowser & }

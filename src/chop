@@ -1,9 +1,9 @@
 #!/bin/sh
 
 convert $1 \
-   -chop 0x$2 \
-   -chop $5x0 \
-   -gravity east -chop $3x0 \
-   -gravity south -chop 0x$4 \
-   -rotate ${6:-0} \
-   chopped.png
+  -chop 0x$2 \
+  -chop $5x0 \
+  -gravity east -chop $3x0 \
+  -gravity south -chop 0x$4 \
+  -rotate ${6:-0} \
+  chopped.${1##*.}

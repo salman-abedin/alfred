@@ -31,13 +31,13 @@ HEIGHT_PX=${TEMP_HEIGHT_PX%%+*}
 DIAGONAL_PX=$(awk -v w="$WIDTH_PX" -v h="$HEIGHT_PX" \
   'BEGIN{print sqrt(w^2 +h^2)}')
 
-DPI_PX=$(awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" \
-  'BEGIN{print dp / di}')
-
-DPI_FT=$(awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" \
-  'BEGIN{print dp / di / 100}')
+rm $INFO
 
 case $1 in
-  -p | --pixel) echo "$DPI_PX" ;;
-  -f | --factor) echo "$DPI_FT" ;;
+  -p | --pixel)
+    awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" 'BEGIN{print dp / di}'
+    ;;
+  -f | --factor)
+    awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" 'BEGIN{print dp / di / 100}'
+    ;;
 esac

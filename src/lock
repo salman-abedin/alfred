@@ -46,11 +46,11 @@ lock() {
     --indicator --radius 170 --ring-width 3 \
     --ringcolor ffffff --insidecolor 00000000 --linecolor 00000000 \
     --timestr "%H:%M" \
-    --time-font sans --timecolor ffffff --timesize 100 \
+    --time-font sans --timecolor ffffff --timesize 90 \
     --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
     --date-font sans --datecolor ffffff --datesize 30 \
     --greetertext "$QUOTE" --greeterpos 'w/2:100' \
-    --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 25 \
+    --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 20 \
     --pass-volume-keys --pass-media-keys \
     -c 00000000 \
     -i "$BACKGROUND_FORMATTED"
