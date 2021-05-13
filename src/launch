@@ -152,7 +152,7 @@ launch_bolt() {
 
 launch_faint() {
   launch_terminal
-  tmux send "xdotool sleep 0.2 key quoteright && faint" Enter
+  tmux send "xdotool sleep 0.1 key quoteright && faint" Enter
 }
 
 case $1 in

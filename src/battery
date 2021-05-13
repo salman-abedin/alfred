@@ -26,9 +26,9 @@ case $1 in
       set -- /sys/class/power_supply/BAT?/capacity
       read -r capacity < "$1"
 
-      if [ "$capacity" -lt 10 ]; then
+      if [ "$capacity" -lt 5 ]; then
         leavex -s
-      elif [ "$capacity" -lt 20 ]; then
+      elif [ "$capacity" -lt 15 ]; then
         notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
       fi
     fi

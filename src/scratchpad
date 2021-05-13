@@ -3,23 +3,34 @@
 # Launches your default terminal as a scratchpad
 # Note: Use your window manager to make the class "scratchpad" floating
 
-#---------------------------------------
-#               Config
-#---------------------------------------
+#===============================================================================
+#                              Config
+#===============================================================================
 
 WIDTH=80
 HEIGHT=10
 OFFSET_X=0
 OFFSET_Y=0
 
-#---------------------------------------
-#               Script
-#---------------------------------------
+TERMINAL=st
 
-SCRATCHPAD="$TERMINAL -c scratchpad -g "$WIDTH"x$HEIGHT+$OFFSET_X+$OFFSET_Y"
+#===============================================================================
+#                              Script
+#===============================================================================
 
-if [ -n "$1" ]; then
-   $SCRATCHPAD "$SHELL" -c "$* && read line"
-else
-   $SCRATCHPAD
-fi
+CMD=
+
+while [ -n "$1" ]; do
+  case $1 in
+    -w) shift && WIDTH=$1 ;;
+    -h) shift && HEIGHT=$1 ;;
+    -x) shift && OFFSET_X=$1 ;;
+    -y) shift && OFFSET_Y=$1 ;;
+    *) CMD="$CMD $1" ;;
+  esac
+  shift
+done
+
+"$TERMINAL" -c scratchpad \
+  -g "$WIDTH"x"$HEIGHT"+"$OFFSET_X"+"$OFFSET_Y" \
+  "$SHELL" -c "$CMD; read line"
