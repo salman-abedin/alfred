@@ -43,14 +43,14 @@ lock() {
   { xdotool sleep 1 mousemove 0 0 click 1 mousemove restore; } &
   QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
   i3lock -ekn \
-    --indicator --radius 170 --ring-width 3 \
-    --ringcolor ffffff --insidecolor 00000000 --linecolor 00000000 \
+    --indicator --radius 150 --ring-width 3 \
+    --ringcolor dddddd --insidecolor 00000000 --linecolor 00000000 \
     --timestr "%H:%M" \
-    --time-font sans --timecolor ffffff --timesize 90 \
+    --time-font sans --timecolor dddddd --timesize 90 \
     --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
-    --date-font sans --datecolor ffffff --datesize 30 \
+    --date-font sans --datecolor dddddd --datesize 30 \
     --greetertext "$QUOTE" --greeterpos 'w/2:100' \
-    --greeter-font "Lexend Deca" --greetercolor ffffff --greetersize 20 \
+    --greeter-font "Lexend Deca" --greetercolor dddddd --greetersize 20 \
     --pass-volume-keys --pass-media-keys \
     -c 00000000 \
     -i "$BACKGROUND_FORMATTED"
@@ -67,10 +67,16 @@ set_background() {
     "$BACKGROUND_FORMATTED"
 }
 
+blank() {
+  xrandr --output eDP-1 --brightness 0
+  sleep 4
+  xrandr --output eDP-1 --brightness 1
+}
+
 main() {
-  [ -s "$LOCK_STAT" ] && exit
-  # cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit
-  # pacmd list-sink-inputs | grep 'state: RUNNING' && exit
+  [ -s "$LOCK_STAT" ] && exit 0
+
+  blank &
   set_background
   savescreen &
   lock
@@ -85,6 +91,10 @@ main
 #===============================================================================
 #                             Exp
 #===============================================================================
+
+# xrandr | awk '(/primary/){print $1}'
+# cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit
+# pacmd list-sink-inputs | grep 'state: RUNNING' && exit
 
 # > /dev/null 2>&1 &
 # sleep 5

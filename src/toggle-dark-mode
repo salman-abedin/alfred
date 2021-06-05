@@ -21,6 +21,7 @@ if grep "'light'" "$VIM" > /dev/null; then
   BACKGROUND_DWM='s/norm_bg\[.*/norm_bg\[\]="#000000";/'
   BORDER_DWM='s/norm_border\[.*/norm_border\[\]="#ffffff";/'
   FOREGROUND_DWM='s/norm_fg\[.*/norm_fg\[\]="#ffffff";/'
+  FONT_DWM='s/sans-serif:style=bold/sans-serif/'
 
   # THEME_QUTE='s/darkmode.*/darkmode.enabled=True/;s/dark=False/dark=True/'
 else
@@ -37,6 +38,7 @@ else
   BACKGROUND_DWM='s/norm_bg\[.*/norm_bg\[\]="#cccccc";/'
   BORDER_DWM='s/norm_border\[.*/norm_border\[\]="#000000";/'
   FOREGROUND_DWM='s/norm_fg\[.*/norm_fg\[\]="#000000";/'
+  FONT_DWM='s/sans-serif/&:style=bold/'
 
   # THEME_QUTE='s/darkmode.*/darkmode.enabled=False/;s/dark=True/dark=False/'
 fi
@@ -48,7 +50,8 @@ cd "${ST%/*}" && make && doas -n make install
 pkill "$TERMINAL" 2> /dev/null
 $TERMINAL -e tmux attach &
 
-sed -i "$BACKGROUND_DWM;$BORDER_DWM;$FOREGROUND_DWM" "$DWM"
+# sed -i "$BACKGROUND_DWM;$BORDER_DWM;$FOREGROUND_DWM:$FONT_DWM" "$DWM"
+sed -i "$BACKGROUND_DWM;$BORDER_DWM;$FOREGROUND_DWM;$FONT_DWM" "$DWM"
 cd "${DWM%/*}" && make && doas -n make install
 pkill dwm 2> /dev/null
 

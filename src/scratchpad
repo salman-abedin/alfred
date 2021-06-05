@@ -1,6 +1,8 @@
 #!/bin/sh
 #
 # Launches your default terminal as a scratchpad
+# Usage:
+#        scratchpad [-w WIDTH] [-h HEIGHT] [-x OFFSET_X] [-y OFFSET_y] [CMD]
 # Note: Use your window manager to make the class "scratchpad" floating
 
 #===============================================================================
@@ -11,8 +13,6 @@ WIDTH=80
 HEIGHT=10
 OFFSET_X=0
 OFFSET_Y=0
-
-TERMINAL=st
 
 #===============================================================================
 #                              Script
@@ -31,6 +31,6 @@ while [ -n "$1" ]; do
   shift
 done
 
-"$TERMINAL" -c scratchpad \
+st -c scratchpad \
   -g "$WIDTH"x"$HEIGHT"+"$OFFSET_X"+"$OFFSET_Y" \
   "$SHELL" -c "$CMD; read line"
