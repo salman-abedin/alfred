@@ -135,8 +135,9 @@ launch_terminal() {
   #    tmux new-session -d \; switch-client
   # fi
   tmux new-session -d \; switch-client
-  pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach &
-  [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] && xdo activate -N st-256color
+  pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach
+  # pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach &
+  # [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] && xdo activate -N st-256color
 }
 
 launch_tmux() {
@@ -155,7 +156,7 @@ launch_bolt() {
 
 launch_faint() {
   launch_terminal
-  tmux send "xdotool sleep 0.1 key quoteright && faint" Enter
+  # tmux send "xdotool sleep 0.1 key quoteright && faint" Enter
 }
 
 case $1 in

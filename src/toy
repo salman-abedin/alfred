@@ -10,23 +10,24 @@ dir="${path%/*}"
 cd "$dir" || exit 1
 
 case $ext in
-   lua) cmd="lua $path" ;;
-   py) cmd="python $path" ;;
-   ts) cmd="yarn build && yarn start" ;;
-   js) cmd="yarn start" ;;
-   sh) cmd="$SHELL $path" ;;
-   c) cmd="gcc $path && ./a.out" ;;
-   hs) cmd="runhaskell $path" ;;
-   dart) cmd="dart $path" ;;
-   php) cmd="php $path" ;;
-   sql) cmd="sqlite3 -column -header toy.db \"\$(cat $path)\"" ;;
+  lua) cmd="lua $path" ;;
+  py) cmd="python $path" ;;
+  ts) cmd="yarn build && yarn start" ;;
+  js) cmd="yarn start" ;;
+  sh) cmd="$SHELL $path" ;;
+  c) cmd="gcc $path && ./a.out" ;;
+  cpp) cmd="g++ -std=c++17 $path && ${path%/*}/a.out" ;;
+  hs) cmd="runhaskell $path" ;;
+  dart) cmd="dart $path" ;;
+  php) cmd="php $path" ;;
+  sql) cmd="sqlite3 -column -header toy.db \"\$(cat $path)\"" ;;
 esac
 
 # pgrep -f "$cmd" ||
 tmux send -t :.+ C-c \; \
-   send -t :.+ C-l \; \
-   send -t :.+ C-l \; \
-   send -t :.+ "$cmd" Enter \;
+  send -t :.+ C-l \; \
+  send -t :.+ C-l \; \
+  send -t :.+ "$cmd" Enter \;
 
 #===============================================================================
 #                             Exp

@@ -81,7 +81,7 @@ main() {
   savescreen &
   lock
 }
-main
+# main
 
 # timeout 5m \
 #    ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
@@ -136,13 +136,13 @@ main
 
 # SCREEN=/tmp/screen.png
 # ffmpeg -y \
-#    -hide_banner \
-#    -loglevel error \
-#    -f x11grab \
-#    -video_size "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')" \
-#    -i "$DISPLAY" \
-#    -vframes 1 \
-#    $SCREEN
+#   -hide_banner \
+#   -loglevel error \
+#   -f x11grab \
+#   -video_size "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')" \
+#   -i "$DISPLAY" \
+#   -vframes 1 \
+#   $SCREEN
 # convert $SCREEN -blur 0x10 $SCREEN
 # convert $SCREEN ~/.local/share/images/arch.png -gravity center -composite -matte $SCREEN
 # # launch -f $SCREEN
