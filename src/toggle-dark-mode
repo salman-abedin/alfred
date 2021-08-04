@@ -2,7 +2,8 @@
 #
 # Toggles misc operations
 
-VIM=/mnt/internal/git/system/magpie/.config/nvim/init.lua
+# VIM=/mnt/internal/git/system/magpie/.config/nvim/init.lua
+VIM=/mnt/internal/git/system/magpie/.config/nvim/plugin/theming.lua
 ST=/mnt/internal/git/system/st/config.def.h
 DWM=/mnt/internal/git/system/dwm/config.def.h
 # QUTE=$GIT/own/magpie/.config/qutebrowser/config.py
@@ -10,7 +11,9 @@ DWM=/mnt/internal/git/system/dwm/config.def.h
 if grep "'light'" "$VIM" > /dev/null; then
   notify-send "Going dark"
 
-  COLOR_SCHEME_VIM="s/'light'/'dark'/;s/PaperColor/OceanicNext/"
+  # COLOR_SCHEME_VIM="s/'light'/'dark'/;s/PaperColor/OceanicNext/"
+  COLOR_SCHEME_VIM="s/'light'/'dark'/"
+  # TODO: change color scheme
 
   COLOR_SCHEME_ST='s/"#eee.*/\/\/&/'
   BACKGROUND_ST='s/defaultbg.*/defaultbg=258;/'
@@ -27,7 +30,9 @@ if grep "'light'" "$VIM" > /dev/null; then
 else
   notify-send "Going light"
 
-  COLOR_SCHEME_VIM="s/'dark'/'light'/;s/OceanicNext/PaperColor/"
+  # COLOR_SCHEME_VIM="s/'dark'/'light'/;s/OceanicNext/PaperColor/"
+  COLOR_SCHEME_VIM="s/'dark'/'light'/"
+  # TODO: change color scheme
 
   COLOR_SCHEME_ST='s/\/\/"#eee/"#eee/'
   BACKGROUND_ST='s/defaultbg.*/defaultbg=259;/'

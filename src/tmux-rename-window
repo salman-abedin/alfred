@@ -2,12 +2,12 @@
 #
 # Auto renames windows on vim startup
 
-FILE=$1
+FILE=${1##*/}
 
 case $FILE in
-   neomutt-$(hostname)* | calcurse-note* | HULK_LIST* | COMMIT_EDITMSG*)
-      exit 0
-      ;;
+  neomutt-* | calcurse-note* | HULK_LIST* | COMMIT_EDITMSG*)
+    exit 0
+    ;;
 esac
 
 tmux rename-window ${FILE%.*}
