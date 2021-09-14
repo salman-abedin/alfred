@@ -19,6 +19,7 @@ OFFSET_Y=0
 #===============================================================================
 
 CMD=
+KILL=
 
 while [ -n "$1" ]; do
   case $1 in
@@ -26,11 +27,16 @@ while [ -n "$1" ]; do
     -h) shift && HEIGHT=$1 ;;
     -x) shift && OFFSET_X=$1 ;;
     -y) shift && OFFSET_Y=$1 ;;
+    -k) KILL=1 ;;
     *) CMD="$CMD $1" ;;
   esac
   shift
 done
 
+if [ "$KILL" != 1 ]; then
+  CMD="$CMD; read line"
+fi
+
 st -c scratchpad \
   -g "$WIDTH"x"$HEIGHT"+"$OFFSET_X"+"$OFFSET_Y" \
-  "$SHELL" -c "$CMD; read line"
+  "$SHELL" -c "$CMD"
