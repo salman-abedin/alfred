@@ -7,57 +7,67 @@
 [ "$1" = --clean ] && shift && clean=true
 path=$(readlink -f "$1")
 name="${path%.*}"
-name_only="${name##*/}"
+# name_only="${name##*/}"
 ext="${path##*.}"
 dir="${path%/*}"
-build="${dir%/*}/build"
-docs="${dir%/*}/docs"
+# build="${dir%/*}/build"
+# docs="${dir%/*}/docs"
 
 case "$1" in
-   *rc | *.sh) exit ;;
+  *rc | *.sh) exit ;;
 esac
 
 cd "$dir" || exit 1
 [ "$clean" ] \
-   && case $ext in
-      tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
-      c) rm -f "$dir/a.out" ;;
-   esac && exit
+  && case $ext in
+    tex) rm -f ./*.out ./*.log ./*.aux ./*.toc ;;
+    c) rm -f "$dir/a.out" ;;
+  esac && exit
 
 makefile() {
-   found=$(find . -name Makefile | wc -l)
-   if [ "$found" = 1 ]; then
-      doas make install
-   else
-      cd ..
-      doas make install
-   fi
+  found=$(find . -name Makefile | wc -l)
+  if [ "$found" = 1 ]; then
+    doas make install
+  else
+    cd ..
+    doas make install
+  fi
 }
 
 case $ext in
-   c | h | sh) makefile ;;
-   txt) wc -w "$path" ;;
-   md) pandoc $file -t ms -o $name.pdf ;;
-   *) makefile ;;
-      # tex) xelatex "$path" ;;
-      # pug)
-      #    pug -o "$build" "$path"
-      #    rm -f $(find "$build" -type f -name "data.html" -or -name "mixins.*")
-      #    ;;
-      #    echo " " >> "$build/$name_only.html"
-      #    sed '$d' "$build/$name_only.html"
-      #    ;;
-      # sass)
-      #    sassc -a "$path" "$build/$name_only.css"
-      # scss) sassc "$path" "$name.css" ;;
-      # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
-      # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
-      # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;
-      # ts)     tsc "$file";;
-      # [rR]md) Rscript -e "require(rmarkdown); rmarkdown::render('$file', quiet=TRUE)" ;;
-      # ms)     groff -ms -T pdf $file > $name.pdf ;;
-      # ms)     eqn $file -T pdf | groff -ms -T pdf > $name.pdf ;;
-      # md)     pandoc $file --pdf-engine=xelatex -o $name.pdf ;;
-      # ms)     refer -PS -e $file | groff -me -ms -kept -T pdf > $name.pdf ;;
-      # mom)    refer -PS -e $file | groff -mom -kept -T pdf > $name.pdf ;;
+  c | h | sh) makefile ;;
+  mq4)
+    # xdotool key super+l ctrl+F7 super+l
+    wine "${path%MQL4*}/metaeditor.exe" /compile:"$path"
+    # if pgrep terminal.exe; then
+    # xdotool search --onlyvisible --classname "terminal.exe" windowactivate
+    # xdotool keydown alt sleep 0.2 key j keyup alt key enter
+    # # xdotool key --window $(xdotool search --onlyvisible --classname "terminal.exe") ctrl+o
+    # fi
+
+    ;;
+  *) makefile ;;
+    # txt) wc -w "$path" ;;
+    # md) pandoc "$file" -t ms -o "$name.pdf" ;;
+    # tex) xelatex "$path" ;;
+    # pug)
+    #    pug -o "$build" "$path"
+    #    rm -f $(find "$build" -type f -name "data.html" -or -name "mixins.*")
+    #    ;;
+    #    echo " " >> "$build/$name_only.html"
+    #    sed '$d' "$build/$name_only.html"
+    #    ;;
+    # sass)
+    #    sassc -a "$path" "$build/$name_only.css"
+    # scss) sassc "$path" "$name.css" ;;
+    # ms) groff -ms -ept -K utf8 "$path" > "$name".ps ;;
+    # ms) groff -m ms -T pdf "$path" > "$name".pdf ;;
+    # ms) eqn "$path" -T pdf | groff -ms -T pdf > "$name".pdf ;;
+    # ts)     tsc "$file";;
+    # [rR]md) Rscript -e "require(rmarkdown); rmarkdown::render('$file', quiet=TRUE)" ;;
+    # ms)     groff -ms -T pdf $file > $name.pdf ;;
+    # ms)     eqn $file -T pdf | groff -ms -T pdf > $name.pdf ;;
+    # md)     pandoc $file --pdf-engine=xelatex -o $name.pdf ;;
+    # ms)     refer -PS -e $file | groff -me -ms -kept -T pdf > $name.pdf ;;
+    # mom)    refer -PS -e $file | groff -mom -kept -T pdf > $name.pdf ;;
 esac

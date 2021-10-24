@@ -40,17 +40,17 @@ lock() {
   echo locked > $LOCK_STAT
   toggle -n
   # Fixes the i3lock lock bug
-  { xdotool sleep 1 mousemove 0 0 click 1 mousemove restore; } &
+  # { xdotool sleep 1 mousemove 0 0 click 1 mousemove restore; } &
   QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
   i3lock -ekn \
     --indicator --radius 150 --ring-width 3 \
-    --ringcolor dddddd --insidecolor 00000000 --linecolor 00000000 \
-    --timestr "%H:%M" \
-    --time-font sans --timecolor dddddd --timesize 90 \
-    --datestr "%a, %d %b" --datepos='tx+0:ty+75' \
-    --date-font sans --datecolor dddddd --datesize 30 \
-    --greetertext "$QUOTE" --greeterpos 'w/2:100' \
-    --greeter-font "Lexend Deca" --greetercolor dddddd --greetersize 20 \
+    --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
+    --time-str "%H:%M" \
+    --time-font sans --time-color dddddd --time-size 90 \
+    --date-str "%a, %d %b" --date-pos='tx+0:ty+75' \
+    --date-font sans --date-color dddddd --date-size 30 \
+    --greeter-text "$QUOTE" --greeter-pos 'w/2:100' \
+    --greeter-font "Lexend Deca" --greeter-color dddddd --greeter-size 20 \
     --pass-volume-keys --pass-media-keys \
     -c 00000000 \
     -i "$BACKGROUND_FORMATTED"
@@ -75,22 +75,28 @@ blank() {
 
 main() {
   [ -s "$LOCK_STAT" ] && exit 0
-
-  blank &
+  # blank &
   set_background
   savescreen &
   lock
 }
-# main
+main
+
+#===============================================================================
+#                             Exp
+#===============================================================================
+
+# main2() {
+# xtrlock -f
+# timeout $SCREENSAVER_DELAY \
+# mpv -fs --no-osc --no-audio --loop=inf --no-resume-playback $FILE_SCREENSAVER > /dev/null 2>&1 \
+# || xset dpms force off
+# }
 
 # timeout 5m \
 #    ffplay -volume 0 -autoexit -exitonkeydown -exitonmousedown -fs -loop 5 \
 #    ~/.local/share/screensavers/matrix.mp4 ||
 #    xset dpms force off
-
-#===============================================================================
-#                             Exp
-#===============================================================================
 
 # xrandr | awk '(/primary/){print $1}'
 # cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit

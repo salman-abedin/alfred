@@ -20,7 +20,8 @@ case $1 in
       echo "$wall"
     done \
       | shuf -n1 > $PATH_WALL
-    feh --no-fehbg --bg-scale "$(_get_wall_path)"
+    # feh --no-fehbg --bg-scale "$(_get_wall_path)"
+    feh --no-fehbg --bg-fill "$(_get_wall_path)"
     ;;
   delete | -d)
     rm -f "$(readlink $(_get_wall_path))"
@@ -28,6 +29,7 @@ case $1 in
     ;;
   *)
     [ -n "$1" ] && echo "$1" > $PATH_WALL
-    feh --no-fehbg --bg-scale "$(_get_wall_path)"
+    # feh --no-fehbg --bg-scale "$(_get_wall_path)"
+    feh --no-fehbg --bg-fill "$(_get_wall_path)"
     ;;
 esac

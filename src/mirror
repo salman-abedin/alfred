@@ -189,7 +189,7 @@ while :; do
       # doas -n -- pacman -Syu --noconfirm
       # yay -Syu --noconfirm
       # npm update -g
-      doas -n -- paru -Syu --noconfirm
+      paru -Syu --noconfirm
       # yarn upgrade global
       ;;
       #}}}

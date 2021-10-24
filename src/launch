@@ -2,7 +2,8 @@
 #
 # General purpose launching script
 
-fork() { setsid -f "$@" > /dev/null 2>&1; }
+# fork() { setsid -f "$@" > /dev/null 2>&1; }
+fork() { setsid -f $* > /dev/null 2>&1; }
 # launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 # launch_dwm() { while :; do ssh-agent dwm 2> ~/.local/share/dwm.log; done; }
 launch_dwm() { while :; do dbus-launch dwm 2> ~/.local/share/dwm.log; done; }
@@ -52,16 +53,22 @@ launch_link() {
 
 launch_file() {
   case $* in
+    *.lnk | *.exe)
+      fork wine "$1"
+      exit
+      ;;
     *.xlsx)
       ssconvert "$1" "${1%.xlsx}.csv" && "$EDITOR" "${1%.xlsx}.csv"
       exit
       ;;
-    *.ar.*)
-      fork alacritty \
-        --config-file ~/.config/alacritty/alacritty_ar.yml \
-        -e "$EDITOR" "$@"
-      exit
-      ;;
+
+      # *.ar.*)
+      # fork alacritty \
+      # --config-file ~/.config/alacritty/alacritty_ar.yml \
+      # -e "$EDITOR" "$@"
+      # exit
+      # ;;
+
     *.url)
       fork "$BROWSER" "$(cat "$@")"
       exit

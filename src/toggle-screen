@@ -6,11 +6,12 @@ HDMI=/tmp/HDMI
 
 if [ -s "$HDMI" ]; then
   : > "$HDMI"
+  xrandr --output HDMI-1 --off
   xrandr --output eDP-1 --auto
 else
-  echo HDMI > "$HDMI"
+  echo on > "$HDMI"
   xrandr --output HDMI-1 --auto
-  xrandr --output eDP-1 --off
-  xcape -e "Super_L=Escape;Mode_switch=Tab"
-  xmodmap "$LAYOUT_EN"
+  # xrandr --output eDP-1 --off
+  # xcape -e "Super_L=Escape;Mode_switch=Tab"
+  # xmodmap "$LAYOUT_EN"
 fi
