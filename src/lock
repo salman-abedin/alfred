@@ -5,42 +5,17 @@
 
 LOCK_STAT=/tmp/LOCK_STAT
 BACKGROUND_FORMATTED=/tmp/LOCK_BACKGROUND
-FILE_PID_SAVESCREEN=/tmp/LOCK_PID_SAVESCREEN
-
 PATH_WALLPAPERS=~/.local/share/wallpapers
-FILE_SCREENSAVER=~/.local/share/screensavers/matrix.mp4
-
-SCREENSAVER_DELAY=5m
-
-kill_screensaver() {
-  read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
-  kill "$PID_SAVESCREEN"
-}
-
-savescreen() {
-  sleep $SCREENSAVER_DELAY
-  mpv -fs --no-osc --no-audio --loop=inf $FILE_SCREENSAVER &
-  # ffplay -volume 0 -fs -loop 10 $FILE_SCREENSAVER & \
-  echo $! > $FILE_PID_SAVESCREEN
-  sleep $SCREENSAVER_DELAY
-  xset dpms force off
-  kill_screensaver
-}
 
 post_unlocked() {
   # setdisplay --bg shuffle
   toggle -n
   : > "$LOCK_STAT"
-  kill_screensaver
-  pkill -P $$
-  # kill $$
 }
 
 lock() {
   echo locked > $LOCK_STAT
   toggle -n
-  # Fixes the i3lock lock bug
-  # { xdotool sleep 1 mousemove 0 0 click 1 mousemove restore; } &
   QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
   i3lock -ekn \
     --indicator --radius 150 --ring-width 3 \
@@ -75,9 +50,8 @@ blank() {
 
 main() {
   [ -s "$LOCK_STAT" ] && exit 0
-  # blank &
+  blank &
   set_background
-  savescreen &
   lock
 }
 main
