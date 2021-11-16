@@ -3,10 +3,9 @@
 # Checks if wifi & internet is up or not
 # Dependencies: wget
 
-for file in /sys/class/net/w*/operstate; do
-   read -r STATE < "$file"
-   [ "$STATE" = up ] && wget -q --spider https://google.com || exit 1
-done
+set -- /sys/class/net/w*/operstate
+read -r STATE < "$1"
+[ "$STATE" = up ] && wget -q --spider https://google.com > /dev/null 2>&1 || exit 1
 
 #===============================================================================
 #                             Exp

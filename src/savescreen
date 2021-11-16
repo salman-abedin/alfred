@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Screen saver
+# Dependencies: mpv, xset & sleep
+
+SCREENSAVER_DELAY=5m
+FILE_SCREENSAVER=~/.local/share/screensavers/matrix.mp4
+FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
+
+# echo $PPID > $FILE_PID_SAVESCREEN
+# mpv -fs --no-osc --no-audio --loop=inf $FILE_SCREENSAVER > /dev/null 2>&1 &
+# sleep $SCREENSAVER_DELAY
+
+sleep 0.5 && xset dpms force off
+
+# pkill -P $$

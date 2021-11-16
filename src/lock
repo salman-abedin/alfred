@@ -6,9 +6,11 @@
 LOCK_STAT=/tmp/LOCK_STAT
 BACKGROUND_FORMATTED=/tmp/LOCK_BACKGROUND
 PATH_WALLPAPERS=~/.local/share/wallpapers
+FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
 
 post_unlocked() {
-  # setdisplay --bg shuffle
+  read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
+  pkill -P $PID_SAVESCREEN
   toggle -n
   : > "$LOCK_STAT"
 }

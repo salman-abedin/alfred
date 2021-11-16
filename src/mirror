@@ -17,6 +17,16 @@ fi
 
 while :; do
   case $1 in
+
+    # kindle{{{
+    #---------------------------------------
+    #               Kindle
+    #---------------------------------------
+    --kindle | -k)
+      sudo cp -fr /mnt/internal/misc/kindle/* /mnt/usb/documents
+      ;;
+    #}}}
+
     # brave{{{
     #---------------------------------------
     #               Brave
@@ -212,7 +222,6 @@ while :; do
   shift
 done
 
-# experiments{{{
 #===============================================================================
 #                             Exp
 #===============================================================================
@@ -235,4 +244,3 @@ done
 # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
 # ;;
 # umount -l /mnt/cloud
-#}}}

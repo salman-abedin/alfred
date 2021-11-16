@@ -52,14 +52,14 @@ wallreel() {
 notifications() {
   if [ -s "$DDM" ]; then
     : > "$DDM"
-    killall -SIGUSR2 dunst
+    killall -SIGUSR2 dunst > /dev/null 2>&1
     sleep 1
     # notify-send -u low -i "$ICONS"/bell.png 'Disturb all you want'
   else
     echo on > "$DDM"
     # notify-send -u low -i "$ICONS"/dnd.png 'Do not disturb'
     sleep 2
-    killall -SIGUSR1 dunst
+    killall -SIGUSR1 dunst > /dev/null 2>&1
   fi
   # uniblocks -u noti
 }

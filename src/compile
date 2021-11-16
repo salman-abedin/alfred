@@ -36,9 +36,15 @@ makefile() {
 
 case $ext in
   c | h | sh) makefile ;;
-  mq4)
-    # xdotool key super+l ctrl+F7 super+l
+  mq4 | mqh)
     wine "${path%MQL4*}/metaeditor.exe" /compile:"$path"
+
+    root="/mnt/internal/windows/mt4_development"
+    wine \
+      "$root/metaeditor.exe" \
+      /compile:"$root/MQL4/Experts/TradeMasterSubscriber.mq4"
+
+    # xdotool key super+l ctrl+F7 super+l
     # if pgrep terminal.exe; then
     # xdotool search --onlyvisible --classname "terminal.exe" windowactivate
     # xdotool keydown alt sleep 0.2 key j keyup alt key enter

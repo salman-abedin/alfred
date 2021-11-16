@@ -5,51 +5,60 @@
 # Usage: panel -(b|d|s|v|w)
 
 case $1 in
-   --date-time | -d) printf "%s" "$(date +'🗓 %a, %d %b   🕰 %H : %M')" ;;
-   --wifi | -w)
-      if connected; then
-         printf "🌏 %s" \
-            "$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
-      else
-         echo "❗ 000"
-      fi
-      ;;
-   --sys-stat | -s)
-      cpu="$(top -b -n 1 | awk '(NR==3){
+  --battery-stat | -b)
+    set -- /sys/class/power_supply/BAT?/capacity
+    read -r CAPACITY < "$1"
+    printf "🔋 %03d%%" "$CAPACITY"
+    ;;
+  --time | -t) printf "%s" "$(date +'🕰 %H : %M')" ;;
+  --date | -d) printf "%s" "$(date +'🗓 %a, %d %b')" ;;
+  --date-time | -D) printf "%s" "$(date +'🗓 %a, %d %b   🕰 %H : %M')" ;;
+  --wifi | -w)
+    set -- /sys/class/net/w*/operstate
+    read -r STATE < "$1"
+    if [ "$STATE" = up ] && wget -q --spider https://google.com > /dev/null 2>&1; then
+      printf "🌏 %s" \
+        "$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
+    else
+      printf "%s" "❌ 000"
+    fi
+    ;;
+  --sys-stat | -s)
+    cpu="$(top -b -n 1 | awk '(NR==3){
     if( $8 == "id," )
         print "000"
     else
         printf "%03d", 100 - $8
     }')"
-      mem="$(free -m | awk '(NR==2){ printf "%04d", $3 }')"
-      temp="$(sensors | awk '(/Core 0/){printf $3}' | sed 's/\.0//; s/+//')"
-      printf "🧠 %s  🐎 %s 🌡 %s" "$mem" "$cpu" "$temp"
-      ;;
+    mem="$(free -m | awk '(NR==2){ printf "%04d", $3 }')"
+    temp="$(sensors | awk '(/Core 0/){printf $3}' | sed 's/\.0//; s/+//')"
+    printf "🧠 %s  🐎 %s 🌡 %s" "$mem" "$cpu" "$temp"
+    ;;
 
-   --mailbox | -m)
-      for file in ~/.local/share/mail/INBOX/new/*; do
-         [ -f "$file" ] || continue
-         printf '%s\n' "$file"
-      done | {
-         while IFS= read -r line || [ -n "$line" ]; do
-            lines=$((lines + 1))
-         done &&
-            printf "📫  %s" "${lines:-0}"
-      }
-      ;;
+  --mailbox | -m)
+    for file in ~/.local/share/mail/INBOX/new/*; do
+      [ -f "$file" ] || continue
+      printf '%s\n' "$file"
+    done | {
+      while IFS= read -r line || [ -n "$line" ]; do
+        lines=$((lines + 1))
+      done \
+        && printf "📫  %s" "${lines:-0}"
+    }
+    ;;
 
-   --vol-stat | -v)
-      showstat() {
-         if amixer get Master | grep -o -m 1 "off" > /dev/null; then
-            printf "🔇 000"
-         else
-            printf "🔊 %03d" \
-               "$(amixer get Master | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
-         fi
-      }
-      showstat
-      ;;
-   *) exit 1 ;;
+  --vol-stat | -v)
+    showstat() {
+      if amixer get Master | grep -o -m 1 "off" > /dev/null; then
+        printf "🔇 000"
+      else
+        printf "🔊 %03d" \
+          "$(amixer get Master | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
+      fi
+    }
+    showstat
+    ;;
+  *) exit 1 ;;
 esac
 
 #===============================================================================
