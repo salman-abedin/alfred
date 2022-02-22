@@ -10,7 +10,7 @@
 
 INFO=/tmp/display_info
 
-xrandr | grep ' connected' > $INFO
+xrandr | grep ' connected' | tail -1 > $INFO
 
 WIDTH_MM=$(awk '{print $NF}' $INFO)
 WIDTH_IN=$(echo "${WIDTH_MM%mm}" | awk '{print $1 * 0.03937007874015748}')
@@ -21,7 +21,7 @@ HEIGHT_IN=$(echo "${HEIGHT_MM%mm}" | awk '{print $1 * 0.03937007874015748}')
 DIAGONAL_IN=$(awk -v w="$WIDTH_IN" -v h="$HEIGHT_IN" \
   'BEGIN{print sqrt(w^2 + h^2)}')
 
-PX=$(cut -d ' ' -f 4 $INFO)
+PX=$(grep -o "[0-9]*x[0-9]*" $INFO)
 
 WIDTH_PX=${PX%x*}
 

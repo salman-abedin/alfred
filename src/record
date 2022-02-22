@@ -18,7 +18,7 @@ case $1 in
       -i "$DISPLAY" \
       -vframes 1 \
       "$FILE"
-    pinta "$FILE"
+    # pinta "$FILE"
     ;;
   --screencast | -s)
     # Forked from https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord

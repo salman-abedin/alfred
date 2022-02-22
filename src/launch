@@ -2,8 +2,8 @@
 #
 # General purpose launching script
 
-# fork() { setsid -f "$@" > /dev/null 2>&1; }
-fork() { setsid -f $* > /dev/null 2>&1; }
+fork() { setsid -f "$@" > /dev/null 2>&1; }
+# fork() { setsid -f $* > /dev/null 2>&1; }
 # launch_dwm() { while :; do dwm 2> ~/.local/share/dwm.log; done; }
 # launch_dwm() { while :; do ssh-agent dwm 2> ~/.local/share/dwm.log; done; }
 launch_dwm() { while :; do dbus-launch dwm 2> ~/.local/share/dwm.log; done; }

@@ -4,15 +4,19 @@
 
 connect() {
   # doas -n systemctl restart bluetooth
+  doas -n sv up bluetoothd
   bluetoothctl power on
   # pulseaudio --start
-  if bluetoothctl connect "${1:-E8:EC:A3:27:60:15}" \
+
+  if bluetoothctl connect "${1:-41:42:B1:BE:00:F3}" \
+    || bluetoothctl connect "E8:EC:A3:27:60:15" \
     || bluetoothctl connect "E8:EC:A3:15:05:0D" \
     || bluetoothctl connect "41:42:B1:BE:00:F3"; then
     sleep 2
-    uniblocks -u vol
+    # uniblocks -u vol
   fi
 }
+
 toggle_mic() {
   CARD=$(pactl list short cards | tail -1 | cut -f1)
   if pactl list cards | grep -i "active profile: a2dp_sink" > /dev/null; then
@@ -21,6 +25,7 @@ toggle_mic() {
     pactl set-card-profile "$CARD" "a2dp_sink"
   fi
 }
+
 main() {
   case $1 in
     --con | -c) connect "$2" ;;

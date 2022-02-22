@@ -1,10 +1,10 @@
 #!/bin/sh
 #
-# Monitors Battery level,
-# Blocks Charging on High battery level
-# Notifies on low levels
-# Shuts down on dangerous levels
-# It also notifies on Plug and Unplug (Using a supplimental udev rule)
+# - Monitors Battery level,
+# - Blocks Charging on High battery level
+# - Notifies on low levels
+# - Shuts down on dangerous levels
+# - Also notifies on Plug and Unplug (Using a supplimental udev rule)
 
 case $1 in
   --block-charge)
@@ -20,7 +20,8 @@ case $1 in
     read -r status < "$1"
 
     if [ "$status" = "Full" ]; then
-      notify-send -t 0 -i "$ICONS"/charging.png 'Fully Charged!'
+      :
+      # notify-send -t 0 -i "$ICONS"/charging.png 'Fully Charged!'
 
     elif [ "$status" = "Discharging" ]; then
       set -- /sys/class/power_supply/BAT?/capacity
