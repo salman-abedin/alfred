@@ -1,11 +1,15 @@
 #!/bin/sh
 #
-# Checks if wifi & internet is up or not
+# Checks if ethernet/wlan & internet is up or not
 # Dependencies: wget
 
-set -- /sys/class/net/w*/operstate
-read -r STATE < "$1"
-[ "$STATE" = up ] && wget -q --spider https://google.com > /dev/null 2>&1 || exit 1
+read -r ETHERNET < /sys/class/net/eth0/carrier
+if [ "$ETHERNET" != 1 ]; then
+	set -- /sys/class/net/w*/operstate
+	read -r WLAN < "$1"
+	[ "$WLAN" = up ] || exit 1
+fi
+wget -q --spider https://google.com > /dev/null 2>&1 || exit 1
 
 #===============================================================================
 #                             Exp
