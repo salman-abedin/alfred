@@ -11,30 +11,30 @@
 silence() { "$@" > /dev/null 2>&1; }
 
 case $1 in
-  --play)
-    silence pidof mpd || silence mpd
-    case $2 in
-      next) silence playerctl next || silence mpc next ;;
-      prev) silence playerctl previous || silence mpc prev ;;
-      toggle) silence playerctl play-pause || silence mpc toggle ;;
-    esac
-    ;;
-  --vol)
-    case $2 in
+	--play)
+		silence pidof mpd || silence mpd
+		case $2 in
+			next) silence playerctl next || silence mpc next ;;
+			prev) silence playerctl previous || silence mpc prev ;;
+			toggle) silence playerctl play-pause || silence mpc toggle ;;
+		esac
+		;;
+	--vol)
+		case $2 in
 
-      # up) amixer set Master 5%+ ;;
-      # down) amixer set Master 5%- ;;
-      # toggle) amixer set Master toggle ;;
+			# up) amixer set Master 5%+ ;;
+			# down) amixer set Master 5%- ;;
+			# toggle) amixer set Master toggle ;;
 
-      up) pactl set-sink-volume @DEFAULT_SINK@ +5% ;;
-      down) pactl set-sink-volume @DEFAULT_SINK@ -5% ;;
-      toggle) pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
+			up) pactl set-sink-volume @DEFAULT_SINK@ +5% ;;
+			down) pactl set-sink-volume @DEFAULT_SINK@ -5% ;;
+			toggle) pactl set-sink-mute @DEFAULT_SINK@ toggle ;;
 
-    esac
-    canberra-gtk-play -i audio-volume-change
-    uniblocks -u vol 2> /dev/null # Personal script (chill & ignore)
-    ;;
-  *) exit 1 ;;
+		esac
+		canberra-gtk-play -i audio-volume-change
+		uniblocks -u vol 2> /dev/null # Personal script (chill & ignore)
+		;;
+	*) exit 1 ;;
 esac
 
 #===============================================================================

@@ -1,15 +1,22 @@
 #!/bin/sh
 #
-# Monitors specific directores for particular changes and runs commands
+# Monitors files/directores for particular changes and runs commands on change events
+# Dependencies: intify-tools
+# Usage: watchman [FILE|DIRECTORY] COMMAND
 
-inotifywait -m -e move,delete ~/.local/share/mail/INBOX/new |
-   while read -r line; do
-      uniblocks -u mail
-   done
+inotifywait -m -e modify "$1" \
+    | while read -r line; do
+        eval "$2"
+    done
 
 #===============================================================================
 #                             Exp
 #===============================================================================
+
+# inotifywait -m -e move,delete ~/.local/share/mail/INBOX/new \
+# | while read -r line; do
+# uniblocks -u mail
+# done
 
 # echo "
 # $GIT/own/magpie
