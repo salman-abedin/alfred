@@ -3,35 +3,37 @@
 # Bluetooth Headset related scripts
 
 connect() {
-  # doas -n systemctl restart bluetooth
-  doas -n sv up bluetoothd
-  bluetoothctl power on
-  # pulseaudio --start
+    # doas -n systemctl restart bluetooth
+    doas -n sv up bluetoothd
+    bluetoothctl power on
+    # pulseaudio --start
 
-  if bluetoothctl connect "${1:-41:42:B1:BE:00:F3}" \
-    || bluetoothctl connect "E8:EC:A3:27:60:15" \
-    || bluetoothctl connect "E8:EC:A3:15:05:0D" \
-    || bluetoothctl connect "41:42:B1:BE:00:F3"; then
-    sleep 2
+    bluetoothctl connect "41:42:B1:BE:00:F3"
+
+    # if bluetoothctl connect "${1:-41:42:B1:BE:00:F3}" \
+    # || bluetoothctl connect "E8:EC:A3:27:60:15" \
+    # || bluetoothctl connect "E8:EC:A3:15:05:0D" \
+    # || bluetoothctl connect "41:42:B1:BE:00:F3"; then
+    # sleep 2
     # uniblocks -u vol
-  fi
+    # fi
 }
 
 toggle_mic() {
-  CARD=$(pactl list short cards | tail -1 | cut -f1)
-  if pactl list cards | grep -i "active profile: a2dp_sink" > /dev/null; then
-    pactl set-card-profile "$CARD" "headset_head_unit"
-  else
-    pactl set-card-profile "$CARD" "a2dp_sink"
-  fi
+    CARD=$(pactl list short cards | tail -1 | cut -f1)
+    if pactl list cards | grep -i "active profile: a2dp" > /dev/null; then
+        pactl set-card-profile "$CARD" "headset-head-unit-cvsd"
+    else
+        pactl set-card-profile "$CARD" "a2dp-sink-aac"
+    fi
 }
 
 main() {
-  case $1 in
-    --con | -c) connect "$2" ;;
-    --tog | -t) toggle_mic ;;
-    *) exit 1 ;;
-  esac
+    case $1 in
+        --con | -c) connect "$2" ;;
+        --tog | -t) toggle_mic ;;
+        *) exit 1 ;;
+    esac
 }
 
 main "$1"
