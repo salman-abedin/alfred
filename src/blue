@@ -32,6 +32,7 @@ main() {
     case $1 in
         --con | -c) connect "$2" ;;
         --tog | -t) toggle_mic ;;
+        --mute | -m) amixer set Capture toggle > /dev/null ;;
         *) exit 1 ;;
     esac
 }

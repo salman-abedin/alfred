@@ -7,219 +7,253 @@
 LOCAL=/mnt/internal
 CLOUD=drive
 
-if ! connected; then
-  # notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
-  :
-  # exit 1
-fi
+# if ! connected; then
+# # notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
+# :
+# # exit 1
+# fi
 
 # notify-send -i "$ICONS/mirror.png" "Mirroring now"
 
 while :; do
-  case $1 in
+    case $1 in
 
-    # kindle{{{
-    #---------------------------------------
-    #               Kindle
-    #---------------------------------------
-    --kindle | -k)
-      sudo cp -fr /mnt/internal/misc/kindle/* /mnt/usb/documents
-      ;;
-    #}}}
+        # ╔════════════════════════════════════════
+        # ║                    Home & Office
+        # ╚════════════════════════════════════════
+        --home-n-office | -hno)
+            branch_current=
+            branch_merge=
+            for repo in \
+                /mnt/internal/git/daily/notes \
+                /mnt/internal/git/system/alfred; do
+                cd "$repo" || continue
+                git add .
+                git commit --allow-empty-message -m ''
 
-    # brave{{{
-    #---------------------------------------
-    #               Brave
-    #---------------------------------------
-    --brave | -b)
-      cd ~/.config || exit
-      tar cf Brave.tar BraveSoftware
-      gpg -esr "$MAIL" Brave.tar
-      rclone copy Brave.tar.gpg $CLOUD:/
-      rm Brave.tar Brave.tar.gpg
-      ;;
-      #}}}
-    # calcurse{{{
-    #---------------------------------------
-    #               Calcurse
-    #---------------------------------------
-    --calcurse | -c)
-      CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav --init=keep-local
-      # --init=keep-remote
-      # --init=keep-local
-      ;;
-      #}}}
-      # dots{{{
-      #---------------------------------------
-      #               Dots
-      #---------------------------------------
-    --dots | -d)
-      WEECHAT_ROOT=$REPOS/magpie/.config/weechat
-      WEECHAT_PRIVATE=$REPOS/magpie-private/.config/weechat
-      WEECHAT_CLONE=~/.config/weechat
+                if [ "$(git branch --show-current)" = 'home' ]; then
+                    branch_merge='office'
+                    branch_current='home'
+                else
+                    branch_merge='home'
+                    branch_current='office'
+                fi
 
-      find "$WEECHAT_ROOT" -maxdepth 1 -type f \
-        | sed 's/\/mnt\/internal\/git\/system\/magpie/\/home\/salman/' \
-        | xargs cp -ft "$WEECHAT_ROOT"
+                git checkout "$branch_merge"
+                git fetch
+                if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
+                    git pull origin "$branch_merge"
+                    git checkout "$branch_current"
+                    git merge --commit --no-edit "$branch_merge"
+                else
+                    git checkout "$branch_current"
+                fi
+                git push
+            done
+            ;;
 
-      find "$WEECHAT_PRIVATE" -maxdepth 1 -type f \
-        | sed 's/\/mnt\/internal\/git\/system\/magpie-private/\/home\/salman/' \
-        | xargs cp -ft "$WEECHAT_PRIVATE"
+        # kindle{{{
+        #---------------------------------------
+        #               Kindle
+        #---------------------------------------
+        --kindle | -k)
+            sudo cp -fr /mnt/internal/misc/kindle/* /mnt/usb/documents
+            ;;
+        #}}}
 
-      # cp -frs -t ~ \
-      #    "$GIT"/own/magpie/. \
-      #    "$GIT"/own/magpie-private/.
+        # brave{{{
+        #---------------------------------------
+        #               Brave
+        #---------------------------------------
+        --brave | -b)
+            cd ~/.config || exit
+            tar cf Brave.tar BraveSoftware
+            gpg -esr "$MAIL" Brave.tar
+            rclone copy Brave.tar.gpg $CLOUD:/
+            rm Brave.tar Brave.tar.gpg
+            ;;
+            #}}}
+        # calcurse{{{
+        #---------------------------------------
+        #               Calcurse
+        #---------------------------------------
+        --calcurse | -c)
+            CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav --init=keep-local
+            # --init=keep-remote
+            # --init=keep-local
+            ;;
+            #}}}
+            # dots{{{
+            #---------------------------------------
+            #               Dots
+            #---------------------------------------
+        --dots | -d)
+            WEECHAT_ROOT=$REPOS/magpie/.config/weechat
+            WEECHAT_PRIVATE=$REPOS/magpie-private/.config/weechat
+            WEECHAT_CLONE=~/.config/weechat
 
-      cp -frs "$REPOS"/magpie/. "$REPOS"/magpie-private/. ~
+            find "$WEECHAT_ROOT" -maxdepth 1 -type f \
+                | sed 's/\/mnt\/internal\/git\/system\/magpie/\/home\/salman/' \
+                | xargs cp -ft "$WEECHAT_ROOT"
 
-      find "$WEECHAT_CLONE" -maxdepth 1 -type l -delete
-      find "$WEECHAT_ROOT" "$WEECHAT_PRIVATE" -maxdepth 1 -type f \
-        | xargs cp -ft ~/.config/weechat
+            find "$WEECHAT_PRIVATE" -maxdepth 1 -type f \
+                | sed 's/\/mnt\/internal\/git\/system\/magpie-private/\/home\/salman/' \
+                | xargs cp -ft "$WEECHAT_PRIVATE"
 
-      cd ~ || exit
-      rm -f LICENSE README.md .gitignore Makefile
+            # cp -frs -t ~ \
+            #    "$GIT"/own/magpie/. \
+            #    "$GIT"/own/magpie-private/.
 
-      # doas -n -- find ~ -xtype l -delete
-      ;;
-      #}}}
-      # drive{{{
-      #---------------------------------------
-      #               Drive
-      #---------------------------------------
-    --drive | -D)
+            cp -frs "$REPOS"/magpie/. "$REPOS"/magpie-private/. ~
 
-      rclone sync $LOCAL/documents $CLOUD:documents
-      rclone sync $LOCAL/library $CLOUD:library
+            find "$WEECHAT_CLONE" -maxdepth 1 -type l -delete
+            find "$WEECHAT_ROOT" "$WEECHAT_PRIVATE" -maxdepth 1 -type f \
+                | xargs cp -ft ~/.config/weechat
 
-      # rclone sync "$GIT"/others $CLOUD:git/others
-      # rclone sync "$GIT"/forks $CLOUD:git/forks
-      # rclone sync "$GIT"/archived $CLOUD:git/archived
+            cd ~ || exit
+            rm -f LICENSE README.md .gitignore Makefile
 
-      ;;
-      #}}}
-      # firefox{{{
+            # doas -n -- find ~ -xtype l -delete
+            ;;
+            #}}}
+            # drive{{{
+            #---------------------------------------
+            #               Drive
+            #---------------------------------------
+        --drive | -D)
 
-      #---------------------------------------
-      #               Firefox
-      #---------------------------------------
-    --firefox | -f)
-      CLOUD=drive
-      FIREFOX_LOCAL=/mnt/internal/misc/firefox
-      FIREFOX_PROFILE=zmzk0pef.default-release
-      GPG_MAIL=SalmanAbedin@disroot.org
+            rclone sync $LOCAL/documents $CLOUD:documents
+            rclone sync $LOCAL/library $CLOUD:library
 
-      #---------------------------------------
-      #              Backup
-      #---------------------------------------
-      cd $FIREFOX_LOCAL || exit
-      tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
-      gpg -esr "$GPG_MAIL" $FIREFOX_PROFILE.tar
-      rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
-      rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
+            # rclone sync "$GIT"/others $CLOUD:git/others
+            # rclone sync "$GIT"/forks $CLOUD:git/forks
+            # rclone sync "$GIT"/archived $CLOUD:git/archived
 
-      #---------------------------------------
-      #              Sync
-      #---------------------------------------
-      # cd /tmp || exit
-      # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
-      # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
-      # tar xf $FIREFOX_PROFILE.tar
-      # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
-      # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
+            ;;
+            #}}}
+            # firefox{{{
 
-      ;;
-      #}}}
-      # git{{{
-      #---------------------------------------
-      #               Git
-      #---------------------------------------
-    --git | -g)
-      ##weechat
-      #cp -fr /home/internal/weechat "$GIT"/own/magpie-private/.config
+            #---------------------------------------
+            #               Firefox
+            #---------------------------------------
+        --firefox | -f)
+            CLOUD=drive
+            FIREFOX_LOCAL=/mnt/internal/misc/firefox
+            FIREFOX_PROFILE=zmzk0pef.default-release
+            GPG_MAIL=SalmanAbedin@disroot.org
 
-      # for repo in "$GIT"/own/*/ "$GIT"/suckless/*/; do
-      for repo in "$REPOS"/*/ "$REPOS"/../daily/*/; do
-        cd "$repo" || continue
-        # git pull --no-rebase
-        git add .
-        [ -z "$(git status --porcelain)" ] && continue
-        #[ "${PWD##*/}" = magpie-private ] \
-        #  || [ "${PWD##*/}" = notes ] \
-        #  || [ "${PWD##*/}" = leetcode ] \
-        #  || message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
-        #if [ -z "$message" ]; then
-        #  git commit --allow-empty-message -m '' && git push
-        #else
-        #  git commit -m "$message" && git push
-        #fi
-        git commit --allow-empty-message -m '' && git push
-      done
-      ;;
-      #}}}
-      # mail{{{
-      #---------------------------------------
-      #               Mail
-      #---------------------------------------
-    --mail | -m)
-      mbsync -c ~/.config/isync/mbsyncrc -a
-      unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
-      [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
-        "Psst. You've got $unread unread mail!"
-      ;;
-      #}}}
-      # phone{{{
-      #---------------------------------------
-      #               Phone
-      #---------------------------------------
-    --phone | -p)
-      ANDROID=/mnt/phone
-      LOCAL=/mnt/internal/phone
-      if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
-        notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
-      fi
-      unison -batch -fat "$ANDROID" "$LOCAL"
-      fusermount -u "$ANDROID"
-      ;;
-      #}}}
-      # repos{{{
-      #---------------------------------------
-      #               Repos
-      #---------------------------------------
-    --repos | -r)
-      for repo in "$GIT"/others/*/; do
-        [ -d "$repo" ] && git -C "$repo" pull --rebase
-      done
-      ;;
-      #}}}
-      # system{{{
-      #---------------------------------------
-      #               System
-      #---------------------------------------
-    --system | -s)
-      # doas -n -- pacman -Syu --noconfirm
-      # yay -Syu --noconfirm
-      # npm update -g
-      paru -Syu --noconfirm
-      # yarn upgrade global
-      ;;
-      #}}}
-      # upstream{{{
-      #---------------------------------------
-      #               Upstream
-      #---------------------------------------
-    --upstream | -u)
-      for repo in "$GIT"/suckless/*/; do
-        if [ -d "$repo" ]; then
-          cd "$repo" || exit
-          git fetch upstream
-          git merge upstream/master --allow-unrelated-histories
-        fi
-      done
-      ;;
-      #}}}
-    *) break ;;
-  esac
-  shift
+            #---------------------------------------
+            #              Backup
+            #---------------------------------------
+            cd $FIREFOX_LOCAL || exit
+            tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
+            gpg -esr "$GPG_MAIL" $FIREFOX_PROFILE.tar
+            rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
+            rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
+
+            #---------------------------------------
+            #              Sync
+            #---------------------------------------
+            # cd /tmp || exit
+            # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
+            # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
+            # tar xf $FIREFOX_PROFILE.tar
+            # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
+            # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
+
+            ;;
+            #}}}
+            # git{{{
+            #---------------------------------------
+            #               Git
+            #---------------------------------------
+        --git | -g)
+            ##weechat
+            #cp -fr /home/internal/weechat "$GIT"/own/magpie-private/.config
+
+            # for repo in "$GIT"/own/*/ "$GIT"/suckless/*/; do
+            for repo in "$REPOS"/*/ "$REPOS"/../daily/*/; do
+                cd "$repo" || continue
+                # git pull --no-rebase
+                git add .
+                [ -z "$(git status --porcelain)" ] && continue
+                #[ "${PWD##*/}" = magpie-private ] \
+                #  || [ "${PWD##*/}" = notes ] \
+                #  || [ "${PWD##*/}" = leetcode ] \
+                #  || message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
+                #if [ -z "$message" ]; then
+                #  git commit --allow-empty-message -m '' && git push
+                #else
+                #  git commit -m "$message" && git push
+                #fi
+                git commit --allow-empty-message -m '' && git push
+            done
+            ;;
+            #}}}
+            # mail{{{
+            #---------------------------------------
+            #               Mail
+            #---------------------------------------
+        --mail | -m)
+            mbsync -c ~/.config/isync/mbsyncrc -a
+            unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
+            [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
+                "Psst. You've got $unread unread mail!"
+            ;;
+            #}}}
+            # phone{{{
+            #---------------------------------------
+            #               Phone
+            #---------------------------------------
+        --phone | -p)
+            ANDROID=/mnt/phone
+            LOCAL=/mnt/internal/phone
+            if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
+                notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
+            fi
+            unison -batch -fat "$ANDROID" "$LOCAL"
+            fusermount -u "$ANDROID"
+            ;;
+            #}}}
+            # repos{{{
+            #---------------------------------------
+            #               Repos
+            #---------------------------------------
+        --repos | -r)
+            for repo in "$GIT"/others/*/; do
+                [ -d "$repo" ] && git -C "$repo" pull --rebase
+            done
+            ;;
+            #}}}
+            # system{{{
+            #---------------------------------------
+            #               System
+            #---------------------------------------
+        --system | -s)
+            # doas -n -- pacman -Syu --noconfirm
+            # yay -Syu --noconfirm
+            # npm update -g
+            paru -Syu --noconfirm
+            # yarn upgrade global
+            ;;
+            #}}}
+            # upstream{{{
+            #---------------------------------------
+            #               Upstream
+            #---------------------------------------
+        --upstream | -u)
+            for repo in "$GIT"/suckless/*/; do
+                if [ -d "$repo" ]; then
+                    cd "$repo" || exit
+                    git fetch upstream
+                    git merge upstream/master --allow-unrelated-histories
+                fi
+            done
+            ;;
+            #}}}
+        *) break ;;
+    esac
+    shift
 done
 
 #===============================================================================

@@ -1,43 +1,44 @@
 #!/bin/sh
 #
 # Wifi related scripts
-# USAGE: wifi -l | [-c SSID PASS] | -d | -S | -s
-
-CARD=$(ip link | grep -o 'wl.\w*')
-
-run() { iwctl station "$CARD" "$@"; }
+# USAGE: wifi -l | [-c SSID PASS]
 
 case "$1" in
-   --dis | -d) run disconnect ;;
-   --show | -S) run show ;;
-   --scan | -s) run scan ;;
-   --list | -l)
-      $0 -s \
-         &&
-         
-
-         # sleep 1
-         run get-networks
-      ;;
-   --con | -c)
-      # $0 -s
-      $0 -d \
-         && $0 -s \
-         &&
-         
-
-         # sleep 1
-         # run --passphrase "${WIFI_PASS:-$3}" connect "${WIFI_SSID:-$2}"
-         run --passphrase "${3:-$WIFI_PASS}" connect "${2:-$WIFI_SSID}" \
-         && $0 -S
-      ;;
-   --rep | -r) $0 -c $REPEATER_SSID $REPEATER_PASS ;;
-   --saraj) $0 -c "$CJ_SSID" "$CJ_PASS" ;;
-   --marinade | -m) $0 -c "$MARINADE_SSID" "$MARINADE_PASS" ;;
+    --show | -s) nmcli con show ;;
+    --list | -l) nmcli dev wifi list ;;
+    --con | -c) sudo -n nmcli dev wifi connect "${2:-$WIFI_SSID}" password "${3:-$WIFI_PASS}" ;;
 esac
 
-#===============================================================================
-#                              Exp
-#===============================================================================
+# ╔══════════════════════════════════════════════════════════════════════
+# ║                              Exp
+# ╚══════════════════════════════════════════════════════════════════════
+
+# CARD=$(ip link | grep -o 'wl.\w*')
+
+# run() { iwctl station "$CARD" "$@"; }
+
+# case "$1" in
+# --dis | -d) run disconnect ;;
+# --show | -S) run show ;;
+# --scan | -s) run scan ;;
+# --list | -l)
+# nmcli devicie wifi list \
+# || $0 -s && sleep 1 && run get-networks
+# ;;
+# --con | -c)
+# # $0 -s
+# $0 -d \
+# && $0 -s \
+# &&
+
+# # sleep 1
+# # run --passphrase "${WIFI_PASS:-$3}" connect "${WIFI_SSID:-$2}"
+# run --passphrase "${3:-$WIFI_PASS}" connect "${2:-$WIFI_SSID}" \
+# && $0 -S
+# ;;
+# --rep | -r) $0 -c $REPEATER_SSID $REPEATER_PASS ;;
+# --saraj) $0 -c "$CJ_SSID" "$CJ_PASS" ;;
+# --marinade | -m) $0 -c "$MARINADE_SSID" "$MARINADE_PASS" ;;
+# esac
 
 # CARD=$(awk -F: 'END {gsub(/ /, "", $1); print $1}' /proc/net/wireless)
