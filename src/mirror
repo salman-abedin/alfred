@@ -30,7 +30,6 @@ while :; do
                 cd "$repo" || continue
                 git add .
                 git commit --allow-empty-message -m ''
-                continue
 
                 if [ "$(git branch --show-current)" = 'home' ]; then
                     branch_merge='office'
@@ -39,6 +38,7 @@ while :; do
                     branch_merge='home'
                     branch_current='office'
                 fi
+                continue
 
                 git checkout "$branch_merge"
                 git fetch
