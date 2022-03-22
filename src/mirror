@@ -38,10 +38,13 @@ while :; do
                     branch_merge='home'
                     branch_current='office'
                 fi
-                continue
 
                 git checkout "$branch_merge"
                 git fetch
+
+                git checkout "$branch_current"
+                continue
+
                 if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
                     git pull origin "$branch_merge"
                     git checkout "$branch_current"
