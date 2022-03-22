@@ -40,7 +40,7 @@ while :; do
                 fi
 
                 git checkout "$branch_merge"
-                git fetch
+                # git fetch
                 if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
                     git pull origin "$branch_merge"
                     git checkout "$branch_current"
@@ -48,7 +48,7 @@ while :; do
                 else
                     git checkout "$branch_current"
                 fi
-                # git push
+                git push
             done
             ;;
 
