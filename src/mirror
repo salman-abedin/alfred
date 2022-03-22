@@ -26,6 +26,7 @@ while :; do
             branch_merge=
             for repo in \
                 /mnt/internal/git/daily/notes \
+                /mnt/internal/git/system/magpie-private \
                 /mnt/internal/git/system/alfred; do
                 cd "$repo" || continue
                 git add .
