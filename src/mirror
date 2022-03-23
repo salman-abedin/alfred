@@ -79,7 +79,8 @@ while :; do
         #               Calcurse
         #---------------------------------------
         --calcurse | -c)
-            CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav --init=keep-local
+            CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav
+            # --init=two-way
             # --init=keep-remote
             # --init=keep-local
             ;;
