@@ -4,9 +4,7 @@
 #
 # Dependencies: doas, find
 
-while read -r line; do
-  doas -n "$SHELL" -c "$line"
-done << eof
+doas -n -- /usr/bin/sh << eof
 pacman -Scc --noconfirm                   # Clears cached packages
 pacman -Rns --noconfirm $(pacman -Qttdq)  # Deletes orphaned packages
 find ~ -xtype l -delete                   # Deletes dead links

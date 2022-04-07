@@ -6,35 +6,35 @@
 #
 
 for device in /sys/class/backlight/*; do
-  read -r CURRENT < "$device"/brightness
-  read -r MAX < "$device"/max_brightness
-  MARGIN=$((MAX / 10))
-  case $1 in
-    --up | -u)
-      [ "$CURRENT" = "$MAX" ] && continue
-      echo $((CURRENT + MARGIN < MAX ? CURRENT + MARGIN : MAX)) \
-        | doas -n tee "$device"/brightness
-      ;;
-    --down | -d)
-      [ "$CURRENT" = 0 ] && continue
-      echo $((CURRENT - MARGIN > 0 ? CURRENT - MARGIN : 0)) \
-        | doas -n tee "$device"/brightness
-      ;;
-    --max | -m)
-      echo $MAX | doas -n tee "$device"/brightness
-      ;;
-    --dim | -D)
-      DIM_FIFO=/tmp/dff
+    read -r CURRENT < "$device"/brightness
+    read -r MAX < "$device"/max_brightness
+    MARGIN=$((MAX / 10))
+    case $1 in
+        --up | -u)
+            [ "$CURRENT" = "$MAX" ] && continue
+            echo $((CURRENT + MARGIN < MAX ? CURRENT + MARGIN : MAX)) \
+                | doas -n tee "$device"/brightness
+            ;;
+        --down | -d)
+            [ "$CURRENT" = 0 ] && continue
+            echo $((CURRENT - MARGIN > 0 ? CURRENT - MARGIN : 0)) \
+                | doas -n tee "$device"/brightness
+            ;;
+        --max | -m)
+            echo $MAX | doas -n tee "$device"/brightness
+            ;;
+        --dim | -D)
+            DIM_FIFO=/tmp/dff
 
-      trap 'exit 0' TERM INT
-      trap 'echo $CURRENT | doas -n tee $device/brightness; pkill -P $$' EXIT
+            trap 'exit 0' TERM INT
+            trap 'echo $CURRENT | doas -n tee $device/brightness; pkill -P $$' EXIT
 
-      # cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit
-      # pacmd list-sink-inputs | grep 'state: RUNNING' && exit
-      echo $((MAX / 3)) | doas -n tee "$device"/brightness
-      [ -e "$DIM_FIFO" ] || mkfifo "$DIM_FIFO"
-      : < "$DIM_FIFO" &
-      wait
-      ;;
-  esac
+            # cat /proc/asound/card*/pcm*/sub*/status | grep RUNNING && exit
+            # pacmd list-sink-inputs | grep 'state: RUNNING' && exit
+            echo $((MAX / 3)) | doas -n tee "$device"/brightness
+            [ -e "$DIM_FIFO" ] || mkfifo "$DIM_FIFO"
+            : < "$DIM_FIFO" &
+            wait
+            ;;
+    esac
 done

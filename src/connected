@@ -5,9 +5,9 @@
 
 read -r ETHERNET < /sys/class/net/eth0/carrier
 if [ "$ETHERNET" != 1 ]; then
-	set -- /sys/class/net/w*/operstate
-	read -r WLAN < "$1"
-	[ "$WLAN" = up ] || exit 1
+    set -- /sys/class/net/w*/operstate
+    read -r WLAN < "$1"
+    [ "$WLAN" = up ] || exit 1
 fi
 wget -q --spider https://google.com > /dev/null 2>&1 || exit 1
 

@@ -19,7 +19,7 @@ HEIGHT_MM=$(awk '{print $(NF-2)}' $INFO)
 HEIGHT_IN=$(echo "${HEIGHT_MM%mm}" | awk '{print $1 * 0.03937007874015748}')
 
 DIAGONAL_IN=$(awk -v w="$WIDTH_IN" -v h="$HEIGHT_IN" \
-  'BEGIN{print sqrt(w^2 + h^2)}')
+    'BEGIN{print sqrt(w^2 + h^2)}')
 
 PX=$(grep -o "[0-9]*x[0-9]*" $INFO)
 
@@ -29,15 +29,15 @@ TEMP_HEIGHT_PX=${PX#*x}
 HEIGHT_PX=${TEMP_HEIGHT_PX%%+*}
 
 DIAGONAL_PX=$(awk -v w="$WIDTH_PX" -v h="$HEIGHT_PX" \
-  'BEGIN{print sqrt(w^2 +h^2)}')
+    'BEGIN{print sqrt(w^2 +h^2)}')
 
 rm $INFO
 
 case $1 in
-  -p | --pixel)
-    awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" 'BEGIN{print dp / di}'
-    ;;
-  -f | --factor)
-    awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" 'BEGIN{print dp / di / 100}'
-    ;;
+    -p | --pixel)
+        awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" 'BEGIN{print dp / di}'
+        ;;
+    -f | --factor)
+        awk -v dp="$DIAGONAL_PX" -v di="$DIAGONAL_IN" 'BEGIN{print dp / di / 100}'
+        ;;
 esac
