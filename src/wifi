@@ -7,11 +7,9 @@ case "$1" in
     --show | -s) nmcli con show ;;
     --list | -l) nmcli dev wifi list ;;
     --con | -c)
-        doas -n -- /usr/bin/sh << eof
-            nmcli radio wifi off
-            nmcli radio wifi on
-            nmcli dev wifi connect "${2:-$WIFI_SSID}" password "${3:-$WIFI_PASS}"
-eof
+        # doas -n nmcli radio wifi off
+        # doas -n nmcli radio wifi on
+        doas -n nmcli dev wifi connect "${2:-$WIFI_SSID}" password "${3:-$WIFI_PASS}"
         ;;
 esac
 
