@@ -8,173 +8,177 @@ fork() { setsid -f "$@" > /dev/null 2>&1; }
 # launch_dwm() { while :; do ssh-agent dwm 2> ~/.local/share/dwm.log; done; }
 launch_dwm() { while :; do dbus-launch dwm 2> ~/.local/share/dwm.log; done; }
 launch_feh() {
-  fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' \
-    -d --edit --start-at \
-    "$1"
+    fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' \
+        -d --edit --start-at \
+        "$1"
 }
 
 mux() {
-  # tmux split-window -h \; \
-  tmux send "C-c" \; \
-    send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter \;
-  # kill-pane -a
-  # kill-pane -t :.1
-  # tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
-  # tmux split-window -h "$EDITOR $1" \; \
-  #    swap-pane -d -t :.1 \; \
-  #    select-layout main-vertical
-  # # resize-pane -Z
+    # tmux split-window -h \; \
+    tmux send "C-c" \; \
+        send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter \;
+    # kill-pane -a
+    # kill-pane -t :.1
+    # tmux send "printf '\033[2J\033[H' && cd ${1%/*} && $EDITOR $1 && faint" Enter
+    # tmux split-window -h "$EDITOR $1" \; \
+    #    swap-pane -d -t :.1 \; \
+    #    select-layout main-vertical
+    # # resize-pane -Z
 }
 
 choose() {
-  choice=$(printf "🌏 Browser\n🎥 MPV\n📚 Foxit Reader\n📙 Master PDF Editor" | amenu) \
-    && case "${choice#* }" in
-      Browser) fork qutebrowser "$1" ;;
-      # Browser) fork falkon "$1" ;;
-      MPV) fork mpv "$1" ;;
-      FoxitReader) fork foxitreader "$1" ;;
-      MasterPDFEditor) fork masterpdfeditor4 "$1" ;;
-        # MPV) qmedia "$1" ;;
-    esac
+    choice=$(printf "🌏 Browser\n🎥 MPV\n📚 Foxit Reader\n📙 Master PDF Editor" | amenu) \
+        && case "${choice#* }" in
+            Browser) fork qutebrowser "$1" ;;
+            # Browser) fork falkon "$1" ;;
+            MPV) fork mpv "$1" ;;
+            FoxitReader) fork foxitreader "$1" ;;
+            MasterPDFEditor) fork masterpdfeditor4 "$1" ;;
+                # MPV) qmedia "$1" ;;
+        esac
 }
 
 launch_link() {
-  case "$1" in
-    *mkv | *webm | *mp4 | *youtube.com/watch* | *youtube.com/playlist* | *youtu.be*)
-      fork mpv "$1"
-      # qmedia "$1"
-      ;;
-    *)
-      fork "$BROWSER" "$1"
-      # fork firefox "$1"
-      ;;
-  esac
+    case "$1" in
+        *mkv | *webm | *mp4 | *youtube.com/watch* | *youtube.com/playlist* | *youtu.be*)
+            fork mpv "$1"
+            # qmedia "$1"
+            ;;
+        *)
+            fork "$BROWSER" "$1"
+            # fork firefox "$1"
+            ;;
+    esac
 }
 
 launch_file() {
-  case $* in
-    *.lnk | *.exe)
-      fork wine "$1"
-      exit
-      ;;
-    *.xlsx)
-      ssconvert "$1" "${1%.xlsx}.csv" && "$EDITOR" "${1%.xlsx}.csv"
-      exit
-      ;;
+    case $* in
+        *.lnk | *.exe)
+            fork wine "$1"
+            exit
+            ;;
+        *.xlsx)
+            ssconvert "$1" "${1%.xlsx}.csv" && "$EDITOR" "${1%.xlsx}.csv"
+            exit
+            ;;
 
-      # *.ar.*)
-      # fork alacritty \
-      # --config-file ~/.config/alacritty/alacritty_ar.yml \
-      # -e "$EDITOR" "$@"
-      # exit
-      # ;;
+            # *.ar.*)
+            # fork alacritty \
+            # --config-file ~/.config/alacritty/alacritty_ar.yml \
+            # -e "$EDITOR" "$@"
+            # exit
+            # ;;
 
-    *.url)
-      fork "$BROWSER" "$(cat "$@")"
-      exit
-      ;;
-    *.sent)
-      # devour sent "$@" &
-      fork sent "$1"
-      # sleep 1 && xdotool key Super+f
-      exit
-      ;;
-    *.ai)
-      fork inkscape "$1"
-      exit
-      ;;
-    *.gpg)
-      gpg -qd "$1" | $EDITOR
-      exit
-      ;;
-      # *toy.*)
-      # {
-      #    sleep 0.5
-      #    tmux split-window -h -l 50 \; \
-      #       select-layout main-vertical \; \
-      #       last-pane
-      # } &
-      # FILE=$*
-      # EXT=${FILE##*.}
-      # if [ "$EXT" = sql ]; then
-      #    tmux split-window
-      # else
-      #    tmux split-window -h -l 50 \; select-layout main-vertical
-      # fi
-      # tmux split-window -l 25% \; last-pane
-      # ;;
-  esac
+        *.url)
+            fork "$BROWSER" "$(cat "$@")"
+            exit
+            ;;
+        *.sent)
+            # devour sent "$@" &
+            fork sent "$1"
+            # sleep 1 && xdotool key Super+f
+            exit
+            ;;
+        *.ai)
+            fork inkscape "$1"
+            exit
+            ;;
+        *.gpg)
+            gpg -qd "$1" | $EDITOR
+            exit
+            ;;
+        *.mp3)
+            mpv --no-video "$1"
+            exit
+            ;;
+            # *toy.*)
+            # {
+            #    sleep 0.5
+            #    tmux split-window -h -l 50 \; \
+            #       select-layout main-vertical \; \
+            #       last-pane
+            # } &
+            # FILE=$*
+            # EXT=${FILE##*.}
+            # if [ "$EXT" = sql ]; then
+            #    tmux split-window
+            # else
+            #    tmux split-window -h -l 50 \; select-layout main-vertical
+            # fi
+            # tmux split-window -l 25% \; last-pane
+            # ;;
+    esac
 
-  case $(file --mime-type "$*" -bL) in
-    # text* | *x-empty | *json | *octet-stream) $EDITOR "$1" ;;
-    text* | *x-empty | *json | *octet-stream | application/csv) mux "$*" ;;
-    # text* | *x-empty | *json | *octet-stream | application/csv)
-    #   tmux new-window "$EDITOR $*" \; \
-    #     swap-window -d -t :-
-    #   ;;
-    *directory) $FILE "$1" ;;
-    *html) fork "$BROWSER" "$1" ;;
-    audio*) mpv "$*" ;;
-    video* | *gif) fork mpv "$*" ;;
-    *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
-    *svg+xml) fork magick display "$1" ;;
-    *x-bittorrent) transmission-remote -a "$1" ;;
-    *.document)
-      BASE=${1##*/}
-      CONVERTED=/mnt/internal/downloads/${BASE%.*}.pdf
-      pandoc "$1" --pdf-engine wkhtmltopdf -o "$CONVERTED" && $0 -f "$CONVERTED"
-      ;;
-    # *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
-    # application/csv) sc-im "$1" ;;
-    application*) extract --clean "$1" ;;
-    image*)
-      fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' -d --edit --start-at \
-        "$1"
-      ;;
-    *) return ;;
-  esac
+    case $(file --mime-type "$*" -bL) in
+        # text* | *x-empty | *json | *octet-stream) $EDITOR "$1" ;;
+        text* | *x-empty | *json | *octet-stream | application/csv) mux "$*" ;;
+        # text* | *x-empty | *json | *octet-stream | application/csv)
+        #   tmux new-window "$EDITOR $*" \; \
+        #     swap-window -d -t :-
+        #   ;;
+        *directory) $FILE "$1" ;;
+        *html) fork "$BROWSER" "$1" ;;
+        audio*) mpv "$*" ;;
+        video* | *gif) fork mpv "$*" ;;
+        *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
+        *svg+xml) fork magick display "$1" ;;
+        *x-bittorrent) transmission-remote -a "$1" ;;
+        *.document)
+            BASE=${1##*/}
+            CONVERTED=/mnt/internal/downloads/${BASE%.*}.pdf
+            pandoc "$1" --pdf-engine wkhtmltopdf -o "$CONVERTED" && $0 -f "$CONVERTED"
+            ;;
+        # *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
+        # application/csv) sc-im "$1" ;;
+        application*) extract --clean "$1" ;;
+        image*)
+            fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' -d --edit --start-at \
+                "$1"
+            ;;
+        *) return ;;
+    esac
 }
 
 launch_terminal() {
-  # if pidof tmux > /dev/null 2>&1; then
-  #    tmux new-window
-  # else
-  #    tmux new-session -d \; switch-client
-  # fi
-  tmux new-session -d \; switch-client
-  pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach
-  # pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach &
-  # [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] && xdo activate -N st-256color
+    # if pidof tmux > /dev/null 2>&1; then
+    #    tmux new-window
+    # else
+    #    tmux new-session -d \; switch-client
+    # fi
+    tmux new-session -d \; switch-client
+    pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach
+    # pidof "$TERMINAL" > /dev/null 2>&1 || "$TERMINAL" -e tmux attach &
+    # [ "$(pidof "$TERMINAL")" != "$(xdo pid)" ] && xdo activate -N st-256color
 }
 
 launch_tmux() {
-  pidof tmux > /dev/null 2>&1 || {
-    tmux new-session -s 'home' -d \
-      -n 'schedule' 'calcurse' \;
-    # new-window -n 'mails' 'neomutt' \;
-    # split-window -h 'neomutt' \; last-pane
-  }
+    pidof tmux > /dev/null 2>&1 || {
+        tmux new-session -s 'home' -d \
+            -n 'schedule' 'calcurse' \;
+        # new-window -n 'mails' 'neomutt' \;
+        # split-window -h 'neomutt' \; last-pane
+    }
 }
 
 launch_bolt() {
-  launch_terminal
-  tmux send "bolt --search" "Enter"
+    launch_terminal
+    tmux send "bolt --search" "Enter"
 }
 
 launch_faint() {
-  launch_terminal
-  # tmux send "xdotool sleep 0.1 key quoteright && faint" Enter
+    launch_terminal
+    # tmux send "xdotool sleep 0.1 key quoteright && faint" Enter
 }
 
 case $1 in
-  --bolt | -b) launch_bolt ;;
-  --choose | -c) shift && choose "$*" ;;
-  --dwm | -d) launch_dwm ;;
-  --file | -f) shift && launch_file "$*" ;;
-  --faint | -F) shift && launch_faint "$*" ;;
-  --link | -l) shift && launch_link "$*" ;;
-  --tmux | -t) launch_tmux ;;
-  --launch_terminal | -T) launch_terminal ;;
+    --bolt | -b) launch_bolt ;;
+    --choose | -c) shift && choose "$*" ;;
+    --dwm | -d) launch_dwm ;;
+    --file | -f) shift && launch_file "$*" ;;
+    --faint | -F) shift && launch_faint "$*" ;;
+    --link | -l) shift && launch_link "$*" ;;
+    --tmux | -t) launch_tmux ;;
+    --launch_terminal | -T) launch_terminal ;;
 esac
 
 # exp{{{
