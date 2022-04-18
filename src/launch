@@ -91,7 +91,6 @@ launch_file() {
             mpv --no-video "$1"
             exit
             ;;
-
             # *toy.*)
             # {
             #    sleep 0.5
@@ -119,7 +118,7 @@ launch_file() {
         #   ;;
         *directory) $FILE "$1" ;;
         *html) fork "$BROWSER" "$1" ;;
-        audio*) mpv --no-video "$*" ;;
+        audio*) mpv "$*" ;;
         video* | *gif) fork mpv "$*" ;;
         *pdf | *postscript | *epub+zip | *vnd.djvu) fork "$READER" "$1" ;;
         *svg+xml) fork magick display "$1" ;;
