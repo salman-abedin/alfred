@@ -65,6 +65,15 @@ while :; do
             ;;
         #}}}
 
+        --work | -w)
+            rsync -aP /mnt/internal/git/system/magpie/.zshenv jump:~
+            rsync -aP /mnt/internal/git/system/magpie/.config/zsh jump:~/.config
+            rsync -aP /mnt/internal/git/system/magpie/.config/tmux jump:~/.config
+            rsync -aP /mnt/internal/git/system/magpie/.config/nvim jump:~/.config
+            rsync -aP /mnt/internal/git/system/magpie/.config/faintrc jump:~/.config
+            rsync -aP /mnt/internal/git/system/alfred/src/launch jump:~/.local/bin
+            ;;
+
         # brave{{{
         #---------------------------------------
         #               Brave
