@@ -71,7 +71,7 @@ while :; do
             rsync -aP /mnt/internal/git/system/magpie/.config/tmux jump:~/.config
             rsync -aP /mnt/internal/git/system/magpie/.config/nvim jump:~/.config
             rsync -aP /mnt/internal/git/system/magpie/.config/faintrc jump:~/.config
-            rsync -aP /mnt/internal/git/system/alfred/src/launch jump:~/.local/bin
+            ssh jump rm ~/.config/nvim/after/plugin/tree_sitter.lua
             ;;
 
         # brave{{{
