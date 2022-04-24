@@ -69,9 +69,9 @@ while :; do
             rsync -aP /mnt/internal/git/system/magpie/.zshenv jump:~
             rsync -aP /mnt/internal/git/system/magpie/.config/zsh jump:~/.config
             rsync -aP /mnt/internal/git/system/magpie/.config/tmux jump:~/.config
-            rsync -aP /mnt/internal/git/system/magpie/.config/nvim jump:~/.config
             rsync -aP /mnt/internal/git/system/magpie/.config/faintrc jump:~/.config
-            ssh jump rm ~/.config/nvim/after/plugin/tree_sitter.lua
+            rsync -aP /mnt/internal/git/system/magpie/.config/nvim jump:~/.config
+            ssh jump 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
             ;;
 
         # brave{{{
