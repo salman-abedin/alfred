@@ -17,7 +17,7 @@ for device in /sys/class/backlight/*; do
             ;;
         --down | -d)
             [ "$CURRENT" = 0 ] && continue
-            echo $((CURRENT - MARGIN > 0 ? CURRENT - MARGIN : 0)) \
+             echo $((CURRENT - MARGIN > 0 ? CURRENT - MARGIN : 0)) \
                 | doas -n tee "$device"/brightness
             ;;
         --max | -m)
