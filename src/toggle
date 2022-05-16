@@ -5,152 +5,152 @@
 DDM=/tmp/ddm
 
 key_layout() {
-  :
+    :
 }
 
 tmux_center() {
-  on() {
-    tmux split-window -h -l 19\% "clear && read -r line" \; \
-      last-pane \; \
-      split-window -b -h -l 21\% "clear && read -r line" \; \
-      last-pane
-  }
-  off() {
-    tmux kill-pane -t :.+ \; kill-pane -t:.-
-  }
-  if [ -n "$1" ]; then
-    case $1 in
-      off) off ;;
-      on) on ;;
-    esac
-    :
-  elif [ "$(tmux list-panes | wc -l)" = 1 ]; then
-    on
-  else
-    off
-  fi
+    on() {
+        tmux split-window -h -l 19\% "clear && read -r line" \; \
+            last-pane \; \
+            split-window -b -h -l 21\% "clear && read -r line" \; \
+            last-pane
+    }
+    off() {
+        tmux kill-pane -t :.+ \; kill-pane -t:.-
+    }
+    if [ -n "$1" ]; then
+        case $1 in
+            off) off ;;
+            on) on ;;
+        esac
+        :
+    elif [ "$(tmux list-panes | wc -l)" = 1 ]; then
+        on
+    else
+        off
+    fi
 }
 
 wallreel() {
-  REELPID=/tmp/reel_pid
+    REELPID=/tmp/reel_pid
 
-  if [ -s $REELPID ]; then
-    kill $(cat $REELPID)
-    : > $REELPID
-    notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Stopped"
-  else
-    while :; do
-      setdisplay --bg shuffle
-      sleep 5m
-    done &
-    echo $! > $REELPID
-    notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Started"
-  fi
+    if [ -s $REELPID ]; then
+        kill $(cat $REELPID)
+        : > $REELPID
+        notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Stopped"
+    else
+        while :; do
+            setdisplay --bg shuffle
+            sleep 5m
+        done &
+        echo $! > $REELPID
+        notify-send -u low -i "$ICONS"/wall.png "Wallpaper Reeling Started"
+    fi
 
 }
 
 notifications() {
-  if [ -s "$DDM" ]; then
-    : > "$DDM"
-    killall -SIGUSR2 dunst > /dev/null 2>&1
-    sleep 1
-    # notify-send -u low -i "$ICONS"/bell.png 'Disturb all you want'
-  else
-    echo on > "$DDM"
-    # notify-send -u low -i "$ICONS"/dnd.png 'Do not disturb'
-    sleep 2
-    killall -SIGUSR1 dunst > /dev/null 2>&1
-  fi
-  # uniblocks -u noti
+    if [ -s "$DDM" ]; then
+        : > "$DDM"
+        killall -SIGUSR2 dunst > /dev/null 2>&1
+        sleep 1
+        notify-send -u low -i "$ICONS"/bell.png 'Disturb all you want'
+    else
+        echo on > "$DDM"
+        notify-send -u low -i "$ICONS"/dnd.png 'Do not disturb'
+        sleep 2
+        killall -SIGUSR1 dunst > /dev/null 2>&1
+    fi
+    # uniblocks -u noti
 }
 
 wifi() {
-  if pidof iwd > /dev/null; then
-    doas systemctl stop iwd
-    notify-send -u low -i "$ICONS"/disconnected.png 'Turned Wifi Off'
-  else
-    doas systemctl start iwd
-    notify-send -u low -i "$ICONS"/connected.png 'Turned Wifi On'
-  fi
+    if pidof iwd > /dev/null; then
+        doas systemctl stop iwd
+        notify-send -u low -i "$ICONS"/disconnected.png 'Turned Wifi Off'
+    else
+        doas systemctl start iwd
+        notify-send -u low -i "$ICONS"/connected.png 'Turned Wifi On'
+    fi
 }
 
 focusmode() {
-  # if [ -s "$DDM" ]; then
-  #    xdo show -a "$STATUSBAR"
-  #    bspc config top_padding 35
-  # else
-  #    xdo hide -a "$STATUSBAR"
-  #    bspc config top_padding 0
-  # fi
-  xdotool key Super+Shift+b
-  sleep 0.5 && xdotool key Super+Shift+f
-  # tmux set status
-  wallreel
-  # wifi
-  notifications
+    # if [ -s "$DDM" ]; then
+    #    xdo show -a "$STATUSBAR"
+    #    bspc config top_padding 35
+    # else
+    #    xdo hide -a "$STATUSBAR"
+    #    bspc config top_padding 0
+    # fi
+    xdotool key Super+Shift+b
+    sleep 0.5 && xdotool key Super+Shift+f
+    # tmux set status
+    wallreel
+    # wifi
+    notifications
 }
 
 fullscreen() {
-  xdotool key Super+Shift+b
-  sleep 0.7 && xdotool key Super+Shift+f
+    xdotool key Super+Shift+b
+    sleep 0.7 && xdotool key Super+Shift+f
 }
 
 dont_disturb() {
-  wallreel
-  notifications
+    wallreel
+    notifications
 }
 
 screen_key() {
-  if pgrep screenkey; then
-    pkill screenkey
-  else
-    screenkey -s small --persist
-  fi
+    if pgrep screenkey; then
+        pkill screenkey
+    else
+        screenkey -s small --persist
+    fi
 }
 
 screen_text() {
-  if pgrep screenkey; then
-    pkill screenkey
-  else
-    screenkey -p center -s small --no-whitespace --multiline \
-      --ignore Mode_switch --ignore Escape --ignore KP_Left
-  fi
+    if pgrep screenkey; then
+        pkill screenkey
+    else
+        screenkey -p center -s small --no-whitespace --multiline \
+            --ignore Mode_switch --ignore Escape --ignore KP_Left
+    fi
 }
 
 cam() {
-  if pgrep droidcam; then
-    pkill droidcam
-  else
-    droidcam-cli -a 192.168.0.101 4747
-  fi
+    if pgrep droidcam; then
+        pkill droidcam
+    else
+        droidcam-cli -a 192.168.0.101 4747
+    fi
 }
 
 monocle() {
-  tmux resize-pane -Z
-  xdotool key Super+z
-  # if tmux list-panes -F '#F' | grep -q Z; then
-  #    tmux resize-pane -t :.- -x 17% \; \
-  #       resize-pane -x 82
-  # else
-  #    tmux resize-pane -Z
-  # fi
+    tmux resize-pane -Z
+    xdotool key Super+z
+    # if tmux list-panes -F '#F' | grep -q Z; then
+    #    tmux resize-pane -t :.- -x 17% \; \
+    #       resize-pane -x 82
+    # else
+    #    tmux resize-pane -Z
+    # fi
 }
 
 while :; do
-  case $1 in
-    --cam | -c) cam ;;
-    --dnd | -D) dont_disturb ;;
-    --fullscreen | -f) fullscreen ;;
-    --focus-mode | -F) focusmode ;;
-    --key-layout | -k) key_layout ;;
-    --monocle | -m) monocle ;;
-    --noti | -n) notifications ;;
-    --wall-reel | -r) wallreel ;;
-    --tmux-center | -t) shift && tmux_center "$1" ;;
-    --wifi | -w) wifi ;;
-    --screen_key) screen_key ;;
-    --screen_text) screen_text ;;
-    *) break ;;
-  esac
-  shift
+    case $1 in
+        --cam | -c) cam ;;
+        --dnd | -D) dont_disturb ;;
+        --fullscreen | -f) fullscreen ;;
+        --focus-mode | -F) focusmode ;;
+        --key-layout | -k) key_layout ;;
+        --monocle | -m) monocle ;;
+        --noti | -n) notifications ;;
+        --wall-reel | -r) wallreel ;;
+        --tmux-center | -t) shift && tmux_center "$1" ;;
+        --wifi | -w) wifi ;;
+        --screen_key) screen_key ;;
+        --screen_text) screen_text ;;
+        *) break ;;
+    esac
+    shift
 done
