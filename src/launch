@@ -153,8 +153,10 @@ launch_terminal() {
 
 launch_tmux() {
     pidof tmux > /dev/null 2>&1 || {
-        tmux new-session -s 'home' -d \
-            -n 'schedule' 'calcurse' \;
+
+        # tmux new-session -s 'home' -d \
+            # -n 'schedule' 'calcurse' \;
+
         # new-window -n 'mails' 'neomutt' \;
         # split-window -h 'neomutt' \; last-pane
     }
