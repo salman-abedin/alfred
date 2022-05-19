@@ -58,7 +58,8 @@ launch_file() {
             exit
             ;;
         *.xlsx)
-            ssconvert "$1" "${1%.xlsx}.csv" && "$EDITOR" "${1%.xlsx}.csv"
+            # ssconvert "$1" "${1%.xlsx}.csv" && "$EDITOR" "${1%.xlsx}.csv"
+            sc-im "$1"
             exit
             ;;
 
