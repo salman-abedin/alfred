@@ -61,7 +61,9 @@ while :; do
         #               Kindle
         #---------------------------------------
         --kindle | -k)
-            sudo cp -fr /mnt/internal/misc/kindle/* /mnt/usb/documents
+            # sudo cp -fr /mnt/internal/misc/kindle/* /mnt/external/documents
+            sudo cp -fr /mnt/internal/git/daily/notes/songs/* /mnt/external/documents/songs
+            sudo cp -fr /mnt/internal/git/daily/notes/music/scores/* /mnt/external/documents/scores
             ;;
         #}}}
 
