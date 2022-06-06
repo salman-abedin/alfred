@@ -131,7 +131,7 @@ launch_file() {
             ;;
         # *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
         # application/csv) sc-im "$1" ;;
-        application*) extract --clean "$1" ;;
+        application*) extract "$1" ;;
         image*)
             fork feh --keep-zoom-vp -A "setdisplay --bg %F" -B 'black' -d --edit --start-at \
                 "$1"
