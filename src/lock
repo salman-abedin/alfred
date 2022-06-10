@@ -9,52 +9,53 @@ PATH_WALLPAPERS=~/.local/share/wallpapers
 FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
 
 post_unlocked() {
-  read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
-  pkill -P $PID_SAVESCREEN
-  toggle -n
-  : > "$LOCK_STAT"
+    read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
+    pkill -P $PID_SAVESCREEN
+    toggle -n
+    : > "$LOCK_STAT"
 }
 
 lock() {
-  echo locked > $LOCK_STAT
-  toggle -n
-  QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
-  i3lock -ekn \
-    --indicator --radius 150 --ring-width 3 \
-    --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
-    --time-str "%H:%M" \
-    --time-font sans --time-color dddddd --time-size 90 \
-    --date-str "%a, %d %b" --date-pos='tx+0:ty+75' \
-    --date-font sans --date-color dddddd --date-size 30 \
-    --greeter-text "$QUOTE" --greeter-pos 'w/2:100' \
-    --greeter-font "Lexend Deca" --greeter-color dddddd --greeter-size 20 \
-    --pass-volume-keys --pass-media-keys \
-    -c 00000000 \
-    -i "$BACKGROUND_FORMATTED"
-  post_unlocked
+    echo locked > $LOCK_STAT
+    toggle -n
+    QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
+    doas -n loginctl suspend
+    i3lock -ekn \
+        --indicator --radius 150 --ring-width 3 \
+        --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
+        --time-str "%H:%M" \
+        --time-font sans --time-color dddddd --time-size 90 \
+        --date-str "%a, %d %b" --date-pos='tx+0:ty+75' \
+        --date-font sans --date-color dddddd --date-size 30 \
+        --greeter-text "$QUOTE" --greeter-pos 'w/2:100' \
+        --greeter-font "Lexend Deca" --greeter-color dddddd --greeter-size 20 \
+        --pass-volume-keys --pass-media-keys \
+        -c 00000000 \
+        -i "$BACKGROUND_FORMATTED"
+    post_unlocked
 }
 
 set_background() {
-  convert \
-    $(find $PATH_WALLPAPERS -name "*.jpg" -o -name "*.png" | shuf -n1) \
-    -resize "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')"! \
-    -fill black -colorize 50% \
-    -filter Gaussian \
-    -blur 0x3 \
-    "$BACKGROUND_FORMATTED"
+    convert \
+        $(find $PATH_WALLPAPERS -name "*.jpg" -o -name "*.png" | shuf -n1) \
+        -resize "$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')"! \
+        -fill black -colorize 50% \
+        -filter Gaussian \
+        -blur 0x3 \
+        "$BACKGROUND_FORMATTED"
 }
 
 blank() {
-  xrandr --output eDP-1 --brightness 0
-  sleep 4
-  xrandr --output eDP-1 --brightness 1
+    xrandr --output eDP-1 --brightness 0
+    sleep 4
+    xrandr --output eDP-1 --brightness 1
 }
 
 main() {
-  [ -s "$LOCK_STAT" ] && exit 0
-  blank &
-  set_background
-  lock
+    [ -s "$LOCK_STAT" ] && exit 0
+    blank &
+    set_background
+    lock
 }
 main
 
