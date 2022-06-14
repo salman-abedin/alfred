@@ -95,6 +95,11 @@ while :; do
         #---------------------------------------
         --calcurse | -c)
             CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav
+<<<<<<< HEAD
+=======
+            # --init=keep-remote
+            # --init=two-way
+>>>>>>> office
             # --init=keep-remote
             # --init=two-way
             # --init=keep-local
