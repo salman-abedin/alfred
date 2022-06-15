@@ -4,7 +4,7 @@
 # Dependencies: shuf, i3lock-color, xset, sleep, xdotool
 
 # config{{{
-DELAY_SUSPEND=900
+# DELAY_SUSPEND=900
 
 LOCK_STAT=/tmp/LOCK_STAT
 BACKGROUND_FORMATTED=/tmp/LOCK_BACKGROUND
@@ -28,22 +28,18 @@ reset() {
 #}}}
 # lock{{{
 lock() {
-    if ! timeout $DELAY_SUSPEND \
-        i3lock -ekn \
-            --indicator --radius 150 --ring-width 3 \
-            --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
-            --time-str "%H:%M" \
-            --time-font sans --time-color dddddd --time-size 90 \
-            --date-str "%a, %d %b" --date-pos='tx+0:ty+75' \
-            --date-font sans --date-color dddddd --date-size 30 \
-            --greeter-text "$QUOTE" --greeter-pos 'w/2:100' \
-            --greeter-font "Lexend Deca" --greeter-color dddddd --greeter-size 20 \
-            --pass-volume-keys --pass-media-keys \
-            -c 00000000 \
-            -i "$BACKGROUND_FORMATTED"; then
-        # loginctl suspend
-        :
-    fi
+    i3lock -ekn \
+        --indicator --radius 150 --ring-width 3 \
+        --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
+        --time-str "%H:%M" \
+        --time-font sans --time-color dddddd --time-size 90 \
+        --date-str "%a, %d %b" --date-pos='tx+0:ty+75' \
+        --date-font sans --date-color dddddd --date-size 30 \
+        --greeter-text "$QUOTE" --greeter-pos 'w/2:100' \
+        --greeter-font "Lexend Deca" --greeter-color dddddd --greeter-size 20 \
+        --pass-volume-keys --pass-media-keys \
+        -c 00000000 \
+        -i "$BACKGROUND_FORMATTED"
 }
 #}}}
 # set background{{{
