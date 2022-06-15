@@ -3,26 +3,32 @@
 # Screen locker
 # Dependencies: shuf, i3lock-color, xset, sleep, xdotool
 
-DELAY_SUSPEND=5
+# config{{{
+DELAY_SUSPEND=900
 
 LOCK_STAT=/tmp/LOCK_STAT
 BACKGROUND_FORMATTED=/tmp/LOCK_BACKGROUND
 PATH_WALLPAPERS=~/.local/share/wallpapers
-FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
-
-post_unlocked() {
+# FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
+#}}}
+# init{{{
+init(){
+    echo locked > $LOCK_STAT
+    toggle -n
+    QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
+}
+#}}}
+# reset{{{
+reset() {
     # read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
     # pkill -P "$PID_SAVESCREEN"
     toggle -n
     : > "$LOCK_STAT"
 }
-
+#}}}
+# lock{{{
 lock() {
-    echo locked > $LOCK_STAT
-    toggle -n
-    QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
-
-    if timeout $DELAY_SUSPEND \
+    if ! timeout $DELAY_SUSPEND \
         i3lock -ekn \
             --indicator --radius 150 --ring-width 3 \
             --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
@@ -35,16 +41,12 @@ lock() {
             --pass-volume-keys --pass-media-keys \
             -c 00000000 \
             -i "$BACKGROUND_FORMATTED"; then
-        # post_unlocked
+        # loginctl suspend
         :
-    else
-        loginctl suspend
-        # ns timedout
     fi
-    toggle -n
-    : > "$LOCK_STAT"
 }
-
+#}}}
+# set background{{{
 set_background() {
     convert \
         $(find $PATH_WALLPAPERS -name "*.jpg" -o -name "*.png" | shuf -n1) \
@@ -54,21 +56,26 @@ set_background() {
         -blur 0x3 \
         "$BACKGROUND_FORMATTED"
 }
-
+#}}}
+# blank{{{
 blank() {
     xrandr --output eDP-1 --brightness 0
     sleep 4
     xrandr --output eDP-1 --brightness 1
 }
-
+#}}}
+# main{{{
 main() {
     [ -s "$LOCK_STAT" ] && exit 0
-    blank &
+    # blank &
+    init
     set_background
     lock
+    reset
 }
 main
-
+#}}}
+# exp{{{
 #===============================================================================
 #                             Exp
 #===============================================================================
@@ -140,3 +147,4 @@ main
 # convert $SCREEN ~/.local/share/images/arch.png -gravity center -composite -matte $SCREEN
 # # launch -f $SCREEN
 # timeout "$dur"m i3lock -enuc 00000000 -i $SCREEN
+#}}}

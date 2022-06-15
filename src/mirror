@@ -13,11 +13,11 @@ CLOUD=drive
 # # exit 1
 # fi
 
-# notify-send -i "$ICONS/mirror.png" "Mirroring now"
+notify-send -i "$ICONS/mirror.png" "Mirroring now"
 
 while :; do
     case $1 in
-
+        # home & office{{{
         # ╔════════════════════════════════════════
         # ║                    Home & Office
         # ╚════════════════════════════════════════
@@ -55,7 +55,7 @@ while :; do
                 git push
             done
             ;;
-
+#}}}
         # kindle{{{
         #---------------------------------------
         #               Kindle
@@ -66,7 +66,7 @@ while :; do
             sudo cp -fr /mnt/internal/git/daily/notes/music/scores/* /mnt/external/documents/scores
             ;;
         #}}}
-
+        # work{{{
         --work | -w)
             rsync -aP /mnt/internal/git/system/magpie/.zshenv $2:~
             rsync -aP /mnt/internal/git/system/magpie/.config/zsh $2:~/.config
@@ -76,7 +76,7 @@ while :; do
             ssh $2 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
             # ssh $2 'ln -s ~/.config/tmux/tmux.conf ~/.tmux.conf'
             ;;
-
+#}}}
         # brave{{{
         #---------------------------------------
         #               Brave
@@ -97,7 +97,6 @@ while :; do
             CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav
             # --init=keep-remote
             # --init=two-way
-            # --init=keep-remote
             # --init=keep-local
             ;;
             #}}}
@@ -273,7 +272,7 @@ while :; do
     esac
     shift
 done
-
+# exp{{{
 #===============================================================================
 #                             Exp
 #===============================================================================
@@ -296,3 +295,4 @@ done
 # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
 # ;;
 # umount -l /mnt/cloud
+#}}}

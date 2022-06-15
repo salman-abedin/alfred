@@ -8,7 +8,7 @@ connect() {
     bluetoothctl power on
     # pulseaudio --start
 
-    bluetoothctl connect "41:42:B1:BE:00:F3"
+    bluetoothctl connect "30:C0:1B:86:61:D5"
 
     # if bluetoothctl connect "${1:-41:42:B1:BE:00:F3}" \
     # || bluetoothctl connect "E8:EC:A3:27:60:15" \
