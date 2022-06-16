@@ -12,7 +12,7 @@ PATH_WALLPAPERS=~/.local/share/wallpapers
 # FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
 #}}}
 # init{{{
-init(){
+init() {
     echo locked > $LOCK_STAT
     toggle -n
     QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)

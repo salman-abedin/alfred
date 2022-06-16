@@ -55,7 +55,7 @@ while :; do
                 git push
             done
             ;;
-#}}}
+            #}}}
         # kindle{{{
         #---------------------------------------
         #               Kindle
@@ -78,7 +78,7 @@ while :; do
             # ssh $2 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
             # ssh $2 'ln -s ~/.config/tmux/tmux.conf ~/.tmux.conf'
             ;;
-#}}}
+            #}}}
         # brave{{{
         #---------------------------------------
         #               Brave
