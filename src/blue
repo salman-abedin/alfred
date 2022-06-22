@@ -3,21 +3,16 @@
 # Bluetooth Headset related scripts
 
 connect() {
-    # doas -n systemctl restart bluetooth
-    doas -n sv up bluetoothd
     bluetoothctl power on
-    # pulseaudio --start
-    modprobe options iwlwifi bt_coex_active=0
+    modprobe iwlwifi bt_coex_active=0
 
-    bluetoothctl connect "30:C0:1B:86:61:D5"
+    bluetoothctl connect "E8:EC:A3:27:60:15"
 
-    # if bluetoothctl connect "${1:-41:42:B1:BE:00:F3}" \
+    # bluetoothctl connect "${1:-41:42:B1:BE:00:F3}" ||
     # || bluetoothctl connect "E8:EC:A3:27:60:15" \
     # || bluetoothctl connect "E8:EC:A3:15:05:0D" \
+    # || bluetoothctl connect "30:C0:1B:86:61:D5" \
     # || bluetoothctl connect "41:42:B1:BE:00:F3"; then
-    # sleep 2
-    # uniblocks -u vol
-    # fi
 }
 
 toggle_mic() {
@@ -31,11 +26,10 @@ toggle_mic() {
 
 main() {
     case $1 in
-        --con | -c) connect "$2" ;;
+        --con | -c) connect ;;
         --tog | -t) toggle_mic ;;
         --mute | -m) amixer set Capture toggle > /dev/null ;;
         *) exit 1 ;;
     esac
 }
-
 main "$1"
