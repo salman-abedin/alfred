@@ -4,6 +4,7 @@
 
 connect() {
     bluetoothctl power on
+    # pulseaudio --start
     modprobe iwlwifi bt_coex_active=0
 
     bluetoothctl connect "E8:EC:A3:27:60:15"
