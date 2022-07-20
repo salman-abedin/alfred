@@ -234,6 +234,16 @@ while :; do
             fusermount -u "$ANDROID"
             ;;
             #}}}
+            # webdav{{{
+            #---------------------------------------
+            #               WebDav
+            #---------------------------------------
+        --webdav | -W)
+            mount /mnt/disroot
+            unison -batch /mnt/internal/webdav /mnt/disroot
+            umount /mnt/disroot
+            ;;
+            #}}}
             # repos{{{
             #---------------------------------------
             #               Repos
