@@ -9,11 +9,10 @@
 LOCK_STAT=/tmp/LOCK_STAT
 BACKGROUND_FORMATTED=/tmp/LOCK_BACKGROUND
 PATH_WALLPAPERS=~/.local/share/wallpapers
-<<<<<<< HEAD
 # FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
 #}}}
 # init{{{
-init(){
+init() {
     echo locked > $LOCK_STAT
     toggle -n
     QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
@@ -29,28 +28,6 @@ reset() {
 #}}}
 # lock{{{
 lock() {
-=======
-FILE_PID_SAVESCREEN=/tmp/PID_SAVESCREEN
-
-post_unlocked() {
-<<<<<<< HEAD
-    read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
-    pkill -P $PID_SAVESCREEN
-=======
-    # read -r PID_SAVESCREEN < $FILE_PID_SAVESCREEN
-    # pkill -P "$PID_SAVESCREEN"
->>>>>>> office
-    toggle -n
-    : > "$LOCK_STAT"
-}
-
-lock() {
-    echo locked > $LOCK_STAT
-    toggle -n
-    QUOTE=$(shuf -n1 ~/.local/share/misc/quotes)
-<<<<<<< HEAD
-    doas -n loginctl suspend
->>>>>>> home
     i3lock -ekn \
         --indicator --radius 150 --ring-width 3 \
         --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
@@ -63,34 +40,6 @@ lock() {
         --pass-volume-keys --pass-media-keys \
         -c 00000000 \
         -i "$BACKGROUND_FORMATTED"
-<<<<<<< HEAD
-=======
-    post_unlocked
-=======
-
-    if timeout $DELAY_SUSPEND \
-        i3lock -ekn \
-            --indicator --radius 150 --ring-width 3 \
-            --ring-color dddddd --inside-color 00000000 --line-color 00000000 \
-            --time-str "%H:%M" \
-            --time-font sans --time-color dddddd --time-size 90 \
-            --date-str "%a, %d %b" --date-pos='tx+0:ty+75' \
-            --date-font sans --date-color dddddd --date-size 30 \
-            --greeter-text "$QUOTE" --greeter-pos 'w/2:100' \
-            --greeter-font "Lexend Deca" --greeter-color dddddd --greeter-size 20 \
-            --pass-volume-keys --pass-media-keys \
-            -c 00000000 \
-            -i "$BACKGROUND_FORMATTED"; then
-        # post_unlocked
-        :
-    else
-        loginctl suspend
-        # ns timedout
-    fi
-    toggle -n
-    : > "$LOCK_STAT"
->>>>>>> office
->>>>>>> home
 }
 #}}}
 # set background{{{
