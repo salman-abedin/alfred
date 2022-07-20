@@ -17,6 +17,26 @@ notify-send -i "$ICONS/mirror.png" "Mirroring now"
 
 while :; do
     case $1 in
+        # pc & phone{{{
+        # ╔════════════════════════════════════════
+        # ║                    PC & Phone
+        # ╚════════════════════════════════════════
+        --pp | -p)
+            cd /mnt/internal/git/daily/unimind || continue
+            git add .
+            git commit --allow-empty-message -m ''
+            git checkout -f phone
+            git fetch
+            if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
+                git pull
+                git checkout -f pc
+                git merge --commit --no-edit --allow-unrelated-histories phone
+            else
+                git checkout -f pc
+            fi
+            git push
+            ;;
+        #}}}
         # home & office{{{
         # ╔════════════════════════════════════════
         # ║                    Home & Office
@@ -43,19 +63,19 @@ while :; do
                     branch_current='office'
                 fi
 
-                git checkout "$branch_merge"
+                git checkout -f "$branch_merge"
                 git fetch
                 if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
-                    git pull origin "$branch_merge"
-                    git checkout "$branch_current"
-                    git merge --commit --no-edit "$branch_merge"
+                    git pull
+                    git checkout -f "$branch_current"
+                    git merge --commit --no-edit --allow-unrelated-histories "$branch_merge"
                 else
-                    git checkout "$branch_current"
+                    git checkout -f "$branch_current"
                 fi
                 git push
             done
             ;;
-#}}}
+            #}}}
         # kindle{{{
         #---------------------------------------
         #               Kindle
@@ -76,7 +96,7 @@ while :; do
             ssh $2 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
             # ssh $2 'ln -s ~/.config/tmux/tmux.conf ~/.tmux.conf'
             ;;
-#}}}
+            #}}}
         # brave{{{
         #---------------------------------------
         #               Brave
@@ -222,7 +242,7 @@ while :; do
             #---------------------------------------
             #               Phone
             #---------------------------------------
-        --phone | -p)
+        --phone | -P)
             ANDROID=/mnt/phone
             LOCAL=/mnt/internal/phone
             if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
@@ -272,7 +292,7 @@ while :; do
     esac
     shift
 done
-# exp{{{
+
 #===============================================================================
 #                             Exp
 #===============================================================================
@@ -295,4 +315,3 @@ done
 # pgrep -f newsboat$ && /usr/bin/xdotool key --window "$(/usr/bin/xdotool search --name newsboat)" R && exit
 # ;;
 # umount -l /mnt/cloud
-#}}}
