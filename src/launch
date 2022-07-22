@@ -125,9 +125,11 @@ launch_file() {
         *svg+xml) fork magick display "$1" ;;
         *x-bittorrent) transmission-remote -a "$1" ;;
         *.document)
-            BASE=${1##*/}
-            CONVERTED=/mnt/internal/downloads/${BASE%.*}.pdf
-            pandoc "$1" --pdf-engine wkhtmltopdf -o "$CONVERTED" && $0 -f "$CONVERTED"
+            fork abiword "$1"
+            # BASE=${1##*/}
+            # CONVERTED=/mnt/internal/downloads/${BASE%.*}.pdf
+            # pandoc "$1" --pdf-engine wkhtmltopdf -o "$CONVERTED" && $0 -f "$CONVERTED"
+
             ;;
         # *.document) pandoc "$1" -o "${1%.*}.pdf" && $0 -f "${1%.*}.pdf" ;;
         # application/csv) sc-im "$1" ;;
