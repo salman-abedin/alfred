@@ -54,6 +54,8 @@ while :; do
                 /mnt/internal/git/system/magpie-private \
                 /mnt/internal/git/system/magpie-personal \
                 /mnt/internal/git/system/alfred; do
+
+                echo $repo
                 cd "$repo" || continue
                 git add .
                 git commit --allow-empty-message -m ''
