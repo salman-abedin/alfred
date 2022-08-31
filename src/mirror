@@ -106,6 +106,7 @@ while :; do
 
             rsync -aPv $repo_personal/.bash_profile $work_dir
             rsync -aPv $repo_personal/.bashrc $work_dir
+            rsync -aPv $repo_personal/.inputrc $work_dir
 
             # rsync -aPv $repo_personal/.local/share/faint $work_dir/.local/share
 
