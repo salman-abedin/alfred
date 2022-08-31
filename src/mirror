@@ -98,6 +98,7 @@ while :; do
             repo_personal=/mnt/internal/git/system/magpie-personal
 
             rsync -aPv $repo_public/.zshenv $work_dir
+
             rsync -aPv $repo_public/.config/zsh $work_dir/.config
             rsync -aPv $repo_public/.config/faintrc $work_dir/.config
             rsync -aPv $repo_public/.config/tmux $work_dir/.config
@@ -106,8 +107,7 @@ while :; do
             rsync -aPv $repo_personal/.bash_profile $work_dir
             rsync -aPv $repo_personal/.bashrc $work_dir
 
-            rsync -aPv $repo_personal/.config/zsh $work_dir
-            rsync -aPv $repo_personal/.local/share/faint $work_dir/.local/share
+            # rsync -aPv $repo_personal/.local/share/faint $work_dir/.local/share
 
             # ssh $2 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
             # ssh $2 'ln -s ~/.config/tmux/tmux.conf ~/.tmux.conf'
