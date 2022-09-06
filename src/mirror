@@ -103,6 +103,8 @@ while :; do
             rsync -aPv $repo_public/.config/tmux $work_dir/.config
             rsync -aPv $repo_public/.config/nvim $work_dir/.config
 
+            rsync -aPv $repo_personal/.config/zsh/zshrc_private $work_dir
+
             # rsync -aPv $repo_personal/.bash_profile $work_dir
             # rsync -aPv $repo_personal/.bashrc $work_dir
             # rsync -aPv $repo_personal/.inputrc $work_dir
