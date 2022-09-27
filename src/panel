@@ -11,6 +11,7 @@ case $1 in
 		printf "🔋 %03d%%" "$CAPACITY"
 		;;
 	--time | -t) printf "%s" "$(date +'🕰 %H : %M')" ;;
+	--time-america | -T) printf "%s" "$(TZ=America/New_York date +'🕰 %H : %M')" ;;
 	--date | -d) printf "%s" "$(date +'🗓 %a, %d %b')" ;;
 	--date-time | -D) printf "%s" "$(date +'🗓 %a, %d %b   🕰 %H : %M')" ;;
 	--web | -w)
