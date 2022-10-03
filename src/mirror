@@ -250,12 +250,24 @@ while :; do
             #               Mail
             #---------------------------------------
         --mail | -m)
+<<<<<<< HEAD
             mbsync -c ~/.config/isync/mbsyncrc dsi
             notmuch new
             unread=$(notmuch count -- tag:unread)
             # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
             [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
                 "Psst. You've got $unread unread mail!"
+=======
+
+            mbsync -c ~/.config/isync/mbsyncrc -a
+            notmuch new
+            # notmuch tag +tickets -- from:infocare@infoimageinc.com and to:salman.abedin@dsinnovators.com
+
+            # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
+            # [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
+                # "Psst. You've got $unread unread mail!"
+
+>>>>>>> home
             ;;
             #}}}
             # phone{{{
