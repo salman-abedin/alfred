@@ -250,10 +250,12 @@ while :; do
             #               Mail
             #---------------------------------------
         --mail | -m)
+
             mbsync -c ~/.config/isync/mbsyncrc -a
             unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
             [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
                 "Psst. You've got $unread unread mail!"
+
             ;;
             #}}}
             # phone{{{

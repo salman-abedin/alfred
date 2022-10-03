@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Monitors files/directores for particular changes and runs commands on change events
-# Dependencies: intify-tools
+# Dependencies: inotify-tools
 # Usage: watchman [FILE|DIRECTORY] COMMAND
 
 inotifywait -m -e modify "$1" \
