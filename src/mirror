@@ -25,7 +25,7 @@ while :; do
             for repo in \
                 /mnt/internal/git/daily/unimind \
                 /mnt/decrypted/git/unimind; do
-                cd "$repo"|| continue
+                cd "$repo" || continue
                 git add .
                 git commit --allow-empty-message -m ''
                 git checkout -f phone
@@ -38,7 +38,7 @@ while :; do
                     git checkout -f pc
                 fi
                 git push
-        done
+            done
             ;;
         #}}}
         # home & office{{{
@@ -250,24 +250,12 @@ while :; do
             #               Mail
             #---------------------------------------
         --mail | -m)
-<<<<<<< HEAD
             mbsync -c ~/.config/isync/mbsyncrc dsi
             notmuch new
             unread=$(notmuch count -- tag:unread)
             # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
             [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
                 "Psst. You've got $unread unread mail!"
-=======
-
-            mbsync -c ~/.config/isync/mbsyncrc -a
-            notmuch new
-            # notmuch tag +tickets -- from:infocare@infoimageinc.com and to:salman.abedin@dsinnovators.com
-
-            # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
-            # [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
-                # "Psst. You've got $unread unread mail!"
-
->>>>>>> home
             ;;
             #}}}
             # phone{{{
