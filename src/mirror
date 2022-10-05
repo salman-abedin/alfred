@@ -250,7 +250,7 @@ while :; do
             #               Mail
             #---------------------------------------
         --mail | -m)
-            mbsync -c ~/.config/isync/mbsyncrc dsi
+            mbsync -c ~/.config/isync/mbsyncrc -a
             notmuch new
             unread=$(notmuch count -- tag:unread)
             # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)

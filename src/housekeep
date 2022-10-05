@@ -2,7 +2,7 @@
 #
 # Cleans up the system (cronjob)
 #
-# Dependencies: doas, find
+# Dependencies: doas, find, notmuch
 
 doas -n -- /usr/bin/sh << eof
 pacman -Scc --noconfirm                   # Clears cached packages
@@ -13,6 +13,10 @@ rm -fr /var/cache/pacman/pkg/* ~/.cache   # Clears caches
 rm -fr /mnt/internal/trash/. \
   /mnt/internal/trash/*                   # Clears trash
 eof
+
+# clears spam
+notmuch search --output=files --format=text0 tag:spam | xargs -r0 rm
+notmuch new
 
 #===============================================================================
 #                             Exp
