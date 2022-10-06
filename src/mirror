@@ -26,6 +26,7 @@ while :; do
                 /mnt/internal/git/daily/unimind \
                 /mnt/decrypted/git/unimind; do
                 cd "$repo" || continue
+                git pull
                 git add .
                 git commit --allow-empty-message -m ''
                 git checkout -f phone
