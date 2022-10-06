@@ -7,11 +7,10 @@
 LOCAL=/mnt/internal
 CLOUD=drive
 
-# if ! connected; then
-# # notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
-# :
-# # exit 1
-# fi
+if ! connected; then
+    notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
+    exit 1
+fi
 
 notify-send -i "$ICONS/mirror.png" "Mirroring now"
 
