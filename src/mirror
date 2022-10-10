@@ -21,9 +21,7 @@ while :; do
         # ║                    PC & Phone
         # ╚════════════════════════════════════════
         --pp | -p)
-            for repo in \
-                /mnt/internal/git/daily/unimind \
-                /mnt/decrypted/git/unimind; do
+            for repo in /mnt/decrypted/git/unimind; do
                 cd "$repo" || continue
                 git pull
                 git add .
@@ -51,7 +49,6 @@ while :; do
 
             for repo in \
                 /mnt/decrypted/git/magpie-private \
-                /mnt/internal/git/system/magpie-private \
                 /mnt/internal/git/system/magpie-personal \
                 /mnt/internal/git/system/alfred; do
 
