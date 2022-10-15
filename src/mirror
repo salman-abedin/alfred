@@ -21,22 +21,20 @@ while :; do
         # ║                    PC & Phone
         # ╚════════════════════════════════════════
         --pp | -p)
-            for repo in /mnt/decrypted/git/unimind; do
-                cd "$repo" || continue
-                git pull
-                git add .
-                git commit --allow-empty-message -m ''
-                git checkout -f phone
-                git fetch
-                if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
-                    git pull
-                    git checkout -f pc
-                    git merge --commit --no-edit --allow-unrelated-histories phone
-                else
-                    git checkout -f pc
-                fi
-                git push
-            done
+            cd /mnt/decrypted/git/unimind || continue
+            git pull origin pc
+            git add .
+            git commit --allow-empty-message -m ''
+            git checkout -f phone
+            git fetch
+            if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
+                git pull origin phone
+                git checkout -f pc
+                git merge --commit --no-edit --allow-unrelated-histories phone
+            else
+                git checkout -f pc
+            fi
+            git push
             ;;
         #}}}
         # home & office{{{
