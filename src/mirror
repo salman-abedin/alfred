@@ -49,8 +49,8 @@ while :; do
                 cd "$repo" || continue
                 git add .
                 git commit --allow-empty-message -m ''
-                git pull
-                git push
+                git pull -u origin master
+                git push -u origin master
             done
             ;;
             #}}}
