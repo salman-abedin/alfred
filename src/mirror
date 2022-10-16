@@ -51,7 +51,6 @@ while :; do
                 git commit --allow-empty-message -m ''
                 git pull
                 git push
-                # test
             done
             ;;
             #}}}
