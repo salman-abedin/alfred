@@ -42,9 +42,9 @@ while :; do
         # ║                    Home & Office
         # ╚════════════════════════════════════════
         --home-n-office | -hno)
-                # /mnt/decrypted/git/magpie-private \
-                # /mnt/internal/git/system/magpie-personal \
             for repo in \
+                /mnt/decrypted/git/magpie-private \
+                /mnt/internal/git/system/magpie-personal \
                 /mnt/internal/git/system/alfred; do
                 cd "$repo" || continue
                 git add .
