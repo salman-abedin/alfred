@@ -42,36 +42,14 @@ while :; do
         # ║                    Home & Office
         # ╚════════════════════════════════════════
         --home-n-office | -hno)
-            branch_current=
-            branch_merge=
-
             for repo in \
                 /mnt/decrypted/git/magpie-private \
                 /mnt/internal/git/system/magpie-personal \
                 /mnt/internal/git/system/alfred; do
-
                 cd "$repo" || continue
                 git add .
                 git commit --allow-empty-message -m ''
-                # git pull --no-rebase
-
-                if [ "$(git branch --show-current)" = 'home' ]; then
-                    branch_merge='office'
-                    branch_current='home'
-                else
-                    branch_merge='home'
-                    branch_current='office'
-                fi
-
-                git checkout -f "$branch_merge"
-                git fetch
-                if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
-                    git pull
-                    git checkout -f "$branch_current"
-                    git merge --commit --no-edit --allow-unrelated-histories "$branch_merge"
-                else
-                    git checkout -f "$branch_current"
-                fi
+                git pull
                 git push
             done
             ;;
