@@ -36,13 +36,14 @@ case $1 in
         [ -f "$RECPID" ] && stop
         ffmpeg \
             -f x11grab \
-            -framerate 25 \
+            -framerate 30 \
             -s "$RESOLUTION" \
             -i "$DISPLAY" \
-            -f alsa -i default \
             -c:v libx264 -preset ultrafast -c:a aac \
+            -f pulse -i "$(pactl list sources short | grep -oP '\S*output\S*')" \
             /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
         echo $! > "$RECPID"
+        #  -f alsa -i default \
         # -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
         # -r 30 \
         ;;

@@ -57,7 +57,7 @@ launch_file() {
             fork wine "$1"
             exit
             ;;
-        *.xlsx)
+        *.xlsx | sc | csv)
             # ssconvert "$1" "${1%.xlsx}.csv" && "$EDITOR" "${1%.xlsx}.csv"
             sc-im "$1"
             exit
