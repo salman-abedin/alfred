@@ -23,7 +23,9 @@ case $1 in
     --screencast | -s)
         # Forked from https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord
         RECPID=/tmp/recpid
-        stop() {
+
+
+        if [ -f "$RECPID" ]; then
             recpid=$(cat "$RECPID")
             kill -15 "$recpid"
             rm -f "$RECPID"
@@ -31,21 +33,21 @@ case $1 in
             kill -9 "$recpid"
             notify-send "stopped recording"
             exit
-        }
-
-        [ -f "$RECPID" ] && stop
-        ffmpeg \
-            -f x11grab \
-            -framerate 30 \
-            -s "$RESOLUTION" \
-            -i "$DISPLAY" \
-            -c:v libx264 -preset ultrafast -c:a aac \
-            -f pulse -i "$(pactl list sources short | grep -oP '\S*output\S*')" \
-            /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
-        echo $! > "$RECPID"
+        else
+            ffmpeg \
+                -f pulse \
+                -i "$(pactl list sources short | grep -oP '\S*output\S*')" \
+                -f x11grab \
+                -framerate 30 \
+                -s "$RESOLUTION" \
+                -i "$DISPLAY" \
+                -c:v libx264rgb -preset ultrafast -c:a aac \
+                /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
+            echo $! > "$RECPID"
+            notify-send "started recording"
+        fi
+        #  -crf 0
         #  -f alsa -i default \
-        # -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
-        # -r 30 \
         ;;
     -S)
         FILE=/mnt/internal/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
