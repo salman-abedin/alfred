@@ -5,62 +5,79 @@
 # Usage: panel -(b|d|s|v|w)
 
 case $1 in
-	--battery-stat | -b)
-		set -- /sys/class/power_supply/BAT?/capacity
-		read -r CAPACITY < "$1"
-		printf "🔋 %03d%%" "$CAPACITY"
-		;;
-	--time | -t) printf "%s" "$(date +'🕰 %H : %M')" ;;
-	--time-america | -T) printf "%s" "$(TZ=America/New_York date +'🕰 %H : %M')" ;;
-	--date | -d) printf "%s" "$(date +'🗓 %a, %d %b')" ;;
-	--date-time | -D) printf "%s" "$(date +'🗓 %a, %d %b   🕰 %H : %M')" ;;
-	--web | -w)
-		read -r ETHERNET < /sys/class/net/eth0/carrier
-		if ! connected; then
-			printf "%s" "❌ 000"
-		elif [ "$ETHERNET" = 1 ]; then
-			printf "🌏 100"
-		else
-			printf "🌏 %s" \
-				"$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
-		fi
-		;;
-	--sys-stat | -s)
-		cpu="$(top -b -n 1 | awk '(NR==3){
+    --battery-stat | -b)
+        set -- /sys/class/power_supply/BAT?/capacity
+        read -r CAPACITY < "$1"
+        printf "🔋 %03d%%" "$CAPACITY"
+        ;;
+    --time | -t) printf "%s" "$(date +'🕰 %H : %M')" ;;
+    --time-america | -T) printf "%s" "$(TZ=America/New_York date +'🕰 %H : %M')" ;;
+    --date | -d) printf "%s" "$(date +'🗓 %a, %d %b')" ;;
+    --date-time | -D) printf "%s" "$(date +'🗓 %a, %d %b   🕰 %H : %M')" ;;
+    --web | -w)
+        read -r ETHERNET < /sys/class/net/eth0/carrier
+        if ! connected; then
+            printf "%s" "❌ 000"
+        elif [ "$ETHERNET" = 1 ]; then
+            printf "🌏 100"
+        else
+            printf "🌏 %s" \
+                "$(awk 'FNR == 3 { printf "%03d", $3*100/70 }' /proc/net/wireless)"
+        fi
+        ;;
+    --sys-stat | -s)
+        cpu="$(top -b -n 1 | awk '(NR==3){
     if( $8 == "id," )
         print "000"
     else
         printf "%03d", 100 - $8
     }')"
-		mem="$(free -m | awk '(NR==2){ printf "%04d", $3 }')"
-		temp="$(sensors | awk '(/Core 0/){printf $3}' | sed 's/\.0//; s/+//')"
-		printf "🧠 %s  🐎 %s 🌡 %s" "$mem" "$cpu" "$temp"
-		;;
+        mem="$(free -m | awk '(NR==2){ printf "%04d", $3 }')"
+        temp="$(sensors | awk '(/Core 0/){printf $3}' | sed 's/\.0//; s/+//')"
+        printf "🧠 %s  🐎 %s 🌡 %s" "$mem" "$cpu" "$temp"
+        ;;
 
-	--mailbox | -m)
-		for file in ~/.local/share/mail/INBOX/new/*; do
-			[ -f "$file" ] || continue
-			printf '%s\n' "$file"
-		done | {
-			while IFS= read -r line || [ -n "$line" ]; do
-				lines=$((lines + 1))
-			done \
-				&& printf "📫  %s" "${lines:-0}"
-		}
-		;;
+    --mailbox | -m)
+        for file in ~/.local/share/mail/INBOX/new/*; do
+            [ -f "$file" ] || continue
+            printf '%s\n' "$file"
+        done | {
+            while IFS= read -r line || [ -n "$line" ]; do
+                lines=$((lines + 1))
+            done \
+                && printf "📫  %s" "${lines:-0}"
+        }
+        ;;
 
-	--vol-stat | -v)
-		showstat() {
-			if amixer get Master | grep -o -m 1 "off" > /dev/null; then
-				printf "🔇 000"
-			else
-				printf "🔊 %03d" \
-					"$(amixer get Master | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
-			fi
-		}
-		showstat
-		;;
-	*) exit 1 ;;
+    --vol-stat | -v)
+        showstat() {
+            if amixer get Master | grep -o -m 1 "off" > /dev/null; then
+                printf "🔇 000"
+            else
+                printf "🔊 %03d" \
+                    "$(amixer get Master | grep -o -m 1 "[0-9]\+%" | sed 's/%//')"
+            fi
+        }
+        showstat
+        ;;
+
+    --input | -i)
+        mic_stat() {
+            source=$(pactl info | grep "Default Source" | cut -f2 -d":")
+            if pactl list sources | grep -A 10 "$source" | grep -q "Mute: yes"; then
+                printf "🔇"
+            else
+                printf "🔊"
+            fi
+        }
+        trap 'mic_stat' RTMIN+1
+        mic_stat
+        while :; do
+            wait
+        done
+        ;;
+
+    *) exit 1 ;;
 esac
 
 #===============================================================================
