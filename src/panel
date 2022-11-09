@@ -65,9 +65,9 @@ case $1 in
         mic_stat() {
             source=$(pactl info | grep "Default Source" | cut -f2 -d":")
             if pactl list sources | grep -A 10 "$source" | grep -q "Mute: yes"; then
-                printf "🔇"
+                printf "🔇\r"
             else
-                printf "🔊"
+                printf "🔊\r"
             fi
         }
         trap 'mic_stat' RTMIN+1
