@@ -7,7 +7,7 @@
 ext="${1##*.}"
 
 case $ext in
-    tar|gz) mkdir "${1%%.*}" 2> /dev/null && tar xf "$1" -C "${1%%.*}" ;;
+    tar|gz|tgz) mkdir "${1%%.*}" 2> /dev/null && tar xf "$1" -C "${1%%.*}" ;;
     zip) unzip "$1" -d "${1%.*}" ;;
     xz) unxz "$1" ;;
     rar) unrar e "$1" ;;
@@ -20,4 +20,4 @@ case $ext in
         # zip) unzip "$path" -d "${1%.*}" ;;
 esac
 
-[ -n "$clean" ] && mv -f "$1" "$TRASH_DIR"
+#  [ -n "$clean" ] && mv -f "$1" "$TRASH_DIR"
