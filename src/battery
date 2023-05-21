@@ -7,51 +7,51 @@
 # - Also notifies on Plug and Unplug (Using a supplimental udev rule)
 
 case $1 in
-    --block-charge)
-        config="/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
-        if [ "$2" = true ]; then
-            echo 1
-        else
-            echo 0
-        fi | doas tee $config > /dev/null
-        ;;
-    --monitor)
-        set -- /sys/class/power_supply/BAT?/status
-        read -r status < "$1"
+--block-charge)
+    config="/sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"
+    if [ "$2" = true ]; then
+        echo 1
+    else
+        echo 0
+    fi | doas tee $config >/dev/null
+    ;;
+--monitor)
+    set -- /sys/class/power_supply/BAT?/status
+    read -r status <"$1"
 
-        if [ "$status" = "Full" ]; then
-            :
-            # notify-send -t 0 -i "$ICONS"/charging.png 'Fully Charged!'
+    if [ "$status" = "Full" ]; then
+        :
+        # notify-send -t 0 -i "$ICONS"/charging.png 'Fully Charged!'
 
-        elif [ "$status" = "Discharging" ]; then
-            set -- /sys/class/power_supply/BAT?/capacity
-            read -r capacity < "$1"
+    elif [ "$status" = "Discharging" ]; then
+        set -- /sys/class/power_supply/BAT?/capacity
+        read -r capacity <"$1"
 
-            if [ "$capacity" -lt 5 ]; then
-                leavex -s
-            elif [ "$capacity" -lt 15 ]; then
-                notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
-            fi
+        if [ "$capacity" -lt 5 ]; then
+            leavex -s
+        elif [ "$capacity" -lt 15 ]; then
+            notify-send -t 0 -i "$ICONS"/dying.png 'Low Battery!'
         fi
-        ;;
-    --plugged)
-        read -r DISPLAY < /tmp/DISPLAY
-        export DISPLAY
-        export XAUTHORITY=~/.config/X11/Xauthority
-        export ICONS=~/.local/share/icons/system
+    fi
+    ;;
+--plugged)
+    read -r DISPLAY </tmp/DISPLAY
+    export DISPLAY
+    export XAUTHORITY=~/.config/X11/Xauthority
+    export ICONS=~/.local/share/icons/system
 
-        read -r distro < /etc/os-release
-        case $distro in
-            *Arch\ Linux*)
-                export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-                ;;
-        esac
-
-        if [ "$2" = true ]; then
-            notify-send -t 1000 -i "$ICONS"/charging.png "Charging"
-        else
-            notify-send -t 1000 -i "$ICONS"/discharging.png "Discharging"
-        fi
-        # doas -n -- canberra-gtk-play -i device-removed &
+    read -r distro </etc/os-release
+    case $distro in
+    *Arch\ Linux*)
+        export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
         ;;
+    esac
+
+    if [ "$2" = true ]; then
+        notify-send -t 1000 -i "$ICONS"/charging.png "Charging"
+    else
+        notify-send -t 1000 -i "$ICONS"/discharging.png "Discharging"
+    fi
+    # doas -n -- canberra-gtk-play -i device-removed &
+    ;;
 esac

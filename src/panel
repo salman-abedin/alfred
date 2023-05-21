@@ -13,7 +13,7 @@ case $1 in
     --time | -t) printf "%s" "$(date +'🕰 %H : %M')" ;;
     --time-america | -T) printf "%s" "$(TZ=America/New_York date +'🕰 %H : %M')" ;;
     --date | -d) printf "%s" "$(date +'🗓 %a, %d %b')" ;;
-    --date-time | -D) printf "%s" "$(date +'🗓 %a, %d %b   🕰 %H : %M')" ;;
+    --date-time | -D) printf "%s" "$(date +'🗓 %a, %d %b 🕰 %H:%M')" ;;
     --web | -w)
         read -r ETHERNET < /sys/class/net/eth0/carrier
         if ! connected; then

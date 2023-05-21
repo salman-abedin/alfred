@@ -2,11 +2,11 @@
 
 # Forked from Luke Smith.
 
-cut -d ';' -f1 ~/.local/share/misc/emojis \
-  | amenu \
-  | sed "s/ .*//" \
-  | tr -d '\n' \
-  | xsel -b && xdotool key Control+Shift+v
+cut -d ';' -f1 ~/.local/share/misc/emojis |
+    amenu |
+    sed "s/ .*//" |
+    tr -d '\n' |
+    xsel -b && xdotool key Control+Shift+v
 
 # chosen=$(cat ~/.local/share/emoji | $DMENU -p "Pick an emoji" | sed "s/ .*//")
 # chosen=$(cut -d ';' -f1 ~/.local/share/emoji | $DMENU -p "Pick an emoji" | sed "s/ .*//")

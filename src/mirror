@@ -7,291 +7,288 @@
 LOCAL=/mnt/internal
 CLOUD=drive
 
-if ! connected; then
-    notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
-    exit 1
-fi
+# if ! connected; then
+#     notify-send -t 3000 -i "$ICONS"/disconnected.png "Coudn't mirror"
+#     exit 1
+# fi
 
 notify-send -i "$ICONS/mirror.png" "Mirroring now"
 
 while :; do
     case $1 in
-        # pc & phone{{{
-        # ╔════════════════════════════════════════
-        # ║                    PC & Phone
-        # ╚════════════════════════════════════════
-        --pp | -p)
-            cd /mnt/decrypted/git/unimind || continue
-            git pull origin pc
+    # pc & phone{{{
+    # ╔════════════════════════════════════════
+    # ║                    PC & Phone
+    # ╚════════════════════════════════════════
+    --pp | -p)
+        cd /mnt/decrypted/git/unimind || continue
+        git pull origin pc
+        git add .
+        git commit --allow-empty-message -m ''
+        git checkout -f phone
+        git fetch
+        if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
+            git pull origin phone
+            git checkout -f pc
+            git merge --commit --no-edit --allow-unrelated-histories phone
+        else
+            git checkout -f pc
+        fi
+        git push
+        ;;
+    #}}}
+    # home & office{{{
+    # ╔════════════════════════════════════════
+    # ║                    Home & Office
+    # ╚════════════════════════════════════════
+    --home-n-office | -hno)
+        for repo in \
+            /mnt/decrypted/git/magpie-private \
+            /mnt/internal/git/system/magpie-personal \
+            /mnt/internal/git/system/alfred; do
+            cd "$repo" || continue
             git add .
             git commit --allow-empty-message -m ''
-            git checkout -f phone
-            git fetch
-            if [ "$(git rev-parse HEAD)" != "$(git rev-parse '@{u}')" ]; then
-                git pull origin phone
-                git checkout -f pc
-                git merge --commit --no-edit --allow-unrelated-histories phone
-            else
-                git checkout -f pc
-            fi
+            git pull
             git push
-            ;;
+        done
+        ;;
         #}}}
-        # home & office{{{
-        # ╔════════════════════════════════════════
-        # ║                    Home & Office
-        # ╚════════════════════════════════════════
-        --home-n-office | -hno)
-            for repo in \
-                /mnt/decrypted/git/magpie-private \
-                /mnt/internal/git/system/magpie-personal \
-                /mnt/internal/git/system/alfred; do
-                cd "$repo" || continue
-                git add .
-                git commit --allow-empty-message -m ''
-                git pull
-                git push
-            done
-            ;;
-            #}}}
-        # kindle{{{
-        #---------------------------------------
-        #               Kindle
-        #---------------------------------------
-        --kindle | -k)
-            # sudo cp -fr /mnt/internal/misc/kindle/* /mnt/external/documents
-            sudo cp -fr /mnt/internal/git/daily/notes/songs/* /mnt/external/documents/songs
-            sudo cp -fr /mnt/internal/git/daily/notes/music/scores/* /mnt/external/documents/scores
-            ;;
+    # kindle{{{
+    #---------------------------------------
+    #               Kindle
+    #---------------------------------------
+    --kindle | -k)
+        # sudo cp -fr /mnt/internal/misc/kindle/* /mnt/external/documents
+        sudo cp -fr /mnt/internal/git/daily/notes/songs/* /mnt/external/documents/songs
+        sudo cp -fr /mnt/internal/git/daily/notes/music/scores/* /mnt/external/documents/scores
+        ;;
+    #}}}
+    # work{{{
+    --work | -w)
+        work_dir=dsi:/z/salmanA
+        repo_public=/mnt/internal/git/system/magpie
+        repo_personal=/mnt/internal/git/system/magpie-personal
+
+        rsync -aPv $repo_public/.zshenv $work_dir
+        rsync -aPv $repo_public/.config/zsh $work_dir/.config
+        rsync -aPv $repo_public/.config/faintrc $work_dir/.config
+        rsync -aPv $repo_public/.config/tmux $work_dir/.config
+        rsync -aPv $repo_public/.config/nvim $work_dir/.config
+
+        rsync -aPv $repo_personal/.config/zsh/zshrc_private $work_dir
+
+        # rsync -aPv $repo_personal/.bash_profile $work_dir
+        # rsync -aPv $repo_personal/.bashrc $work_dir
+        # rsync -aPv $repo_personal/.inputrc $work_dir
+
+        # rsync -aPv $repo_personal/.local/share/faint $work_dir/.local/share
+
+        # ssh $2 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
+        # ssh $2 'ln -s ~/.config/tmux/tmux.conf ~/.tmux.conf'
+        ;;
         #}}}
-        # work{{{
-        --work | -w)
-            work_dir=dsi:/z/salmanA
-            repo_public=/mnt/internal/git/system/magpie
-            repo_personal=/mnt/internal/git/system/magpie-personal
-
-            rsync -aPv $repo_public/.zshenv $work_dir
-            rsync -aPv $repo_public/.config/zsh $work_dir/.config
-            rsync -aPv $repo_public/.config/faintrc $work_dir/.config
-            rsync -aPv $repo_public/.config/tmux $work_dir/.config
-            rsync -aPv $repo_public/.config/nvim $work_dir/.config
-
-            rsync -aPv $repo_personal/.config/zsh/zshrc_private $work_dir
-
-            # rsync -aPv $repo_personal/.bash_profile $work_dir
-            # rsync -aPv $repo_personal/.bashrc $work_dir
-            # rsync -aPv $repo_personal/.inputrc $work_dir
-
-            # rsync -aPv $repo_personal/.local/share/faint $work_dir/.local/share
-
-            # ssh $2 'rm -f ~/.config/nvim/after/plugin/tree_sitter.lua ~/.config/nvim/after/plugin/efm.lua ~/.config/nvim/after/plugin/lsp.lua'
-            # ssh $2 'ln -s ~/.config/tmux/tmux.conf ~/.tmux.conf'
-            ;;
-            #}}}
-        # brave{{{
-        #---------------------------------------
-        #               Brave
-        #---------------------------------------
-        --brave | -b)
-            cd ~/.config || exit
-            tar cf Brave.tar BraveSoftware
-            gpg -esr "$MAIL" Brave.tar
-            rclone copy Brave.tar.gpg $CLOUD:/
-            rm Brave.tar Brave.tar.gpg
-            ;;
-            #}}}
+    # brave{{{
+    #---------------------------------------
+    #               Brave
+    #---------------------------------------
+    --brave | -b)
+        cd ~/.config || exit
+        tar cf Brave.tar BraveSoftware
+        gpg -esr "$MAIL" Brave.tar
+        rclone copy Brave.tar.gpg $CLOUD:/
+        rm Brave.tar Brave.tar.gpg
+        ;;
+        #}}}
+    # nextcloud{{{
+    #---------------------------------------
+    #               Nextcloud
+    #---------------------------------------
+    --nextcloud | -n)
+        NEXTCLOUD_USERNAME=$(awk -F, '/^nextcloud,/{print $2}' $UNIPASS_SOURCE | sed 's/@.*//')
+        NEXTCLOUD_PASSWORD=$(awk -F, '/^nextcloud,/{print $3}' $UNIPASS_SOURCE)
+        LOCAL=/mnt/decrypted/local/nextcloud
+        REMOTE=https://${NEXTCLOUD_USERNAME}:${NEXTCLOUD_PASSWORD}@nextcloud.salmanabedin.xyz
+        nextcloudcmd $LOCAL $REMOTE
+        ;;
+        #}}}
         # calcurse{{{
         #---------------------------------------
         #               Calcurse
         #---------------------------------------
         --calcurse | -c)
-            CALCURSE_CALDAV_PASSWORD=$(gpg -qd ~/.local/share/misc/passwords.gpg 2> /dev/null | awk -F, '/^disroot,/{print $3}') calcurse-caldav
+            CALCURSE_CALDAV_PASSWORD=$(awk -F, '/^nextcloud,/{print $3}' $UNIPASS_SOURCE) calcurse-caldav
             # --init=keep-remote
             # --init=two-way
             # --init=keep-local
             ;;
             #}}}
-            # dots{{{
-            #---------------------------------------
-            #               Dots
-            #---------------------------------------
-        --dots | -d)
-            WEECHAT_ROOT=$REPOS/magpie/.config/weechat
-            WEECHAT_PRIVATE=$REPOS/magpie-private/.config/weechat
-            WEECHAT_CLONE=~/.config/weechat
+        # dots{{{
+        #---------------------------------------
+        #               Dots
+        #---------------------------------------
+    --dots | -d)
+        WEECHAT_ROOT=$REPOS/magpie/.config/weechat
+        WEECHAT_PRIVATE=$REPOS/magpie-private/.config/weechat
+        WEECHAT_CLONE=~/.config/weechat
 
-            find "$WEECHAT_ROOT" -maxdepth 1 -type f \
-                | sed 's/\/mnt\/internal\/git\/system\/magpie/\/home\/salman/' \
-                | xargs cp -ft "$WEECHAT_ROOT"
+        find "$WEECHAT_ROOT" -maxdepth 1 -type f |
+            sed 's/\/mnt\/internal\/git\/system\/magpie/\/home\/salman/' |
+            xargs cp -ft "$WEECHAT_ROOT"
 
-            find "$WEECHAT_PRIVATE" -maxdepth 1 -type f \
-                | sed 's/\/mnt\/internal\/git\/system\/magpie-private/\/home\/salman/' \
-                | xargs cp -ft "$WEECHAT_PRIVATE"
+        find "$WEECHAT_PRIVATE" -maxdepth 1 -type f |
+            sed 's/\/mnt\/internal\/git\/system\/magpie-private/\/home\/salman/' |
+            xargs cp -ft "$WEECHAT_PRIVATE"
 
-            # cp -frs -t ~ \
-            #    "$GIT"/own/magpie/. \
-            #    "$GIT"/own/magpie-private/.
+        # cp -frs -t ~ \
+        #    "$GIT"/own/magpie/. \
+        #    "$GIT"/own/magpie-private/.
 
-            cp -frs "$REPOS"/magpie/. "$REPOS"/magpie-private/. ~
+        cp -frs "$REPOS"/magpie/. "$REPOS"/magpie-private/. ~
 
-            find "$WEECHAT_CLONE" -maxdepth 1 -type l -delete
-            find "$WEECHAT_ROOT" "$WEECHAT_PRIVATE" -maxdepth 1 -type f \
-                | xargs cp -ft ~/.config/weechat
+        find "$WEECHAT_CLONE" -maxdepth 1 -type l -delete
+        find "$WEECHAT_ROOT" "$WEECHAT_PRIVATE" -maxdepth 1 -type f |
+            xargs cp -ft ~/.config/weechat
 
-            cd ~ || exit
-            rm -f LICENSE README.md .gitignore Makefile
+        cd ~ || exit
+        rm -f LICENSE README.md .gitignore Makefile
 
-            # doas -n -- find ~ -xtype l -delete
-            ;;
-            #}}}
-            # drive{{{
-            #---------------------------------------
-            #               Drive
-            #---------------------------------------
-        --drive | -D)
+        # doas -n -- find ~ -xtype l -delete
+        ;;
+        #}}}
+        # firefox{{{
 
-            rclone sync $LOCAL/documents $CLOUD:documents
-            rclone sync $LOCAL/library $CLOUD:library
+        #---------------------------------------
+        #               Firefox
+        #---------------------------------------
+    --firefox | -f)
+        CLOUD=drive
+        FIREFOX_LOCAL=/mnt/internal/misc/firefox
+        FIREFOX_PROFILE=zmzk0pef.default-release
+        GPG_MAIL=SalmanAbedin@disroot.org
 
-            # rclone sync "$GIT"/others $CLOUD:git/others
-            # rclone sync "$GIT"/forks $CLOUD:git/forks
-            # rclone sync "$GIT"/archived $CLOUD:git/archived
+        #---------------------------------------
+        #              Backup
+        #---------------------------------------
+        cd $FIREFOX_LOCAL || exit
+        tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
+        gpg -esr "$GPG_MAIL" $FIREFOX_PROFILE.tar
+        rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
+        rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
 
-            ;;
-            #}}}
-            # firefox{{{
+        #---------------------------------------
+        #              Sync
+        #---------------------------------------
+        # cd /tmp || exit
+        # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
+        # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
+        # tar xf $FIREFOX_PROFILE.tar
+        # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
+        # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
 
-            #---------------------------------------
-            #               Firefox
-            #---------------------------------------
-        --firefox | -f)
-            CLOUD=drive
-            FIREFOX_LOCAL=/mnt/internal/misc/firefox
-            FIREFOX_PROFILE=zmzk0pef.default-release
-            GPG_MAIL=SalmanAbedin@disroot.org
+        ;;
+        #}}}
+        # git{{{
+        #---------------------------------------
+        #               Git
+        #---------------------------------------
+    --git | -g)
+        ##weechat
+        #cp -fr /home/internal/weechat "$GIT"/own/magpie-private/.config
 
-            #---------------------------------------
-            #              Backup
-            #---------------------------------------
-            cd $FIREFOX_LOCAL || exit
-            tar cf $FIREFOX_PROFILE.tar $FIREFOX_PROFILE
-            gpg -esr "$GPG_MAIL" $FIREFOX_PROFILE.tar
-            rclone copy $FIREFOX_PROFILE.tar.gpg $CLOUD:/
-            rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg
-
-            #---------------------------------------
-            #              Sync
-            #---------------------------------------
-            # cd /tmp || exit
-            # rclone copy $CLOUD:$FIREFOX_PROFILE.tar.gpg ~
-            # gpg -o $FIREFOX_PROFILE.tar -d $FIREFOX_PROFILE.tar.gpg
-            # tar xf $FIREFOX_PROFILE.tar
-            # unison -batch $FIREFOX_LOCAL/$FIREFOX_PROFILE $FIREFOX_PROFILE
-            # rm $FIREFOX_PROFILE.tar $FIREFOX_PROFILE.tar.gpg $FIREFOX_PROFILE
-
-            ;;
-            #}}}
-            # git{{{
-            #---------------------------------------
-            #               Git
-            #---------------------------------------
-        --git | -g)
-            ##weechat
-            #cp -fr /home/internal/weechat "$GIT"/own/magpie-private/.config
-
-            # for repo in "$GIT"/own/*/ "$GIT"/suckless/*/; do
-            for repo in "$REPOS"/*/ "$REPOS"/../daily/*/; do
-                cd "$repo" || continue
-                # git pull --no-rebase
-                git add .
-                [ -z "$(git status --porcelain)" ] && continue
-                #[ "${PWD##*/}" = magpie-private ] \
-                #  || [ "${PWD##*/}" = notes ] \
-                #  || [ "${PWD##*/}" = leetcode ] \
-                #  || message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
-                #if [ -z "$message" ]; then
-                #  git commit --allow-empty-message -m '' && git push
-                #else
-                #  git commit -m "$message" && git push
-                #fi
-                git commit --allow-empty-message -m '' && git push
-            done
-            ;;
-            #}}}
-            # mail{{{
-            #---------------------------------------
-            #               Mail
-            #---------------------------------------
-        --mail | -m)
-            mbsync -c ~/.config/isync/mbsyncrc -a
-            notmuch new
-            unread=$(notmuch count -- tag:unread)
-            # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
-            [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
-                "Psst. You've got $unread unread mail!"
-            ;;
-            #}}}
-            # phone{{{
-            #---------------------------------------
-            #               Phone
-            #---------------------------------------
-        --phone | -P)
-            ANDROID=/mnt/phone
-            LOCAL=/mnt/internal/phone
-            if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
-                notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
+        # for repo in "$GIT"/own/*/ "$GIT"/suckless/*/; do
+        for repo in "$REPOS"/*/ "$REPOS"/../daily/*/; do
+            cd "$repo" || continue
+            # git pull --no-rebase
+            git add .
+            [ -z "$(git status --porcelain)" ] && continue
+            #[ "${PWD##*/}" = magpie-private ] \
+            #  || [ "${PWD##*/}" = notes ] \
+            #  || [ "${PWD##*/}" = leetcode ] \
+            #  || message=$(timeout 15 sh -c " : | $DMENU -p $(echo $PWD | awk -F / '{print $NF}')")
+            #if [ -z "$message" ]; then
+            #  git commit --allow-empty-message -m '' && git push
+            #else
+            #  git commit -m "$message" && git push
+            #fi
+            git commit --allow-empty-message -m '' && git push
+        done
+        ;;
+        #}}}
+        # mail{{{
+        #---------------------------------------
+        #               Mail
+        #---------------------------------------
+    --mail | -m)
+        mbsync -c ~/.config/isync/mbsyncrc -a
+        notmuch new
+        unread=$(notmuch count -- tag:unread)
+        # unread=$(find ~/.local/share/mail/INBOX/new/* -type f 2> /dev/null | wc -l)
+        [ "$unread" -gt 0 ] && notify-send -t 0 -i "$ICONS/mail.png" \
+            "Psst. You've got $unread unread mail!"
+        ;;
+        #}}}
+        # phone{{{
+        #---------------------------------------
+        #               Phone
+        #---------------------------------------
+    --phone | -P)
+        ANDROID=/mnt/phone
+        LOCAL=/mnt/internal/phone
+        if ! timeout 3 sshfs -p "$PORT" "$CARD" "$ANDROID"; then
+            notify-send -t 3000 -i "$ICONS"/critical.png "Couldn't sync phone!" && exit 1
+        fi
+        unison -batch -fat "$ANDROID" "$LOCAL"
+        fusermount -u "$ANDROID"
+        ;;
+        #}}}
+        # webdav{{{
+        #---------------------------------------
+        #               WebDav
+        #---------------------------------------
+    --webdav | -W)
+        mount /mnt/disroot
+        unison -batch /mnt/internal/webdav /mnt/disroot
+        umount /mnt/disroot
+        ;;
+        #}}}
+        # repos{{{
+        #---------------------------------------
+        #               Repos
+        #---------------------------------------
+    --repos | -r)
+        for repo in "$GIT"/others/*/; do
+            [ -d "$repo" ] && git -C "$repo" pull --rebase
+        done
+        ;;
+        #}}}
+        # system{{{
+        #---------------------------------------
+        #               System
+        #---------------------------------------
+    --system | -s)
+        # doas -n -- pacman -Syu --noconfirm
+        # yay -Syu --noconfirm
+        # npm update -g
+        paru -Syu --noconfirm
+        # yarn upgrade global
+        ;;
+        #}}}
+        # upstream{{{
+        #---------------------------------------
+        #               Upstream
+        #---------------------------------------
+    --upstream | -u)
+        for repo in "$GIT"/suckless/*/; do
+            if [ -d "$repo" ]; then
+                cd "$repo" || exit
+                git fetch upstream
+                git merge upstream/master --allow-unrelated-histories
             fi
-            unison -batch -fat "$ANDROID" "$LOCAL"
-            fusermount -u "$ANDROID"
-            ;;
-            #}}}
-            # webdav{{{
-            #---------------------------------------
-            #               WebDav
-            #---------------------------------------
-        --webdav | -W)
-            mount /mnt/disroot
-            unison -batch /mnt/internal/webdav /mnt/disroot
-            umount /mnt/disroot
-            ;;
-            #}}}
-            # repos{{{
-            #---------------------------------------
-            #               Repos
-            #---------------------------------------
-        --repos | -r)
-            for repo in "$GIT"/others/*/; do
-                [ -d "$repo" ] && git -C "$repo" pull --rebase
-            done
-            ;;
-            #}}}
-            # system{{{
-            #---------------------------------------
-            #               System
-            #---------------------------------------
-        --system | -s)
-            # doas -n -- pacman -Syu --noconfirm
-            # yay -Syu --noconfirm
-            # npm update -g
-            paru -Syu --noconfirm
-            # yarn upgrade global
-            ;;
-            #}}}
-            # upstream{{{
-            #---------------------------------------
-            #               Upstream
-            #---------------------------------------
-        --upstream | -u)
-            for repo in "$GIT"/suckless/*/; do
-                if [ -d "$repo" ]; then
-                    cd "$repo" || exit
-                    git fetch upstream
-                    git merge upstream/master --allow-unrelated-histories
-                fi
-            done
-            ;;
-            #}}}
-        *) break ;;
+        done
+        ;;
+        #}}}
+    *) break ;;
     esac
     shift
 done

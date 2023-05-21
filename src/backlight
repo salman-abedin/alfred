@@ -23,6 +23,9 @@ for device in /sys/class/backlight/*; do
         --max | -m)
             echo $MAX | doas -n tee "$device"/brightness
             ;;
+        --mid | -M)
+            echo $((MAX / 3)) | doas -n tee "$device"/brightness
+            ;;
         --dim | -D)
             DIM_FIFO=/tmp/dff
 

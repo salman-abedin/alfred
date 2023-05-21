@@ -2,34 +2,39 @@
 #
 # Display related scripts
 #
-# Dependencies: feh, shuf & readlink
+# Dependencies: feh/swaybg, shuf & readlink
 #
 # set-bg --shuffle | --delete | WALL_PATH | NONE
 
 PATH_WALL=~/.local/share/WALL
 PATH_WALLPAPERS=~/.local/share/wallpapers
 
+case $XDG_SESSION_TYPE in
+wayland) cmd="swaybg -m fill -i" ;;
+*) cmd="feh --no-fehbg --bg-fill" ;;
+esac
+
 _get_wall_path() {
-  read -r WALL_PATH < "$PATH_WALL"
-  echo $WALL_PATH
+    read -r WALL_PATH <"$PATH_WALL"
+    echo $WALL_PATH
 }
 
 case $1 in
-  --shuffle | -s)
+--shuffle | -s)
     for wall in "$PATH_WALLPAPERS"/*; do
-      echo "$wall"
-    done \
-      | shuf -n1 > $PATH_WALL
+        echo "$wall"
+    done |
+        shuf -n1 >$PATH_WALL
     # feh --no-fehbg --bg-scale "$(_get_wall_path)"
-    feh --no-fehbg --bg-fill "$(_get_wall_path)"
+    $cmd "$(_get_wall_path)" &
     ;;
-  delete | -d)
+delete | -d)
     rm -f "$(readlink $(_get_wall_path))"
     $0 -s
     ;;
-  *)
-    [ -n "$1" ] && echo "$1" > $PATH_WALL
+*)
+    [ -n "$1" ] && echo "$1" >$PATH_WALL
     # feh --no-fehbg --bg-scale "$(_get_wall_path)"
-    feh --no-fehbg --bg-fill "$(_get_wall_path)"
+    $cmd "$(_get_wall_path)" &
     ;;
 esac

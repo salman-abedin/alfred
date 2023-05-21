@@ -1,0 +1,13 @@
+#!/bin/sh
+
+list=$(tmux list-windows -a)
+choice=$(echo "$list" | cut -d' ' -f2 | tr -d '\-\*Z' | $DMENU)
+[ -z "$choice" ] && exit
+window=$(echo "$list" | grep -Po ".*(?=: $choice)")
+tmux switch-client -t "$window"
+
+# ╔═══════════════════════════════════════════════════════════════════════════════
+# ║                               Exp
+# ╚═══════════════════════════════════════════════════════════════════════════════
+
+# choice=$(echo "$list" |  grep -Po "(?<= )\w.*(?= \()" | sed 's/[-*]Z//' | $DMENU)

@@ -7,56 +7,85 @@
 RESOLUTION=$(xrandr | awk '(/current/){print $8 "x" $10 }' | sed 's/,//')
 
 case $1 in
-    --display | -d)
-        # Forked from https://github.com/dylanaraps/bin/blob/master/scr
-        FILE=/mnt/internal/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
-        ffmpeg -y \
-            -hide_banner \
-            -loglevel error \
+--display | -d)
+    # Forked from https://github.com/dylanaraps/bin/blob/master/scr
+    FILE=/mnt/internal/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
+    ffmpeg -y \
+        -hide_banner \
+        -loglevel error \
+        -f x11grab \
+        -video_size "$RESOLUTION" \
+        -i "$DISPLAY" \
+        -vframes 1 \
+        "$FILE"
+    # pinta "$FILE"
+    drawing "$FILE"
+    ;;
+--screencast | -s)
+    # Forked from https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord
+    RECPID=/tmp/recpid
+
+    if [ -f "$RECPID" ]; then
+        recpid=$(cat "$RECPID")
+        kill -15 "$recpid"
+        rm -f "$RECPID"
+        sleep 3
+        kill -9 "$recpid"
+        notify-send "stopped recording"
+        exit
+    else
+        ffmpeg \
+            -f pulse \
+            -i "$(pactl list sources short | grep -oP '\S*output\S*')" \
             -f x11grab \
-            -video_size "$RESOLUTION" \
+            -framerate 30 \
+            -s "$RESOLUTION" \
             -i "$DISPLAY" \
-            -vframes 1 \
-            "$FILE"
-        # pinta "$FILE"
-        drawing "$FILE"
-        ;;
-    --screencast | -s)
-        # Forked from https://github.com/LukeSmithxyz/voidrice/blob/master/.local/bin/dmenurecord
-        RECPID=/tmp/recpid
+            -c:v libx264rgb -preset ultrafast -c:a aac \
+            /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
+        echo $! >"$RECPID"
+        notify-send "started recording"
+    fi
+    #  -crf 0
+    #  -f alsa -i default \
+    ;;
+--windowcast | -w)
+    result=$(xprop)
+    window_name=$(echo "$result" | grep '_WM_NAME' | grep -oP '(?<=").*(?=")')
 
+    RECPID=/tmp/recpid
 
-        if [ -f "$RECPID" ]; then
-            recpid=$(cat "$RECPID")
-            kill -15 "$recpid"
-            rm -f "$RECPID"
-            sleep 3
-            kill -9 "$recpid"
-            notify-send "stopped recording"
-            exit
-        else
-            ffmpeg \
-                -f pulse \
-                -i "$(pactl list sources short | grep -oP '\S*output\S*')" \
-                -f x11grab \
-                -framerate 30 \
-                -s "$RESOLUTION" \
-                -i "$DISPLAY" \
-                -c:v libx264rgb -preset ultrafast -c:a aac \
-                /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
-            echo $! > "$RECPID"
-            notify-send "started recording"
-        fi
-        #  -crf 0
-        #  -f alsa -i default \
-        ;;
-    -S)
-        FILE=/mnt/internal/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
-        maim -s -u > $FILE
-        # pinta $FILE
-        drawing $FILE
-        ;;
-    *) exit 1 ;;
+    if [ -f "$RECPID" ]; then
+        recpid=$(cat "$RECPID")
+        kill -15 "$recpid"
+        rm -f "$RECPID"
+        sleep 3
+        kill -9 "$recpid"
+        notify-send "stopped recording"
+        exit
+    else
+        ffmpeg \
+            -f pulse \
+            -i "$(pactl list sources short | grep -oP '\S*output\S*')" \
+            -f dshow \
+            -framerate 30 \
+            -s "$RESOLUTION" \
+            -i "$window_name" \
+            -c:v libx264rgb -preset ultrafast -c:a aac \
+            /mnt/internal/downloads/screencast_"$(date +'%Y-%d_%b-%H_%M_%S')".mkv &
+        echo $! >"$RECPID"
+        notify-send "started recording"
+    fi
+    #  -crf 0
+    #  -f alsa -i default \
+    ;;
+-S)
+    FILE=/mnt/internal/downloads/screenshot_"$(date +'%Y-%d_%b-%H_%M_%S')".png
+    maim -s -u >$FILE
+    # pinta $FILE
+    drawing $FILE
+    ;;
+*) exit 1 ;;
 esac
 
 # -i :0.0 \
